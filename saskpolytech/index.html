@@ -6,14 +6,19 @@
     <title>Salutations!</title>
     <link rel="icon" type="image/x-icon" href="./rose.png">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+
     <style>
         body {
             background: linear-gradient(135deg, #512D6D, #00B2E3);
             color: #fff;
-            font-family: 'Lato', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            font-family: "DM Sans", system-ui, sans-serif;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            overflow-x: hidden;
             position: relative;
         }
 
@@ -31,12 +36,12 @@
         }
 
         a {
-            color: #00B2E3;
+            color: gold !important;
             text-decoration: none;
         }
 
         a:hover {
-            color: #8DC63F;
+            color: #ffee88 !important;
             text-decoration: underline;
         }
 
@@ -60,14 +65,6 @@
         .hover-row:hover {
             background-color: rgba(255, 255, 255, 0.15);
             transform: scale(1.01);
-        }
-
-        a {
-            color: gold !important;
-        }
-
-        a:hover {
-            color: #FFEE88 !important;
         }
 
         .instructor-btn {
@@ -113,9 +110,113 @@
 
         @media (max-width: 768px) {
             #musicToggle {
-                width: 60px;
-                height: 60px;
-                font-size: 1.6rem;
+                width: 64px;
+                height: 64px;
+                font-size: 1.5rem;
+            }
+
+            header .row {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            header .col-md-3,
+            header .col-md-6 {
+                width: 100%;
+                text-align: center !important;
+                margin-bottom: 1rem;
+            }
+
+            header img {
+                max-width: 120px;
+            }
+
+            main .row {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            main .col-md-4 {
+                order: -1;
+                /* avatar first */
+                margin-bottom: 2rem;
+            }
+
+            main .col-md-8 {
+                width: 100%;
+            }
+        }
+
+        /* Fix awkward header padding and spacing on smaller devices */
+        @media (max-width: 992px) {
+            header.container {
+                padding-top: 2.5rem !important;
+                padding-bottom: 2.5rem !important;
+            }
+
+            header h1 {
+                font-size: 1.9rem;
+            }
+
+            header h2 {
+                font-size: 1.3rem;
+            }
+
+            header p {
+                margin-top: 0.5rem;
+            }
+
+            /* Harmonize the table layout between mobile and tablet */
+            @media (max-width: 992px) {
+                .row.fw-bold.text-uppercase {
+                    display: none;
+                    /* hide the rigid header row */
+                }
+
+                .hover-row {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: flex-start;
+                    background: rgba(255, 255, 255, 0.08);
+                    border-radius: 12px;
+                    padding: 1rem 1.2rem;
+                    margin: 0.75rem auto;
+                    width: 90%;
+                    text-align: left;
+                    box-shadow: 0 0 8px rgba(255, 255, 255, 0.1);
+                }
+
+                .hover-row .col-3,
+                .hover-row .col-7,
+                .hover-row .col-2 {
+                    all: unset;
+                    display: block;
+                    width: 100%;
+                    margin: 0.15rem 0;
+                }
+
+                .hover-row .fw-bold {
+                    font-weight: 600;
+                    color: #ffeb99;
+                    font-size: 1.1rem;
+                }
+
+                .hover-row .text-end {
+                    text-align: right;
+                    font-size: 1.3rem;
+                    margin-top: 0.25rem;
+                }
+            }
+
+            /* Give the header a narrower stage on small screens */
+            @media (max-width: 768px) {
+                header.container {
+                    max-width: 90%;
+                    margin-left: auto;
+                    margin-right: auto;
+                    border-radius: 1rem;
+                    padding: 2rem 1.25rem !important;
+                }
             }
         }
     </style>
@@ -137,9 +238,8 @@
             </div>
 
             <div class="col-md-6">
-                <h1 class="mb-0 fw-bold text-warning display-5">🎭 Welcome to 🎭</h1>
-                <br>
-                <h2>Business Information Systems</h2>
+                <h1 class="mb-0 fw-bold text-warning display-6">🎭 Welcome to 🎭</h1>
+                <h2 class="mt-2">Business Information Systems</h2>
                 <p class="text-secondary small mt-2">Where business logic meets a touch of coding madness</p>
             </div>
 
@@ -158,6 +258,7 @@
                 <img src="../assets/img/jack-the-leader.png" alt="Instructor Zach"
                     class="img-fluid rounded-3 shadow-sm">
             </div>
+
             <div class="col-md-8">
                 <h3 class="mb-3 text-light">Courses:</h3>
 
@@ -214,19 +315,12 @@
     <script>
         const bgm = document.getElementById('bgm');
         const btn = document.getElementById('musicToggle');
-
-        // Start muted by default
         bgm.pause();
-        btn.textContent = '🎵'; // Show play icon
+        btn.textContent = '🎵';
 
         btn.onclick = () => {
-            if (bgm.paused) {
-                bgm.play();
-                btn.textContent = '🔇';
-            } else {
-                bgm.pause();
-                btn.textContent = '🎵';
-            }
+            if (bgm.paused) { bgm.play(); btn.textContent = '🔇'; }
+            else { bgm.pause(); btn.textContent = '🎵'; }
         };
     </script>
 </body>
