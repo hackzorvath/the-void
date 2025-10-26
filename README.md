@@ -7,7 +7,7 @@ _Built with HTML, CSS, JavaScript, and an extravagant amount of mirth._
 
 ## 🌌 Premise
 
-Welcome, wayward traveller of the web, to **enter_the_void** — a static-site experiment that straddles the line between classroom and cabaret.  
+Welcome, wayward traveller of the web, to **the_void** — a static-site experiment that straddles the line between classroom and cabaret.  
 What began as a modest course hub has metastasized into something delightfully unruly: a portal of links, lectures, and luminous nonsense, all wrapped in the spectral silk of Saskatchewan Polytechnic’s palette.  
 
 Here the author, performer, and professor (that’s me) collects the many acts of my digital life:
@@ -43,6 +43,6 @@ The void is hosted via **GitHub Pages**, automatically rebuilt whenever I push t
 To conjure your own version:
 
 ```bash
-git clone https://github.com/hackzorvath/enter_the_void.git
-cd enter_the_void
+git clone https://github.com/hackzorvath/the-void.git
+cd the_void
 open index.html
