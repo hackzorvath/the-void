@@ -17,21 +17,6 @@ Here the author, performer, and professor (that’s me) collects the many acts o
 
 ---
 
-## 🧩 Structure
-enter_the_void/
-│
-├── index.html # The curtain rises here
-├── css/ # Costume design (styles)
-├── js/ # Stage mechanics (scripts)
-├── img/ # Dramatis personae (images)
-└── .gitignore # Keeps the riff-raff out
-
-
-
-Everything is static, hand-crafted, and deliberately lightweight — no frameworks, no build tools, just pure HTML theatre.
-
----
-
 ## ⚙️ Technology
 
 - **HTML5** for the bones  
