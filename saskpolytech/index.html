@@ -49,10 +49,6 @@
             border-top: 1px solid rgba(255, 255, 255, 0.3);
         }
 
-
-
-
-
         /* High-contrast link rows for your background */
         .hover-row {
             color: #fff;
@@ -66,18 +62,40 @@
         }
 
         a {
-            color: #fff !important;
+            color: gold !important;
         }
 
         a:hover {
             color: #FFEE88 !important;
+        }
+
+        /* Fancy return button — improved contrast */
+        .instructor-btn {
+            background: linear-gradient(135deg, #0074cc, #00b2e3);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: #fff;
+            font-weight: 700;
+            font-size: 1.05rem;
+            padding: 0.6rem 1.2rem;
+            border-radius: 50rem;
+            letter-spacing: 0.5px;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .instructor-btn:hover {
+            background: linear-gradient(135deg, #00b2e3, #8dc63f);
+            color: #fff;
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 0 12px rgba(255, 255, 255, 0.5);
         }
     </style>
 </head>
 
 <body>
     <audio autoplay loop>
-        <source src="res/sfx/miror-b.mp3" type="audio/mpeg">
+        <source src="../assets/sfx/miror-b.mp3" type="audio/mpeg">
         What year are you living in?? Get a modern browser, chum.
     </audio>
 
@@ -95,19 +113,22 @@
                 <p class="text-secondary small mt-2">Where business logic meets a touch of coding madness</p>
             </div>
 
-            <div class="col-md-3">
-                <h3 class="mb-0 text-info">Instructor Jack</h3>
-                <br>
-                <p>Earl of Mirth ☤ Professor of Code</p>
+            <!-- Right: Instructor Name & Return Button -->
+            <div class="col-md-3 text-md-end text-center">
+                <a href="../index.html" class="btn instructor-btn shadow-sm rounded-pill mb-2"
+                    aria-label="Go to main homepage">
+                    🌑 Back to the Void 🌑
+                </a>
+
             </div>
         </div>
     </header>
 
-
     <main class="container py-4">
         <div class="row align-items-center g-4">
             <div class="col-md-4 d-flex justify-content-center align-items-center">
-                <img src="res/img/jack-the-leader.png" alt="Instructor Zach" class="img-fluid rounded-3 shadow-sm">
+                <img src="../assets/img/jack-the-leader.png" alt="Instructor Zach"
+                    class="img-fluid rounded-3 shadow-sm">
             </div>
             <div class="col-md-8">
                 <h3 class="mb-3 text-light">Courses:</h3>
