@@ -18,4 +18,46 @@ Here the author, performer, and professor (that’s me) collects the many acts o
 ---
 
 ## 🧩 Structure
+enter_the_void/
+│
+├── index.html # The curtain rises here
+├── css/ # Costume design (styles)
+├── js/ # Stage mechanics (scripts)
+├── img/ # Dramatis personae (images)
+└── .gitignore # Keeps the riff-raff out
 
+
+
+Everything is static, hand-crafted, and deliberately lightweight — no frameworks, no build tools, just pure HTML theatre.
+
+---
+
+## ⚙️ Technology
+
+- **HTML5** for the bones  
+- **Bootstrap** for a touch of civilized structure  
+- **CSS custom styling** because aesthetics are pedagogy  
+- **JavaScript** for interactivity and occasional mischief  
+- **GitHub Pages** for free, effortless hosting in the ether  
+
+---
+
+## 💡 Philosophy
+
+> _“Teach as you perform, and perform as you teach.”_  
+> — Jack Horvath, somewhere between a midterm and a monologue  
+
+The site is less a portfolio and more a living rehearsal space — where code, design, and pedagogy share the same stage lights.  
+Expect the occasional glitch, pun, or philosophical tangent; they’re all part of the show.
+
+---
+
+## 🚀 Deployment
+
+The void is hosted via **GitHub Pages**, automatically rebuilt whenever I push to `main`.  
+To conjure your own version:
+
+```bash
+git clone https://github.com/hackzorvath/enter_the_void.git
+cd enter_the_void
+open index.html
