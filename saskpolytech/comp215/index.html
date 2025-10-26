@@ -7,23 +7,75 @@
     <link rel="icon" type="image/x-icon" href="../rose.png">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="./res/css/styles.css">
+    <style>
+        /* === Music Toggle Button === */
+        #musicToggle {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            font-size: 1.3rem;
+            z-index: 20;
+            transition: background 0.3s ease;
+        }
+
+        #musicToggle:hover {
+            background: rgba(255, 255, 255, 0.35);
+        }
+
+        @media (max-width: 768px) {
+            #musicToggle {
+                width: 60px;
+                height: 60px;
+                font-size: 1.6rem;
+            }
+        }
+
+        /* === Instructor Button: COMP 215 Theme === */
+        .instructor-btn {
+            background: linear-gradient(135deg, #0074cc, #00b2e3);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: #fff;
+            font-weight: 700;
+            font-size: 1.05rem;
+            padding: 0.6rem 1.2rem;
+            border-radius: 50rem;
+            letter-spacing: 0.5px;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .instructor-btn:hover {
+            background: linear-gradient(135deg, #00b2e3, #8dc63f);
+            color: #fff;
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 0 12px rgba(255, 255, 255, 0.5);
+        }
+    </style>
 </head>
 
 <body>
-    <audio autoplay loop>
+    <audio id="bgm" loop>
         <source src="../../assets/sfx/colress.mp3" type="audio/mpeg">
         What year are you living in?? Get a modern browser, chum.
     </audio>
 
+    <!-- 🎵 Music Toggle Button -->
+    <button id="musicToggle" title="Toggle Music">🎵</button>
+
     <header class="container my-4 p-4 border border-primary-subtle rounded-4 shadow-sm text-center">
         <div class="row align-items-center g-3">
-            <!-- Left: Logo -->
             <div class="col-md-3 text-md-start text-center">
                 <img src="https://saskpolytech.ca/about/organization/communications-and-marketing/images/logos/full-colour-release/Saskatchewan_Polytechnic_RLS.png"
                     alt="SaskPoly Logo" class="img-fluid rounded-3 shadow-sm" style="max-width:160px;">
             </div>
 
-            <!-- Center: Course Title -->
             <div class="col-md-6">
                 <h1 class="mb-0">COMP 215</h1>
                 <h2 class="mt-2">
@@ -31,10 +83,10 @@
                 </h2>
             </div>
 
-            <!-- Right: Instructor Name -->
             <div class="col-md-3 text-md-end text-center">
-                <a href="../index.html" class="btn btn-warning btn-lg shadow-sm">
-                    <h3 class="instructor-name mb-0">Instructor Zach</h3>
+                <a href="../../index.html" class="btn instructor-btn shadow-sm rounded-pill mb-2"
+                    aria-label="Go to main homepage">
+                    🌑 Back to the Void 🌑
                 </a>
             </div>
         </div>
@@ -48,52 +100,47 @@
         </div>
     </header>
 
-
     <main class="container py-4">
         <div class="row align-items-center g-4">
-
-            <!-- Left Column: Centered Image -->
             <div class="col-md-3 d-flex justify-content-center align-items-center">
-                <img src="../../assets/img/colress.png" alt="SaskPoly Logo" class="img-fluid rounded-3 shadow-sm">
+                <img src="../../assets/img/colress.png" alt="Colress" class="img-fluid rounded-3 shadow-sm">
             </div>
 
-            <!-- Right Column: Lab List -->
             <div class="col-md-9">
                 <h3>Labs:</h3><br>
                 <ul class="list-group list-group-flush rounded-3 shadow-lg overflow-hidden" id="labList">
                     <li class="list-group-item bg-transparent text-light">
-                        <a href="lab01/index.html">➡️&nbsp;&nbsp;&nbsp;1: Introduction to HTML</a>
+                        <a href="lab01/index.html">➡️ 1: Introduction to HTML</a>
                     </li>
                     <li class="list-group-item bg-transparent text-light">
-                        <a href="lab02/index.html">➡️&nbsp;&nbsp;&nbsp;2: Introduction to CSS</a>
+                        <a href="lab02/index.html">➡️ 2: Introduction to CSS</a>
                     </li>
                     <li class="list-group-item bg-transparent text-light">
-                        <a href="lab03/index.html">➡️&nbsp;&nbsp;&nbsp;3: Column Layouts with CSS</a>
+                        <a href="lab03/index.html">➡️ 3: Column Layouts with CSS</a>
                     </li>
                     <li class="list-group-item bg-transparent text-light">
-                        <a href="lab04/index.html">➡️&nbsp;&nbsp;&nbsp;4: Bootstrap & Responsive Design</a>
+                        <a href="lab04/index.html">➡️ 4: Bootstrap & Responsive Design</a>
                     </li>
                     <li class="list-group-item bg-transparent text-light">
-                        <a href="lab05/default.html">➡️&nbsp;&nbsp;&nbsp;5: Intro to JavaScript</a>
+                        <a href="lab05/default.html">➡️ 5: Intro to JavaScript</a>
                     </li>
                     <li class="list-group-item bg-transparent text-light">
-                        <a href="lab06/default.html">➡️&nbsp;&nbsp;&nbsp;6: Javascript Form Validation</a>
+                        <a href="lab06/default.html">➡️ 6: JavaScript Form Validation</a>
                     </li>
                     <li class="list-group-item bg-transparent text-light">
-                        <a href="lab07/default.html">➡️&nbsp;&nbsp;&nbsp;7: TBD</a>
+                        <a href="lab07/default.html">➡️ 7: TBD</a>
                     </li>
                     <li class="list-group-item bg-transparent text-light">
-                        <a href="lab08/default.html">➡️&nbsp;&nbsp;&nbsp;8: TBD</a>
+                        <a href="lab08/default.html">➡️ 8: TBD</a>
                     </li>
                     <li class="list-group-item bg-transparent text-light">
-                        <a href="lab09/default.html">➡️&nbsp;&nbsp;&nbsp;9: TBD</a>
+                        <a href="lab09/default.html">➡️ 9: TBD</a>
                     </li>
                     <li class="list-group-item bg-transparent text-light">
-                        <a href="lab10/default.html">➡️&nbsp;&nbsp;&nbsp;10: TBD</a>
+                        <a href="lab10/default.html">➡️ 10: TBD</a>
                     </li>
                 </ul>
             </div>
-
         </div>
     </main>
 
@@ -103,6 +150,25 @@
             <a href="mailto:horvathz@saskpolytech.ca">horvathz@saskpolytech.ca</a>
         </p>
     </footer>
+
+    <script>
+        const bgm = document.getElementById('bgm');
+        const btn = document.getElementById('musicToggle');
+
+        // start silent by default
+        bgm.pause();
+        btn.textContent = '🎵';
+
+        btn.onclick = () => {
+            if (bgm.paused) {
+                bgm.play();
+                btn.textContent = '🔇';
+            } else {
+                bgm.pause();
+                btn.textContent = '🎵';
+            }
+        };
+    </script>
 </body>
 
 </html>

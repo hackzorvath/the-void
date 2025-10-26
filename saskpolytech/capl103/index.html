@@ -14,13 +14,11 @@
         }
 
         a {
-            color: #ffe8a3;
-            text-decoration: none;
+            color: #512D6D;
         }
 
         a:hover {
-            color: #ffffff;
-            text-decoration: underline;
+            color: #00B2E3;
         }
 
         header {
@@ -40,14 +38,66 @@
         footer {
             background: rgba(255, 255, 255, 0.05);
         }
+
+        /* === Instructor Button (Gradient) === */
+        .instructor-btn {
+            background: linear-gradient(135deg, #0074cc, #00b2e3);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: #fff;
+            font-weight: 700;
+            font-size: 1.05rem;
+            padding: 0.6rem 1.2rem;
+            border-radius: 50rem;
+            letter-spacing: 0.5px;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .instructor-btn:hover {
+            background: linear-gradient(135deg, #00b2e3, #8dc63f);
+            color: #fff;
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 0 12px rgba(255, 255, 255, 0.5);
+        }
+
+        /* === Music Toggle Button === */
+        #musicToggle {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            font-size: 1.3rem;
+            z-index: 20;
+            transition: background 0.3s ease;
+        }
+
+        #musicToggle:hover {
+            background: rgba(255, 255, 255, 0.35);
+        }
+
+        @media (max-width: 768px) {
+            #musicToggle {
+                width: 60px;
+                height: 60px;
+                font-size: 1.6rem;
+            }
+        }
     </style>
 </head>
 
 <body>
-    <audio autoplay loop>
+    <!-- 🎵 Music Controls -->
+    <audio id="bgm" loop>
         <source src="../../assets/sfx/prof-rowan.mp3" type="audio/mpeg">
         Your browser seems ethically outdated, chum.
     </audio>
+    <button id="musicToggle" title="Toggle Music">🎵</button>
 
     <header class="container my-4 p-4 border border-secondary-subtle rounded-4 shadow-sm text-center">
         <div class="row align-items-center g-3">
@@ -63,30 +113,41 @@
                 <h2 class="mt-2">Professionalism & Ethics</h2>
             </div>
 
-            <!-- Right: Instructor Name -->
+            <!-- Right: Return Button -->
             <div class="col-md-3 text-md-end text-center">
-                <a href="../index.html" class="btn btn-secondary btn-lg shadow-sm">
-                    <h3 class="instructor-name mb-0">Instructor Zach</h3>
+                <a href="../../index.html" class="btn instructor-btn shadow-sm rounded-pill mb-2"
+                    aria-label="Go to main homepage">
+                    🌑 Back to the Void 🌑
                 </a>
             </div>
         </div>
 
         <div>
             <p class="mt-3">
-                You will develop essential employability skills which will assist you in labour market research in the information technology sector, employment-related communications, and interviewing techniques. You will prepare documentation required for successful job application and employment. You will also study the role of the Canadian Information Processing Society (CIPS) and Information Systems Professionals (ISP) in
-                providing ethical guidelines for personal conduct. This will include topics in diversity, inclusion and indigenization strategy, truth and reconciliation. You will learn about the responsibilities of working with management information systems and an organization’s data. You will also learn about the Cooperative Education and Work Integrated Learning (CEWIL) Canada accreditation and how it relates to the cooperative education process.
+                You will develop essential employability skills which will assist you in labour market research in the
+                information technology sector, employment-related communications, and interviewing techniques. You will
+                prepare
+                documentation required for successful job application and employment. You will also study the role of
+                the
+                Canadian Information Processing Society (CIPS) and Information Systems Professionals (ISP) in providing
+                ethical
+                guidelines for personal conduct. This will include topics in diversity, inclusion and indigenization
+                strategy,
+                truth and reconciliation. You will learn about the responsibilities of working with management
+                information
+                systems and an organization’s data. You will also learn about the Cooperative Education and Work
+                Integrated
+                Learning (CEWIL) Canada accreditation and how it relates to the cooperative education process.
             </p>
         </div>
     </header>
 
     <main class="container py-4">
         <div class="row align-items-center g-4">
-            <!-- Left Column: Centered Image -->
             <div class="col-md-3 d-flex justify-content-center align-items-center">
                 <img src="../../assets/img/prof-rowan.png" alt="Professor Rowan" class="img-fluid rounded-3 shadow-sm">
             </div>
 
-            <!-- Right Column: Unit List -->
             <div class="col-md-9">
                 <h3>Topics:</h3><br>
                 <ul class="list-group list-group-flush rounded-3 shadow-lg overflow-hidden" id="labList">
@@ -113,6 +174,25 @@
             <a href="mailto:horvathz@saskpolytech.ca">horvathz@saskpolytech.ca</a>
         </p>
     </footer>
+
+    <script>
+        const bgm = document.getElementById('bgm');
+        const btn = document.getElementById('musicToggle');
+
+        // Start silent by default
+        bgm.pause();
+        btn.textContent = '🎵';
+
+        btn.onclick = () => {
+            if (bgm.paused) {
+                bgm.play();
+                btn.textContent = '🔇';
+            } else {
+                bgm.pause();
+                btn.textContent = '🎵';
+            }
+        };
+    </script>
 </body>
 
 </html>

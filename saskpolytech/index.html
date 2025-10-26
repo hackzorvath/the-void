@@ -14,12 +14,14 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            position: relative;
         }
 
         header {
             background: rgba(255, 255, 255, 0.1);
             border: 2px solid rgba(255, 255, 255, 0.2);
             border-radius: 1rem;
+            position: relative;
         }
 
         h1,
@@ -49,7 +51,6 @@
             border-top: 1px solid rgba(255, 255, 255, 0.3);
         }
 
-        /* High-contrast link rows for your background */
         .hover-row {
             color: #fff;
             border-bottom: 1px solid rgba(255, 255, 255, 0.2);
@@ -69,7 +70,6 @@
             color: #FFEE88 !important;
         }
 
-        /* Fancy return button — improved contrast */
         .instructor-btn {
             background: linear-gradient(135deg, #0074cc, #00b2e3);
             border: 2px solid rgba(255, 255, 255, 0.3);
@@ -90,14 +90,44 @@
             transform: translateY(-2px) scale(1.05);
             box-shadow: 0 0 12px rgba(255, 255, 255, 0.5);
         }
+
+        /* Music toggle button */
+        #musicToggle {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            font-size: 1.3rem;
+            z-index: 20;
+            transition: background 0.3s ease;
+        }
+
+        #musicToggle:hover {
+            background: rgba(255, 255, 255, 0.35);
+        }
+
+        @media (max-width: 768px) {
+            #musicToggle {
+                width: 60px;
+                height: 60px;
+                font-size: 1.6rem;
+            }
+        }
     </style>
 </head>
 
 <body>
-    <audio autoplay loop>
+    <audio id="bgm" loop>
         <source src="../assets/sfx/miror-b.mp3" type="audio/mpeg">
         What year are you living in?? Get a modern browser, chum.
     </audio>
+
+    <button id="musicToggle" title="Toggle Music">🎵</button>
 
     <header class="container my-4 p-4 shadow-sm text-center text-bg-dark rounded-4 border border-secondary">
         <div class="row align-items-center g-3">
@@ -113,13 +143,11 @@
                 <p class="text-secondary small mt-2">Where business logic meets a touch of coding madness</p>
             </div>
 
-            <!-- Right: Instructor Name & Return Button -->
             <div class="col-md-3 text-md-end text-center">
                 <a href="../index.html" class="btn instructor-btn shadow-sm rounded-pill mb-2"
                     aria-label="Go to main homepage">
                     🌑 Back to the Void 🌑
                 </a>
-
             </div>
         </div>
     </header>
@@ -134,14 +162,12 @@
                 <h3 class="mb-3 text-light">Courses:</h3>
 
                 <div class="container-fluid p-0">
-                    <!-- Header Row -->
                     <div class="row fw-bold text-uppercase py-2 border-bottom border-light text-light">
                         <div class="col-3">Course Code</div>
                         <div class="col-7">Description</div>
                         <div class="col-2 text-end">Link</div>
                     </div>
 
-                    <!-- Course Rows -->
                     <a href="comp215/index.html" class="text-decoration-none">
                         <div class="row align-items-center py-3 hover-row">
                             <div class="col-3 fw-bold">COMP 215</div>
@@ -184,6 +210,25 @@
             <a href="mailto:horvathz@saskpolytech.ca" class="text-light">horvathz@saskpolytech.ca</a>
         </p>
     </footer>
+
+    <script>
+        const bgm = document.getElementById('bgm');
+        const btn = document.getElementById('musicToggle');
+
+        // Start muted by default
+        bgm.pause();
+        btn.textContent = '🎵'; // Show play icon
+
+        btn.onclick = () => {
+            if (bgm.paused) {
+                bgm.play();
+                btn.textContent = '🔇';
+            } else {
+                bgm.pause();
+                btn.textContent = '🎵';
+            }
+        };
+    </script>
 </body>
 
 </html>

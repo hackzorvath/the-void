@@ -75,6 +75,58 @@
         .instructor-btn:hover {
             transform: translateY(-1px);
         }
+
+        #musicToggle {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            font-size: 1.2rem;
+            z-index: 20;
+            transition: background 0.25s ease;
+        }
+
+        #musicToggle:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        .instructor-btn {
+            background: linear-gradient(135deg, #00784b, #00b277);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: #fff;
+            font-weight: 700;
+            font-size: 1.05rem;
+            padding: 0.6rem 1.2rem;
+            border-radius: 50rem;
+            letter-spacing: 0.5px;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .instructor-btn:hover {
+            background: linear-gradient(135deg, #00b277, #8dc63f);
+            color: #fff;
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 0 12px rgba(255, 255, 255, 0.5);
+        }
+
+        a {
+            color: #004d40;
+            /* deep green */
+            font-weight: 600;
+        }
+
+        a:hover {
+            color: #a7ffeb;
+            /* minty cyan highlight */
+            text-decoration: underline;
+        }
     </style>
     <link rel="stylesheet" href="./res/css/styles.css">
 
@@ -85,6 +137,8 @@
         <source src="../../assets/sfx/prof-elm.mp3" type="audio/mpeg">
         Your browser has fallen behind the times, chum.
     </audio>
+
+    <button id="musicToggle" title="Toggle Music">🎵</button>
 
     <header class="container my-4 p-4 border border-success-subtle rounded-4 shadow-sm text-center">
         <div class="row align-items-center g-3">
@@ -102,9 +156,9 @@
 
             <!-- Right: Instructor Name -->
             <div class="col-md-3 text-md-end text-center">
-                <a href="../index.html" class="btn btn-success shadow-sm instructor-btn rounded-pill"
-                    aria-label="Go to course home">
-                    <span class="instructor-name">Instructor Zach</span>
+                <a href="../../index.html" class="btn instructor-btn shadow-sm rounded-pill mb-2"
+                    aria-label="Go to main homepage">
+                    🌑 Back to the Void 🌑
                 </a>
             </div>
         </div>
@@ -153,6 +207,18 @@
             <a href="mailto:horvathz@saskpolytech.ca">horvathz@saskpolytech.ca</a>
         </p>
     </footer>
+
+    <script>
+        const bgm = document.querySelector("audio");
+        const btn = document.getElementById("musicToggle");
+        bgm.pause(); // start silent
+        btn.textContent = "🎵";
+        btn.onclick = () => {
+            if (bgm.paused) { bgm.play(); btn.textContent = "🔇"; }
+            else { bgm.pause(); btn.textContent = "🎵"; }
+        };
+    </script>
+
 </body>
 
 </html>
