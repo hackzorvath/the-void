@@ -1,6 +1,6 @@
 # 🎭 enter_the_void
 
-**A digital proscenium by Jack Horvath**  
+**A digital proscenium by Jack**  
 _Built with HTML, CSS, JavaScript, and an extravagant amount of mirth._
 
 ---
@@ -30,7 +30,7 @@ Here the author, performer, and professor (that’s me) collects the many acts o
 ## 💡 Philosophy
 
 > _“Teach as you perform, and perform as you teach.”_  
-> — Jack Horvath, somewhere between a midterm and a monologue  
+> — Jack, somewhere between a midterm and a monologue  
 
 The site is less a portfolio and more a living rehearsal space — where code, design, and pedagogy share the same stage lights.  
 Expect the occasional glitch, pun, or philosophical tangent; they’re all part of the show.
