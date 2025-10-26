@@ -1,0 +1,114 @@
+/* Base Reset and Typography */
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  font-family: 'Segoe UI', 'Roboto', sans-serif;
+}
+
+/* Background */
+body {
+  background: linear-gradient(135deg, #0a1a2f, #122b45, #0a1a2f);
+  background-attachment: fixed;
+  color: #e0e6ed;
+  line-height: 1.6;
+}
+
+/* Header */
+header {
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 2px solid #1c3d5a;
+}
+
+:root {
+  --footer-height: 70px;
+}
+
+footer {
+  height: var(--footer-height);
+  line-height: var(--footer-height);
+}
+
+main {
+  padding-bottom: calc(var(--footer-height) + 20px);
+}
+
+h1 {
+  font-size: 2.5rem;
+  color: #f9d342;
+  text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.8);
+  font-family: 'Broadway', sans-serif;
+}
+
+h2 {
+  font-size: 1rem;
+  color: #9bb4d9;
+  font-family: 'Broadway', sans-serif;
+}
+
+/* Lab List */
+#labList {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid #1c3d5a;
+  border-radius: 10px;
+}
+
+#labList li {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  transition: background-color 0.3s ease;
+}
+
+#labList li:last-child {
+  border-bottom: none;
+}
+
+#labList li:hover {
+  background: rgba(249, 211, 66, 0.15);
+}
+
+#labList a {
+  color: #66d9ef;
+  text-decoration: none;
+  font-weight: bold;
+  display: block;
+  padding: 8px 4px;
+}
+
+#labList a:hover {
+  color: #f9d342;
+}
+
+#labList {
+  margin-bottom: 100px;
+}
+
+/* Footer */
+footer {
+  font-size: 0.9rem;
+  color: #9bb4d9;
+  background: rgba(13, 26, 42, 0.95);
+  border-top: 1px solid #1c3d5a;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+}
+
+/* Responsive Tweaks */
+@media (max-width: 768px) {
+  header {
+    padding: 20px;
+  }
+
+  h1 {
+    font-size: 2rem;
+  }
+
+  #labList a {
+    font-size: 0.95rem;
+  }
+}

@@ -1,0 +1,28 @@
+
+body {
+    margin: 0;
+    font-family: "Georgia", serif;
+    background: linear-gradient(135deg, #4a0000, #990000, #cc0000);
+    color: #f0e6d2;
+    text-align: center;
+    padding: 50px;
+}
+
+h1 {
+    color: gold;
+    font-size: 3em;
+    text-shadow: 2px 2px 6px #000;
+}
+
+p {
+    color: #ddd;
+    font-size: 1.2em;
+    max-width: 600px;
+    margin: auto;
+}
+
+a {
+    color: gold;
+    font-size: 2em;
+    text-shadow: 2px 2px 6px #000;
+}

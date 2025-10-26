@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>JavaScript Test Page</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+    }
+
+    /* Main floating form */
+    #floatingForm {
+      width: 300px;
+      height: 160px;
+      top: 60px;
+      left: 320px;
+      position: absolute;
+      border: 2px dashed blue;
+      padding: 10px;
+    }
+
+    /* Controller form styling */
+    #controllerForm {
+      width: 300px;
+      height: 60px;
+      position: absolute;
+      top: 260px;
+      left: 320px;
+      border: 2px solid blue;
+      padding: 10px;
+      text-align: center;
+    }
+
+    table {
+      border-collapse: separate;
+      border-spacing: 6px;
+    }
+
+    input[type="text"] {
+      width: 150px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Floating Form -->
+  <div id="floatingForm">
+    <h3>JavaScript Test Page</h3>
+    <form name="testForm">
+      <table>
+        <tr>
+          <td><input type="button" id="btnCheckText" value="Check Text" onclick="isEmpty()"></td>
+          <td><input type="text" id="txtText1"></td>
+        </tr>
+        <tr>
+          <td><input type="button" id="btnRelocate" value="Go To" onclick="relocatePage()"></td>
+          <td><input type="text" id="txtText2" placeholder="example.com"></td>
+        </tr>
+        <tr>
+          <td><input type="button" id="btnCheckBrowser" value="My Browser Is" onclick="checkBrowser()"></td>
+          <td><input type="text" id="txtText3" readonly></td>
+        </tr>
+      </table>
+    </form>
+  </div>
+
+  <!-- Controller Form -->
+  <div id="controllerForm">
+    <h4>Form Controller</h4>
+    <input type="button" value="Move Left" onclick="controlForm(1)">
+    <input type="button" value="Show" onclick="controlForm(2)">
+    <input type="button" value="Hide" onclick="controlForm(3)">
+    <input type="button" value="Move Right" onclick="controlForm(4)">
+  </div>
+
+  <script>
+    // ===== Functional Section for Top Form =====
+    function isEmpty() {
+      const text = document.getElementById("txtText1").value;
+      if (text.trim() === "") {
+        alert("The text box is empty");
+      } else {
+        alert("The text box is not empty");
+      }
+    }
+
+    function relocatePage() {
+      const url = document.getElementById("txtText2").value.trim();
+      if (url) {
+        window.location.href = "https://" + url;
+      } else {
+        alert("Please enter a website address");
+      }
+    }
+
+    function checkBrowser() {
+      document.getElementById("txtText3").value = navigator.appName;
+    }
+
+    // ===== Controller Functions =====
+    let LeftPosition = 320;
+    function controlForm(opt) {
+      const form = document.getElementById("floatingForm");
+
+      if (opt === 1) { // Move left
+        LeftPosition -= 10;
+        form.style.left = LeftPosition + "px";
+      }
+      if (opt === 2) { // Show
+        form.style.visibility = "visible";
+      }
+      if (opt === 3) { // Hide
+        form.style.visibility = "hidden";
+      }
+      if (opt === 4) { // Move right
+        LeftPosition += 10;
+        form.style.left = LeftPosition + "px";
+      }
+    }
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,62 @@
+/*colors the light sections of the chessboard green */
+.light {
+  background-color: green;
+}
+
+/*colors the dark sections of the chessboard purple */
+.dark {
+  background-color: purple;
+}
+
+/*sizes the individual chessboard squares.*/
+.chessboard .col-1 {
+  /*Forces the column width to exactly 1/8th (12.5%) of the parent row's width*/
+  width: 12.5%;
+  /* Removes any default padding/gutters on the column. */
+  padding: 0;
+  /*setting the bottom padding as a percentage of the width forces the height to equal the width (12.5% of 12.5% width)*/
+  padding-bottom: 12.5%;
+  /* Allows for absolute positioning of chess pieces or square content inside the cell. */
+  position: relative;
+}
+
+/*positions the contents of chessboard*/
+.chessboard .square-content {
+  /* Anchors the content to the top-left corner of the parent square. */
+  top: 0;
+  left: 0;
+  /* Makes the content fill the entire square area. */
+  width: 100%;
+  height: 100%;
+  /* Horizontally centers the content. */
+  justify-content: center;
+  /* Vertically centers the content. */
+  align-items: center;
+}
+
+/*colors background black */
+body {
+  background-color: #000000;
+}
+
+/*got creepy font from google fonts, linked in html, color green */
+#creepytext {
+  font-family: "Nosifer", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  color: orange;
+}
+
+/*got font from google fonts, linked in html, color orange */
+#text1 {
+  color: orange;
+
+  font-family: "Creepster", system-ui;
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* colors text with id="text2" green */
+#text2 {
+  color: purple;
+}

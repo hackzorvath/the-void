@@ -1,0 +1,131 @@
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  font-family: 'Segoe UI', 'Roboto', sans-serif;
+}
+
+/* Background */
+body {
+  background: linear-gradient(135deg, #2a3f5f, #3f5d80, #2a3f5f);
+  /* softer blue gradient */
+  background-attachment: fixed;
+  color: #eef2f7;
+  /* very light gray-blue text */
+  line-height: 1.6;
+}
+
+/* Header */
+header {
+  text-align: center;
+  margin: 30px;
+  padding: 30px;
+  background-color: rgba(255, 255, 255, 0.08);
+  /* gentle overlay */
+  border-radius: 15px;
+  border: 2px solid #5c7ea6;
+  /* muted blue border */
+}
+
+h1 {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+  color: #ffdd88;
+  /* warm soft gold */
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
+  font-family: 'Broadway', sans-serif;
+}
+
+h2 {
+  font-size: 1.6rem;
+  margin-bottom: 8px;
+  color: #c5ddf2;
+  /* light pastel blue */
+  font-family: 'Broadway', sans-serif;
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
+}
+
+h3 {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+  color: #eef2f7;
+  /* light welcoming text */
+  font-family: 'Broadway', sans-serif;
+}
+
+/* Paragraphs */
+p {
+  font-size: 1.1rem;
+  color: #d6e4f5;
+  /* soft blue-gray */
+}
+
+/* Table Styling */
+table {
+  width: 95%;
+  margin: 30px auto;
+  border-collapse: collapse;
+  background: rgba(255, 255, 255, 0.07);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+}
+
+table th,
+table td {
+  padding: 14px;
+  text-align: left;
+}
+
+table th {
+  font-size: 1.1rem;
+  background: #4b6484;
+  /* medium soft blue */
+  color: #ffdd88;
+  /* soft gold headings */
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+table tr:nth-child(even) {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+table tr:hover {
+  background: rgba(255, 221, 136, 0.2);
+  /* warm gold tint */
+  cursor: pointer;
+}
+
+/* Links */
+a {
+  color: #7dd3fc;
+  /* soft sky blue */
+  text-decoration: none;
+  font-weight: bold;
+}
+
+a:hover {
+  color: #ffdd88;
+  /* warm gold on hover */
+}
+
+/* Footer */
+footer {
+  text-align: center;
+  margin-top: 40px;
+  font-size: 0.9rem;
+  color: #c5ddf2;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: #324964;
+  /* muted blue */
+  padding: 12px;
+  border-top: 1px solid #5c7ea6;
+}

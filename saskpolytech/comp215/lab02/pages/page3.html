@@ -1,0 +1,59 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title>CSS Exercise - Page 3</title>
+	<link href="../../res/css/styles.css" rel="stylesheet" />
+</head>
+
+<body>
+	<a href="../index.html" style="float: right;">🏠 Lab Homepage</a>
+	<h1>Cascading Style Sheets</h1>
+	<h2>Multiple Styles Will Cascade Into One</h2>
+	<p>
+		Style sheets allow style information to be specified in many ways. Styles can be specified
+		inside a single HTML element's style attribute, inside a &lt;style&gt; block in the &lt;head&gt; section of an
+		HTML page,
+		or linked in from an external CSS file. Multiple external style sheets can be referenced inside a single HTML
+		document.
+	</p>
+
+	<h3>Cascading Order</h3>
+
+	<p>
+		What style will be used when there is more than one style specified for an HTML element?
+	</p>
+	<p>
+		Generally speaking we can say that all the styles will "cascade" into a new "virtual" style sheet by the
+		following rules, where number four has the highest priority:
+	</p>
+	<ol>
+		<li>Browser default</li>
+		<li>External style sheet</li>
+		<li>Internal style sheet (inside the &lt;head&gt; element)</li>
+		<li>In-line style (inside an HTML element's style attribute)</li>
+	</ol>
+
+	<p>
+		So, an in-line style (inside an HTML element's style attribute) has the highest priority, which means that it
+		will override a &lt;style&gt; block declared inside the
+		&lt;head&gt; tag, linked in from an external style sheet, or in the browser itself (a default value).
+	</p>
+
+
+	<table>
+		<tr>
+			<td>
+				<a href="page2.html">Previous...</a>
+
+			</td>
+			<td>
+				<a href="page1.html">Next...</a>
+			</td>
+		</tr>
+	</table>
+
+</body>
+
+</html>

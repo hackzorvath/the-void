@@ -1,0 +1,30 @@
+* {
+    font-family: "Comic Sans MS", "Comic Sans", cursive;
+}
+
+body {
+    margin: 0;
+    background: black;
+    text-align: center;
+    padding: 50px;
+}
+
+h1 {
+    color: orange;
+    font-size: 3em;
+}
+
+p {
+    color: #ddd;
+    font-size: 1.2em;
+    margin: auto;
+}
+
+a {
+    color: purple;
+    font-size: 2em;
+}
+
+a:hover {
+    color: green;
+}

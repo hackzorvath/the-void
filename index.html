@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Mad Jack's Void</title>
+    <link rel="icon" type="image/x-icon" href="./res/img/rose.png" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600&display=swap" rel="stylesheet" />
+    <style>
+        /* === Twilight Theme (active) === */
+        body {
+            font-family: "DM Sans", system-ui, sans-serif;
+            background: linear-gradient(135deg, #2b1055, #7597de);
+            color: #fff;
+            min-height: 100vh;
+            padding-bottom: 6rem;
+            /* room for sticky footer */
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* === Mirthful Dawn (commented) ===
+  body {
+    background: linear-gradient(135deg, #fff5e1, #ffd6a5);
+    color: #1a1a1a;
+  }
+  */
+
+        /* === Trickster Starlight (commented) ===
+  body {
+    background: linear-gradient(135deg, #0b132b, #1c2541, #5bc0be, #f1d302);
+    color: #fff;
+  }
+  */
+
+        header {
+            text-align: center;
+            padding: 3rem 1rem 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+        }
+
+        h1 {
+            font-weight: 600;
+            text-shadow: 0 0 12px rgba(255, 255, 255, 0.4);
+        }
+
+        nav.navbar {
+            background: rgba(255, 255, 255, 0.1);
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .nav-link {
+            color: #ffeb99 !important;
+            font-weight: 500;
+        }
+
+        .nav-link:hover {
+            color: #fff !important;
+        }
+
+        main {
+            padding: 3rem 1rem;
+            text-align: center;
+        }
+
+        .avatar {
+            width: 100%;
+            max-width: 420px;
+            /* you can adjust this cap */
+            height: auto;
+            border-radius: 12px;
+            /* gentle rounded corners, not a full circle */
+            box-shadow: 0 0 25px rgba(255, 255, 255, 0.25);
+            animation: float 8s ease-in-out infinite;
+            object-fit: contain;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-8px);
+            }
+        }
+
+        /* external resource table */
+        .hover-row {
+            color: #fff;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            transition: background-color 0.2s, transform 0.1s;
+        }
+
+        .hover-row:hover {
+            background-color: rgba(255, 255, 255, 0.15);
+            transform: scale(1.01);
+        }
+
+        /* stars */
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: #fff;
+            border-radius: 50%;
+            animation: twinkle 4s infinite ease-in-out;
+        }
+
+        @keyframes twinkle {
+
+            0%,
+            100% {
+                opacity: .2;
+            }
+
+            50% {
+                opacity: 1;
+            }
+        }
+
+
+        /* sticky footer */
+        footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.35);
+            border-top: 1px solid rgba(255, 255, 255, 0.25);
+            padding: 0.8rem 0 1rem;
+            font-size: 0.85rem;
+            text-align: center;
+            z-index: 10;
+        }
+
+        footer .social-links a {
+            font-size: 1.3rem;
+            margin: 0 0.45rem;
+            color: #ffeb99;
+            text-decoration: none;
+            transition: all 0.25s ease-in-out;
+        }
+
+        footer .social-links a:hover {
+            color: #fff;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+            transform: translateY(-2px) scale(1.2);
+        }
+
+
+        /* Sticky music toggle emoji button thingy */
+        #musicToggle {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 1.2rem;
+            z-index: 20;
+        }
+
+        #musicToggle:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            main .row {
+                text-align: center;
+            }
+
+            .col-md-4 {
+                margin-bottom: 2rem;
+            }
+        }
+
+
+
+        /* Navbar shit - make that golden babyyyyyyy */
+        nav.navbar {
+            background: rgba(255, 255, 255, 0.1);
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .navbar-nav .nav-item {
+            margin: 0 1rem;
+        }
+
+        .nav-link {
+            color: #ffeb99 !important;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.25s ease;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Full golden hover effect */
+        .nav-link:hover {
+            color: #2b1055 !important;
+            background: linear-gradient(135deg, #ffd700, #fff7b0);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+            transform: translateY(-1px);
+        }
+
+        /* shine bright like a diamond ... made of gold */
+        .nav-link:focus,
+        .nav-link:active {
+            color: #2b1055 !important;
+            background: linear-gradient(135deg, #ffe45c, #fff7b0);
+            box-shadow: 0 0 18px rgba(255, 215, 0, 0.75);
+        }
+
+        /* avatar is weirdly close - split that shit up a touch */
+        .col-md-4.d-flex {
+            padding-right: 4rem;
+        }
+
+        hr {
+            border: none;
+            height: 3px;
+            border-radius: 2px;
+            background: linear-gradient(90deg, #ffd700, #ffb6ff, #7597de);
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
+            margin: 2rem 0;
+        }
+    </style>
+</head>
+
+<body>
+    <script>
+        for (let i = 0; i < 60; i++) {
+            const s = document.createElement('div');
+            s.className = 'star';
+            s.style.top = Math.random() * 100 + '%';
+            s.style.left = Math.random() * 100 + '%';
+            s.style.animationDelay = Math.random() * 5 + 's';
+            document.body.appendChild(s);
+        }
+    </script>
+
+    <audio id="bgm" autoplay loop>
+        <source src="assets/sfx/corbeau.mp3" type="audio/mpeg">
+        Your browser cannot hear the music of the spheres.
+    </audio>
+    <button id="musicToggle" title="Toggle Music">🔇</button>
+
+    <header>
+        <h1>Mad Jack's Void</h1>
+        <p class="lead mb-0">Professional Educator • Maverick Extraordinaire • Games Master</p>
+    </header>
+
+    <nav class="navbar navbar-expand-md justify-content-center">
+        <ul class="navbar-nav">
+            <li class="nav-item"><a class="nav-link" href="saskpoly/index.html">🎓 Work 🏛️</a></li>
+            <li class="nav-item"><a class="nav-link" href="#games">🎲 Games 🎮</a></li>
+            <li class="nav-item"><a class="nav-link" href="#writing">📇 Writing 📜</a></li>
+            <li class="nav-item"><a class="nav-link" href="#projects">💡 Projects 🛠️</a></li>
+            <li class="nav-item"><a class="nav-link" href="#contact"> 📩 Contact 📞</a></li>
+        </ul>
+    </nav>
+
+    <main class="container py-5">
+        <div class="row align-items-center g-4">
+            <!-- Left Column: Avatar -->
+            <div class="col-md-4 d-flex justify-content-center align-items-center">
+                <img src="assets/img/corbeau.png" alt="Corbeau Avatar" class="avatar">
+            </div>
+
+            <!-- Right Column: External Resource Links -->
+            <div class="col-md-8">
+
+                <!-- internals links to my shit -->
+                <div class="container-fluid p-0">
+                    <!-- Header Row -->
+                    <div class="row fw-bold text-uppercase py-2 border-bottom border-light text-light">
+                        <div class="col-3 text-start">Entertainment</div>
+                    </div>
+                    <!-- Resource Rows -->
+                    <a href="https://www.reddit.com/" target="_blank" class="text-decoration-none">
+                        <div class="row align-items-center py-3 hover-row">
+                            <div class="col-3 fw-semibold text-start">Reddit</div>
+                            <div class="col-8 text-start">Front page of the internet — chaos, comedy, and curiosity
+                            </div>
+                            <div class="col-1 text-end">👀</div>
+                        </div>
+                    </a>
+
+                    <a href="https://chatgpt.com" target="_blank" class="text-decoration-none">
+                        <div class="row align-items-center py-3 hover-row">
+                            <div class="col-3 fw-semibold text-start">ChatGPT</div>
+                            <div class="col-8 text-start">Your ever-faithful digital dramaturge and dialogue partner
+                            </div>
+                            <div class="col-1 text-end">🤖</div>
+                        </div>
+                    </a>
+
+                    <a href="https://www.serebii.net/" target="_blank" class="text-decoration-none">
+                        <div class="row align-items-center py-3 hover-row">
+                            <div class="col-3 fw-semibold text-start">Serebii</div>
+                            <div class="col-8 text-start">Pokémon compendium — from Kanto's roots to Paldea's peaks
+                            </div>
+                            <div class="col-1 text-end">🧬</div>
+                        </div>
+                    </a>
+
+                    <a href="https://fogu.com/hm/" target="_blank" class="text-decoration-none">
+                        <div class="row align-items-center py-3 hover-row">
+                            <div class="col-3 fw-semibold text-start">Ushi No Tane</div>
+                            <div class="col-8 text-start">Harvest Moon's pastoral archive of seasons and sprites</div>
+                            <div class="col-1 text-end">🌽</div>
+                        </div>
+                    </a>
+
+                    <a href="https://github.com" target="_blank" class="text-decoration-none">
+                        <div class="row align-items-center py-3 hover-row">
+                            <div class="col-3 fw-semibold text-start">GitHub</div>
+                            <div class="col-8 text-start">Repository realm for coders, critics, and creators</div>
+                            <div class="col-1 text-end">🐙</div>
+                        </div>
+                    </a>
+
+                    <a href="https://itch.io/game-assets" target="_blank" class="text-decoration-none">
+                        <div class="row align-items-center py-3 hover-row">
+                            <div class="col-3 fw-semibold text-start">Itch.io</div>
+                            <div class="col-8 text-start">Indie dev bazaar brimming with bite-sized brilliance</div>
+                            <div class="col-1 text-end">🎮</div>
+                        </div>
+                    </a>
+
+                    <a href="https://pixelfrog-assets.itch.io/tiny-swords" target="_blank" class="text-decoration-none">
+                        <div class="row align-items-center py-3 hover-row">
+                            <div class="col-3 fw-semibold text-start">Tiny Swords</div>
+                            <div class="col-8 text-start">An ongoing asset package brimming with mirth and inspiration</div>
+                            <div class="col-1 text-end">🛡️</div>
+                        </div>
+                    </a>
+
+                    <a href="https://godotengine.org/" target="_blank" class="text-decoration-none">
+                        <div class="row align-items-center py-3 hover-row">
+                            <div class="col-3 fw-semibold text-start">Godot Engine</div>
+                            <div class="col-8 text-start">A modern marvel of open source game development theatre</div>
+                            <div class="col-1 text-end">🧩</div>
+                        </div>
+                    </a>
+                </div>
+
+                <hr>
+
+                <!-- work shit -->
+                <div class="container-fluid p-0">
+                    <!-- Header Row -->
+                    <div class="row fw-bold text-uppercase py-2 border-bottom border-light text-light">
+                        <div class="col-3 text-start">Work Shit</div>
+                    </div>
+
+                    <!-- Resource Rows -->
+
+                    <a href="https://outlook.office365.com/mail/" target="_blank" class="text-decoration-none">
+                        <div class="row align-items-center py-3 hover-row">
+                            <div class="col-3 fw-semibold text-start">Microsoft 365</div>
+                            <div class="col-8 text-start">Mail, meetings, and spreadsheets — civilization’s backbone
+                            </div>
+                            <div class="col-1 text-end">💼</div>
+                        </div>
+                    </a>
+
+                    <a href="https://online.saskpolytech.ca/d2l/home" target="_blank" class="text-decoration-none">
+                        <div class="row align-items-center py-3 hover-row">
+                            <div class="col-3 fw-semibold text-start">Brightspace</div>
+                            <div class="col-8 text-start">Your scholarly stage for coursework, cohorts, and chaos</div>
+                            <div class="col-1 text-end">📚</div>
+                        </div>
+                    </a>
+
+                    <a href="https://www.w3schools.com/html/default.asp" target="_blank" class="text-decoration-none">
+                        <div class="row align-items-center py-3 hover-row">
+                            <div class="col-3 fw-semibold text-start">W3Schools</div>
+                            <div class="col-8 text-start">HTML & CSS & JS - Oh My! The yellow brick road of web wisdom
+                            </div>
+                            <div class="col-1 text-end">🌐</div>
+                        </div>
+                    </a>
+                </div>
+
+                <hr>
+
+
+            </div>
+        </div>
+    </main>
+
+
+    <footer class="text-center mt-5 py-3">
+        <div class="social-links mb-2">
+            <a href="mailto:horvathz@saskpolytech.ca" title="Work Email">✉️</a>
+            <a href="mailto:hackzorvath@gmail.com" title="Personal Email">🕊️</a>
+            <a href="https://github.com/" target="_blank" title="GitHub">🐙</a>
+            <a href="https://itch.io/" target="_blank" title="Itch.io">🎮</a>
+            <a href="https://store.steampowered.com/" target="_blank" title="Steam">🔥</a>
+            <a href="https://www.youtube.com/" target="_blank" title="YouTube">🎥</a>
+            <a href="https://www.instagram.com/" target="_blank" title="Instagram">📸</a>
+            <a href="https://discord.gg/" target="_blank" title="Discord">💬</a>
+            <a href="https://ko-fi.com/" target="_blank" title="Ko-fi">☕</a>
+        </div>
+        <small class="opacity-75">© 2025 Mad Jack - All mirth reserved.</small>
+    </footer>
+
+    <script>
+        const bgm = document.getElementById('bgm');
+        const btn = document.getElementById('musicToggle');
+        btn.onclick = () => {
+            if (bgm.paused) { bgm.play(); btn.textContent = '🔇'; }
+            else { bgm.pause(); btn.textContent = '🎵'; }
+        };
+
+        // set up some badass Bootstrap tooltips yaaaaaaas
+        document.addEventListener("DOMContentLoaded", () => {
+            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.forEach(el => new bootstrap.Tooltip(el));
+        });
+    </script>
+</body>
+
+</html>

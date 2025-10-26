@@ -1,0 +1,126 @@
+* {
+
+    box-sizing: border-box;
+}
+
+html,body {
+    height: 100%;
+}
+
+header {
+    text-align: center;
+    margin: 30px;
+    padding: 30px;
+    background-color: rgba(255, 215, 0, 0.1);
+
+
+    border-radius: 15px;    
+    border: 2px solid #FFD700;
+    /* golden border */
+}
+
+h1 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    color: #FFD700;
+    text-shadow: 2px 2px 4px #000;
+    font-family: 'Broadway', sans-serif;
+}
+
+h2 {
+    font-size: 1rem;
+    margin-bottom: 8px;
+    color: #FFD700;
+    text-shadow: 2px 2px 4px #000;
+    font-family: 'Broadway', sans-serif;
+}
+
+h3 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+    color: #333;
+    font-family: 'Broadway', sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #3a0d0d, #6b0000, #3a0d0d);
+    background-attachment: fixed;
+    /* keeps it steady on scroll */
+}
+
+p {
+    font-size: 1.2rem;
+    color: #666;
+}
+
+/* Table Styling */
+table {
+    text-align: center;
+    margin: 30px;
+    padding: 30px;
+
+    border-collapse: collapse;
+    margin: 30px;
+    background: rgba(255, 255, 255, 0.9);
+    /* semi-transparent white */
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+
+th {
+    font-size: 1.2rem;
+    color: #333;
+    font-family: 'Arial Black', sans-serif;
+
+    border-bottom: 2px solid #ccc;  
+    background: #f4f4f4;
+    /* light gray */
+    padding: 12px;
+    border: 1px solid #ccc;   
+}
+
+table th,
+table td {
+    border: 1px solid #ccc;
+    padding: 12px;
+    text-align: left;
+}
+
+table th {
+    background: #444;
+    color: white;
+}
+
+table tr:nth-child(even) {
+    background: #f2f2f2;
+}
+
+table tr:hover {
+    background: rgba(255, 215, 0, 0.2);
+    /* golden glow */
+    cursor: pointer;
+}
+
+a {
+    color: #0066cc;
+    text-decoration: none;
+}
+a:hover {
+    color: #ffcc00;
+    /* golden yellow */
+}
+footer {
+    text-align: center;
+    margin-top: 40px;
+    font-size: 0.9rem;
+    color: #FFD700;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: #333;
+    text-align: center;
+    padding: 10px;
+}

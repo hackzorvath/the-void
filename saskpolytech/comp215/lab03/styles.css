@@ -1,0 +1,118 @@
+    /* Global reset / box model sanity */
+    *,
+    *::before,
+    *::after {
+        box-sizing: border-box;
+    }
+
+    html,
+    body {
+        height: 100%;
+        margin: 0;
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+        color: #222;
+    }
+
+    /* Page framing */
+    header {
+        background: #2a7ae2;
+        color: white;
+        padding: 18px 24px;
+    }
+
+    header h1 {
+        margin: 0;
+        font-size: 1.25rem;
+        letter-spacing: 0.5px;
+    }
+
+    /* Layout columns following the rules you gave */
+    #left {
+        float: left;
+        width: 210px;
+        border: 2px dashed #2b6bb0;
+        /* visible dashed blue */
+        padding: 12px;
+        background: #edf6ff;
+    }
+
+    #right {
+        float: right;
+        width: 200px;
+        border: 2px dashed #2b6bb0;
+        padding: 12px;
+        background: #edf6ff;
+    }
+
+    /*
+    The center column sits between the two floats. We provide left and right margins
+    equal to the float widths so it doesn't overlap them.
+
+    Your note: margin-left: 210px; margin-right: 210px;
+    Why 218px can "work better": borders, padding, scrollbars or page default margins
+    can add a few pixels. If the left or right column actually consumes extra space
+    (for instance 2px border + 6px padding), you need to account for that. Using
+    box-sizing: border-box (we set it above) helps, and increasing the margin by a
+    few pixels is a quick fix if things visually overlap.
+  */
+    #center {
+        margin-left: 210px;
+        /* change to 218px if you observe overlap due to border/padding/scrollbar */
+        margin-right: 210px;
+        /* keep symmetric with the left column width */
+        border: 2px solid #2b6bb0;
+        padding: 16px;
+        background: #ffffff;
+        min-height: 260px;
+    }
+
+    /* footer styling (clear floats) */
+    #footer {
+        background: #ccc;
+        margin: 20px;
+        text-align: center;
+        padding: 12px;
+        clear: both;
+        /* ensures it sits below left/right floats */
+    }
+
+    /* small niceties */
+    .panel-title {
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: #0b3a66;
+    }
+
+    p {
+        margin: 0 0 12px 0;
+        line-height: 1.45;
+    }
+
+    .note {
+        font-size: 0.9rem;
+        color: #444;
+        background: #f7fbff;
+        padding: 8px;
+        border-radius: 4px;
+        border: 1px solid #e0f0ff;
+    }
+
+    /* Responsive: stack columns on narrow viewports */
+    @media (max-width: 760px) {
+
+        #left,
+        #right {
+            float: none;
+            width: auto;
+            margin: 0 0 12px 0;
+        }
+
+        #center {
+            margin-left: 0;
+            margin-right: 0;
+        }
+
+        #footer {
+            margin: 12px;
+        }
+    }

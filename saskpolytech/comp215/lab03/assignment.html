@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Three-column layout demo</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+
+  <!-- footer -->
+  <header>
+    <h1>Three-Column Layout Demo</h1>
+  </header>
+
+  <!-- left column -->
+  <div id="left" role="complementary" aria-label="Left column">
+    <div class="panel-title">Left</div>
+    <p>This is the left column. It is floated left with <code>width:210px</code> and a dashed blue border.</p>
+    <p class="note">Tip: use <code>box-sizing:border-box</code> to make padding/border not expand the width
+      unexpectedly.</p>
+  </div>
+
+  <!-- right column -->
+  <div id="right" role="complementary" aria-label="Right column">
+    <div class="panel-title">Right</div>
+    <p>This is the right column. It is floated right with <code>width:200px</code> and a dashed blue border.</p>
+  </div>
+
+  <!-- center column -->
+  <div id="center" role="main" aria-label="Main content">
+    <div class="panel-title">Center</div>
+    <p>This is the main center column. Notice the CSS uses <code>margin-left</code> and <code>margin-right</code> set to
+      the widths of the floated columns so the center area flows between them.</p>
+
+    <h3>Why 218px sometimes "works better"</h3>
+    <p>
+      The original question you included asked why <code>margin-left:210px</code> vs <code>218px</code>. The difference
+      comes down to extra pixels added by borders, padding or default body margins/scrollbars. If the left column has a
+      <code>2px</code> border and some padding, the effective visual space it takes is more than 210px. Using
+      <code>box-sizing:border-box</code> prevents padding and border from increasing element width, which is the
+      preferred fix. Increasing margin by a few pixels (e.g. to 218px) is a pragmatic workaround when you don't change
+      the box model or when there are other layout quirks.
+    </p>
+
+    <h4>Student exercise idea</h4>
+    <p>Try changing the values: set <code>box-sizing</code> off, add padding/borders, and see how the center column
+      overlaps. Then toggle <code>box-sizing:border-box</code> back on and observe how the layout stabilizes.</p>
+  </div>
+
+  <!-- footer -->
+  <div id="footer" role="contentinfo">
+    Footer — this area clears floats and sits below the three columns.
+  </div>
+
+</body>
+
+</html>

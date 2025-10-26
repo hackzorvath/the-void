@@ -1,0 +1,35 @@
+body {
+    padding: 1rem;
+}
+
+#trainerForm {
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    transition: border 0.3s ease;
+    border-radius: 3rem;
+}
+
+.bulbasaur {
+    border: 4px solid #78C850;
+}
+
+.charmander {
+    border: 4px solid #F08030;
+}
+
+.squirtle {
+    border: 4px solid #6890F0;
+}
+
+#pokemonImage {
+    border: 2px solid gold;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    border-radius: 5rem;
+    transition: opacity 0.5s ease;
+    opacity: 0;
+}
+
+#pokemonImage.visible {
+    opacity: 1;
+}

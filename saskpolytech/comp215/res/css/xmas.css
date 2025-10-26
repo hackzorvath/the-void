@@ -1,0 +1,71 @@
+body {
+  /* using an external image as a tileable background */
+  background: #003300 url('https://www.transparenttextures.com/patterns/snow.png') repeat;
+  background-size: 200px 200px;
+}
+
+h1 {
+  color: #ff2222;
+  font-size: 3em;
+  text-shadow: 2px 2px 6px #000, 0 0 10px #ff2222;
+  font-family: 'Mountains of Christmas', cursive, 'Arial', sans-serif;
+}
+
+/* a little christmas magic here and there */
+@keyframes snow {
+  0% {
+    transform: translateY(-10vh) rotate(0deg);
+  }
+
+  100% {
+    transform: translateY(110vh) rotate(360deg);
+  }
+}
+
+.snowflake {
+  position: fixed;
+  top: -10px;
+  font-size: 1.5em;
+  color: #fff;
+  text-shadow: 0 0 10px #fff;
+  animation: snow 10s linear infinite;
+  z-index: 9999;
+  pointer-events: none;
+}
+
+/* 🎄 Festive text adjustments */
+h2 {
+  color: #00cc66 !important;
+  text-shadow: 2px 2px 6px #000, 0 0 15px #ffd700, 0 0 25px #ff2222;
+  font-family: 'Mountains of Christmas', cursive, 'Arial', sans-serif;
+  font-size: 2.5em;
+}
+
+/* candy cane borders */
+p {
+  border: 6px solid;
+  border-image: repeating-linear-gradient(45deg, #ff2222, #ff2222 10px, #fff 10px, #fff 20px) 10;
+  background: rgba(0, 50, 0, 0.6);
+  color: #ffd700;
+  padding: 2%;
+
+}
+
+a {
+  color: #ffd700;
+  font-size: 2em;
+  text-decoration: none;
+  animation: twinkle 2s infinite;
+  border-bottom: 2px dotted #ff2222;
+}
+
+a:hover {
+  color: #ff2222;
+  background: rgba(255, 255, 255, 0.15);
+  border-bottom: 2px solid #00cc66;
+  text-shadow: 0 0 10px #ffd700, 0 0 20px #ff2222;
+}
+
+table td {
+  padding: 10px 20px; /* top/bottom | left/right */
+}

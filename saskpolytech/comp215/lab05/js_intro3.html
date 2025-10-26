@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    
+  <meta charset="utf-8" />
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>The Tri-Stack of Jack</title>
+    <style>
+    :root {
+      --bg: #111;
+      --ink: #eee;
+      --gold: #e0b64b;
+      --crimson: #b2242b;
+      --violet: #6b36a8;
+      --blue: #2c6ea8;
+      --leaf: #2aa26b;
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    html,
+    body {
+      height: 100%
+    }
+
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+      color: var(--ink);
+      background: radial-gradient(80rem 80rem at 50% -20%, #3b0a0a 10%, #120909 55%, #0a0a0a 100%), var(--bg);
+      display: grid;
+      place-items: center;
+      padding: 2rem;
+    }
+
+    .stage {
+      width: min(900px, 100%);
+      border: 1px solid #333;
+      border-radius: 16px;
+      padding: 1.25rem;
+      background: #0e0b0b99;
+      backdrop-filter: blur(6px);
+      box-shadow: 0 10px 30px #000 inset, 0 10px 40px #000;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1rem
+    }
+
+    h1 {
+      font-size: clamp(1.25rem, 1rem + 2vw, 2rem);
+      margin: 0;
+      letter-spacing: .5px
+    }
+
+    .controls {
+      display: flex;
+      gap: .5rem;
+      flex-wrap: wrap
+    }
+
+    button {
+      border: 1px solid #333;
+      background: #1a1a1a;
+      color: var(--ink);
+      padding: .6rem .9rem;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: transform .05s ease, box-shadow .2s ease, border-color .2s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px #000
+    }
+
+    button[data-mode="earl"] {
+      border-color: var(--leaf)
+    }
+
+    button[data-mode="sparrow"] {
+      border-color: var(--blue)
+    }
+
+    button[data-mode="madjack"] {
+      border-color: var(--crimson)
+    }
+
+    main {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: 1fr 320px;
+    }
+
+    @media (max-width: 800px) {
+      main {
+        grid-template-columns: 1fr
+      }
+    }
+
+    .marquee {
+      border: 1px solid #2a2a2a;
+      border-radius: 12px;
+      padding: 1rem;
+      background: #120f0f;
+      min-height: 8rem;
+    }
+
+    .aside {
+      border: 1px dashed #2a2a2a;
+      border-radius: 12px;
+      padding: 1rem;
+      background: #0f0c0c;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: .2rem .5rem;
+      border-radius: 999px;
+      font-size: .8rem;
+      border: 1px solid #333;
+      margin-right: .35rem
+    }
+
+    /* Persona themes */
+    .earl .marquee {
+      outline: 2px solid var(--leaf);
+      box-shadow: 0 0 0 3px #000 inset
+    }
+
+    .earl .tag {
+      border-color: var(--leaf);
+      color: var(--leaf)
+    }
+
+    .earl .motto {
+      color: var(--gold)
+    }
+
+    .sparrow .marquee {
+      outline: 2px solid var(--blue)
+    }
+
+    .sparrow .tag {
+      border-color: var(--blue);
+      color: var(--blue)
+    }
+
+    .sparrow .motto {
+      color: #9cc9ff
+    }
+
+    .madjack .marquee {
+      outline: 2px solid var(--crimson);
+      box-shadow: 0 0 0 3px #000 inset
+    }
+
+    .madjack .tag {
+      border-color: var(--crimson);
+      color: var(--crimson)
+    }
+
+    .madjack .motto {
+      color: #ff7066
+    }
+
+    .motto {
+      font-style: italic;
+      opacity: .95
+    }
+
+    .log {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: .92rem;
+      line-height: 1.35
+    }
+
+    .pulse {
+      animation: pulse .8s ease
+    }
+
+    @keyframes pulse {
+      50% {
+        transform: scale(1.01)
+      }
+    }
+  </style>
+</head>
+
+<body class="earl">
+    <div class="stage" id="stage">
+        <header>
+            <h1>🎭 The Tri-Stack of Jack</h1>
+            <div class="controls">
+                <button data-mode="earl" title="HTML: The Builder">HTML • Earl</button>
+                <button data-mode="sparrow" title="CSS: The Sage">CSS • Sparrow</button>
+                <button data-mode="madjack" title="JS: The Trickster">JS • Mad Jack</button>
+                <button id="act" title="Trigger a tasteful bit of chaos">Run an Act()</button>
+              </div>
+          </header>
+
+        <main>
+            <section class="marquee" id="marquee" aria-live="polite">
+                <p class="motto" id="motto">“To err is human. To jest is divine. To learn from both—sublime.”</p>
+                <p><span class="tag">structure</span><span class="tag">style</span><span class="tag">spirit</span></p>
+                <p id="line">Welcome to the cathedral-circus of the soul. Pick your ringmaster.</p>
+              </section>
+
+            <aside class="aside">
+                <strong>Professor’s Notes</strong>
+                <ul>
+                    <li><b>HTML (Earl)</b>: landmarks, headings, labels, ARIA—beams & rafters.</li>
+                    <li><b>CSS (Sparrow)</b>: hierarchy, rhythm, restraint—lights & costumes.</li>
+                    <li><b>JS (Mad Jack)</b>: events, state, surprise—cue the drumroll.</li>
+                  </ul>
+                <div class="log" id="log" aria-live="polite"></div>
+              </aside>
+          </main>
+      </div>
+
+    
+  <script>
+    const stage = document.getElementById('stage');
+    const marquee = document.getElementById('marquee');
+    const motto = document.getElementById('motto');
+    const line = document.getElementById('line');
+    const log = document.getElementById('log');
+    const btns = document.querySelectorAll('button[data-mode]');
+    const actBtn = document.getElementById('act');
+
+    const copy = {
+      earl: {
+        line: "HTML raises the tent: honest tags, sturdy headings, and room for everyone.",
+        motto: "Duty with delight: build well, then bow to the work."
+      },
+      sparrow: {
+        line: "CSS cues the lights: hierarchy, whitespace, and a whisper of elegance.",
+        motto: "Wisdom in the margins: let clarity do the talking."
+      },
+      madjack: {
+        line: "JavaScript juggles knives (safely): interaction, motion, and tasteful mayhem.",
+        motto: "Chaos with compassion: surprise, but never betray."
+      }
+    };
+
+    btns.forEach(b => {
+      b.addEventListener('click', () => {
+        const mode = b.dataset.mode;
+        document.body.className = mode;              // swap theme
+        line.textContent = copy[mode].line;          // swap line
+        motto.textContent = copy[mode].motto;        // swap motto
+        marquee.classList.remove('pulse'); void marquee.offsetWidth; marquee.classList.add('pulse');
+        log.innerHTML = `> mode: ${mode.toUpperCase()}<br>` + log.innerHTML;
+      });
+    });
+
+    // A tiny "act" to demo behavior without libraries
+    actBtn.addEventListener('click', () => {
+      const mode = document.body.className || 'earl';
+      const beats = {
+        earl() { line.textContent = "Semantic scaffolding erected. Audience seated alphabetically by aria-role."; },
+        sparrow() { line.textContent = "Typographic tidying complete. Ragged edges tamed. Applause in small caps."; },
+        madjack() {
+          line.textContent = "🎇 Confetti event dispatched. Please sign the waiver labeled 'joy'.";
+          transientConfetti();
+        }
+      };
+      beats[mode](); marquee.classList.add('pulse');
+      setTimeout(() => marquee.classList.remove('pulse'), 500);
+    });
+
+    function transientConfetti() {
+      const p = document.createElement('p');
+      p.textContent = "✨ A tasteful burst of DOM-approved sparkle has occurred.";
+      log.prepend(p);
+      // remove oldest lines to keep things tidy
+      const max = 8;
+      const kids = [...log.querySelectorAll('p, br, div')];
+      if (kids.length > max) kids.slice(max).forEach(k => k.remove());
+    }
+  </script>
+</body>
+
+</html>

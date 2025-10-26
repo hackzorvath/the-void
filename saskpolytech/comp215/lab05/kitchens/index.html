@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kitchen Calculator</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+            padding: 2rem;
+        }
+
+        #calcForm {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            transition: border 0.3s ease;
+        }
+
+        .empire {
+            border: 4px solid #007bff;
+        }
+
+        .elite {
+            border: 4px solid #28a745;
+        }
+
+        .gold {
+            border: 4px dashed #ffc107;
+        }
+
+        #productImage {
+            width: 100%;
+            border-radius: .5rem;
+            border: 2px solid #dee2e6;
+            object-fit: cover;
+            display: none;
+            /* hidden until selection */
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <form id="calcForm" class="needs-validation" novalidate>
+            <h2 class="text-center mb-4">Kitchen Calculator</h2>
+
+            <div class="row g-4 align-items-start">
+
+                <!-- Left + Middle Columns -->
+                <div class="col-md-8">
+                    <div class="row">
+                        <!-- 1. Product Type -->
+                        <div class="col-md-6 mb-3">
+                            <label for="productType" class="form-label">1. Product Type</label>
+                            <select id="productType" class="form-select" required>
+                                <option value="">Choose...</option>
+                                <option value="wall">Wall Cabinets</option>
+                                <option value="base">Base Cabinets</option>
+                                <option value="counter">Counter Tops</option>
+                            </select>
+                            <div class="invalid-feedback">Please select a product type.</div>
+                        </div>
+
+                        <!-- 2. Product Line -->
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label d-block">2. Product Line</label>
+                            <div class="form-check">
+                                <input type="radio" name="line" id="empire" value="empire" class="form-check-input"
+                                    required>
+                                <label class="form-check-label" for="empire">Empire Standard</label>
+                            </div>
+                            <div class="form-check">
+                                <input type="radio" name="line" id="elite" value="elite" class="form-check-input"
+                                    required>
+                                <label class="form-check-label" for="elite">Kitchen Elite</label>
+                            </div>
+                            <div class="form-check">
+                                <input type="radio" name="line" id="gold" value="gold" class="form-check-input"
+                                    required>
+                                <label class="form-check-label" for="gold">Gold Star Plus</label>
+                            </div>
+                        </div>
+
+                        <!-- 3. Linear Footage -->
+                        <div class="col-md-6 mb-3">
+                            <label for="linearFeet" class="form-label">3. Linear Footage</label>
+                            <input type="number" id="linearFeet" class="form-control" min="3" max="50" required>
+                            <div class="invalid-feedback">Linear footage must be between 3 and 50 feet.</div>
+                        </div>
+
+                        <!-- 4. Corner Units -->
+                        <div class="col-md-6 mb-3" id="cornerDiv">
+                            <label for="cornerUnits" class="form-label">4. Corner Units</label>
+                            <input type="number" id="cornerUnits" class="form-control" min="0" max="5" value="0"
+                                required>
+                            <div class="invalid-feedback">Corner units must be between 0 and 5.</div>
+                        </div>
+
+                        <!-- 5. Calculate Button -->
+                        <div class="col-12 text-center mb-3">
+                            <button type="button" id="calcBtn" class="btn btn-primary w-50">Calculate</button>
+                        </div>
+
+                        <!-- 6. Results -->
+                        <div class="col-12 mb-3">
+                            <label for="result" class="form-label">5. Total Price</label>
+                            <input type="text" id="result" class="form-control" readonly>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column - Dynamic Image -->
+                <div class="col-md-4 text-center">
+                    <img id="productImage" src="" alt="Product Preview">
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        const prices = {
+            empire: { wall: 99.99, base: 69.99, counter: 30.99, corner: 50.99 },
+            elite: { wall: 179.00, base: 79.00, counter: 189.99, corner: 79.99 },
+            gold: { wall: 200.99, base: 99.99, counter: 212.99, corner: 89.99 }
+        };
+
+        const form = document.getElementById("calcForm");
+        const result = document.getElementById("result");
+        const cornerDiv = document.getElementById("cornerDiv");
+        const productImage = document.getElementById("productImage");
+        const productType = document.getElementById("productType");
+        const calcBtn = document.getElementById("calcBtn");
+
+        // Event listeners
+        productType.addEventListener("change", () => {
+            toggleCorner();
+            updateImage();
+        });
+        document.querySelectorAll("input[name='line']").forEach(r => r.addEventListener("change", updateBorder));
+        calcBtn.addEventListener("click", getTotalPrice);
+
+        // Hide/show corner field
+        function toggleCorner() {
+            const type = productType.value;
+            cornerDiv.style.display = (type === "counter") ? "none" : "block";
+        }
+
+        // Border styling based on product line
+        function updateBorder() {
+            form.classList.remove("empire", "elite", "gold");
+            const selected = document.querySelector("input[name='line']:checked");
+            if (!selected) return;
+            if (selected.value === "empire") form.classList.add("empire");
+            if (selected.value === "elite") form.classList.add("elite");
+            if (selected.value === "gold") form.classList.add("gold");
+        }
+
+        // Image based on product type
+        function updateImage() {
+            const type = productType.value;
+            if (!type) {
+                productImage.style.display = "none";
+                productImage.src = "";
+                return;
+            }
+
+            let imageSrc = "";
+            if (type === "wall") imageSrc = "wall.jpg";
+            if (type === "base") imageSrc = "base.jpg";
+            if (type === "counter") imageSrc = "counter.jpg";
+
+            productImage.src = imageSrc;
+            productImage.style.display = "block";
+        }
+
+        // Calculate total price
+        function getTotalPrice() {
+            if (!form.checkValidity()) {
+                form.classList.add("was-validated");
+                return;
+            }
+
+            const type = productType.value;
+            const line = document.querySelector("input[name='line']:checked").value;
+            const feet = parseFloat(document.getElementById("linearFeet").value);
+            const corners = parseInt(document.getElementById("cornerUnits").value || 0);
+
+            let total = prices[line][type] * feet;
+            if (type !== "counter") total += prices[line].corner * corners;
+
+            result.value = `$${total.toFixed(2)}`;
+        }
+    </script>
+
+</body>
+
+</html>
