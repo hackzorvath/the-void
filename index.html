@@ -11,6 +11,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
 
+    <link rel="stylesheet" href="assets/css/common.css" />
+
     <style>
         /* === Twilight Theme (active) === */
         body {
@@ -414,48 +416,16 @@
                         </div>
                     </a>
                 </div>
-
-                <hr>
             </div>
         </div>
     </main>
 
-    <!-- Find a simple way to turn this into a reusable component -->
+    <!-- make sure to spin up a python dev server if testing locally -->
+    <!-- use %python3 -m http.server 8000 -->
+    <!-- Alternatively, use the tool you created, curtains_up.command -->
     <div id="footer-placeholder"></div>
-    <script>
-        fetch("components/footer.html")
-            .then(response => response.text())
-            .then(html => {
-                document.getElementById("footer-placeholder").outerHTML = html;
-            })
-            .catch(err => console.error("Could not load footer:", err));
-    </script>
+    <script src="assets/scripts/common.js"></script>
 
-
-
-    <script>
-        const bgm = document.getElementById('bgm');
-        const btn = document.getElementById('musicToggle');
-
-        // Start silent by default
-        bgm.pause();
-        btn.textContent = '🎵'; // show play icon initially
-
-        btn.onclick = () => {
-            if (bgm.paused) {
-                bgm.play();
-                btn.textContent = '🔇'; // now music is playing
-            } else {
-                bgm.pause();
-                btn.textContent = '🎵'; // music paused again
-            }
-        };
-
-        document.addEventListener("DOMContentLoaded", () => {
-            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-            tooltipTriggerList.forEach(el => new bootstrap.Tooltip(el));
-        });
-    </script>
 </body>
 
 </html>

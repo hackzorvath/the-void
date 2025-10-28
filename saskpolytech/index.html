@@ -10,6 +10,8 @@
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600&display=swap" rel="stylesheet">
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
 
+    <link rel="stylesheet" href="../assets/css/common.css">
+
     <style>
         body {
             background: linear-gradient(135deg, #512D6D, #00B2E3);
@@ -49,11 +51,6 @@
             background-color: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.1);
             color: #fff;
-        }
-
-        footer {
-            margin-top: auto;
-            border-top: 1px solid rgba(255, 255, 255, 0.3);
         }
 
         .hover-row {
@@ -231,26 +228,41 @@
     <button id="musicToggle" title="Toggle Music">🎵</button>
 
     <header class="container my-4 p-4 shadow-sm text-center text-bg-dark rounded-4 border border-secondary">
-        <div class="row align-items-center g-3">
-            <div class="col-md-3 text-md-start text-center">
-                <img src="https://saskpolytech.ca/about/organization/communications-and-marketing/images/logos/full-colour-release/Saskatchewan_Polytechnic_RLS.png"
-                    alt="SaskPoly Logo" class="img-fluid rounded-3 shadow-sm" style="max-width:160px;">
-            </div>
+        <!-- Logo Row -->
+        <div class="row justify-content-center mb-3">
+            <div class="col-12">
+                <a href="https://saskpolytech.ca/">
+                    <img src="https://saskpolytech.ca/about/organization/communications-and-marketing/images/logos/full-colour-release/Saskatchewan_Polytechnic_RLS.png"
+                        alt="Saskatchewan Polytechnic Logo" class="img-fluid mx-auto d-block rounded-3 shadow-sm"
+                        style="max-width: 220px;">
+                </a>
 
-            <div class="col-md-6">
+            </div>
+        </div>
+
+        <!-- Title Row -->
+        <div class="row justify-content-center mb-2">
+            <div class="col-12">
                 <h1 class="mb-0 fw-bold text-warning display-6">🎭 Welcome to 🎭</h1>
-                <h2 class="mt-2">Business Information Systems</h2>
-                <p class="text-secondary small mt-2">Where business logic meets a touch of coding madness</p>
-            </div>
-
-            <div class="col-md-3 text-md-end text-center">
-                <a href="../index.html" class="btn instructor-btn shadow-sm rounded-pill mb-2"
-                    aria-label="Go to main homepage">
-                    🌑 Back to the Void 🌑
+                <a href="https://saskpolytech.ca/programs-and-courses/programs/Business-Information-Systems.aspx">
+                    <h2 class="mt-2">Business Information Systems</h2>
                 </a>
             </div>
         </div>
+
+        <!-- Tagline Row -->
+        <div class="row justify-content-center">
+            <div class="col-12">
+                <p class="text-secondary small mt-2">
+                    Information technology, business software, mobile platforms — information systems are reinventing
+                    the way we do business. Computer-savvy people with programming and development skills are in demand
+                    in the business world. When your skill set includes training in business solution development,
+                    you're a hot commodity.
+                </p>
+            </div>
+        </div>
     </header>
+
 
     <main class="container py-4">
         <div class="row align-items-center g-4">
@@ -305,24 +317,9 @@
         </div>
     </main>
 
-    <footer class="text-center mt-5 py-3">
-        <p>
-            Saskatchewan Polytechnic ☤ Contact:
-            <a href="mailto:horvathz@saskpolytech.ca" class="text-light">horvathz@saskpolytech.ca</a>
-        </p>
-    </footer>
+    <div id="footer-placeholder"></div>
+    <script src="../assets/scripts/common.js"></script>
 
-    <script>
-        const bgm = document.getElementById('bgm');
-        const btn = document.getElementById('musicToggle');
-        bgm.pause();
-        btn.textContent = '🎵';
-
-        btn.onclick = () => {
-            if (bgm.paused) { bgm.play(); btn.textContent = '🔇'; }
-            else { bgm.pause(); btn.textContent = '🎵'; }
-        };
-    </script>
 </body>
 
 </html>

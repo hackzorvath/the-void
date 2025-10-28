@@ -1,0 +1,27 @@
+#homeButton {
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    font-size: 1.4rem;
+    z-index: 30;
+    transition: background 0.3s ease, transform 0.2s ease;
+}
+
+#homeButton:hover {
+    background: rgba(255, 255, 255, 0.4);
+    transform: translateY(-2px) scale(1.05);
+}
+
+@media (max-width: 768px) {
+    #homeButton {
+        width: 64px;
+        height: 64px;
+        font-size: 1.8rem;
+    }
+}

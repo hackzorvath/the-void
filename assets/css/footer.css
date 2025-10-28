@@ -1,0 +1,26 @@
+footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.35);
+    border-top: 1px solid rgba(255, 255, 255, 0.25);
+    padding: 0.8rem 0 1rem;
+    font-size: 0.85rem;
+    text-align: center;
+    z-index: 10;
+}
+
+footer .social-links a {
+    font-size: 1.3rem;
+    margin: 0 0.45rem;
+    color: #ffeb99;
+    text-decoration: none;
+    transition: all 0.25s ease-in-out;
+}
+
+footer .social-links a:hover {
+    color: #fff;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+    transform: translateY(-2px) scale(1.2);
+}
