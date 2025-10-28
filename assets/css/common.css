@@ -1,27 +1,253 @@
+/* ==========================================
+   COMMON STRUCTURE & TYPOGRAPHY
+   ========================================== */
+
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600&display=swap");
+
+:root {
+    /* Placeholder theme vars (overridden per theme) */
+    --color-bg: #000;
+    --color-text: #fff;
+    --color-accent: gold;
+    --color-muted: rgba(255, 255, 255, 0.6);
+
+    --radius-md: 12px;
+    --radius-lg: 1rem;
+    --shadow-soft: 0 0 10px rgba(255, 255, 255, 0.1);
+    --shadow-strong: 0 0 25px rgba(255, 255, 255, 0.25);
+}
+
+/* === Base Layout === */
+body {
+    font-family: "DM Sans", system-ui, sans-serif;
+    color: var(--color-text);
+    background: var(--color-bg);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+    position: relative;
+    margin: 0;
+    padding-bottom: 6rem;
+    transition: background 0.4s ease, color 0.3s ease;
+}
+
+/* === Headers === */
+h1,
+h2,
+h3 {
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+h1 {
+    font-size: 2.5rem;
+}
+
+h2 {
+    font-size: 1.75rem;
+}
+
+h3 {
+    font-size: 1.25rem;
+}
+
+/* === Links === */
+a {
+    color: var(--color-accent);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+a:hover {
+    color: var(--color-muted);
+    text-decoration: underline;
+}
+
+/* === Buttons === */
+.instructor-btn {
+    background: var(--color-accent);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    color: var(--color-text);
+    font-weight: 700;
+    font-size: 1.05rem;
+    padding: 0.6rem 1.2rem;
+    border-radius: 50rem;
+    letter-spacing: 0.5px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+    transition: all 0.3s ease-in-out;
+    box-shadow: var(--shadow-soft);
+}
+
+.instructor-btn:hover {
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: var(--shadow-strong);
+}
+
+/* === Shared Interactive Elements === */
+.hover-row {
+    color: var(--color-text);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.hover-row:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    transform: scale(1.01);
+}
+
+/* === Media Responsiveness === */
+@media (max-width: 992px) {
+    header.container {
+        padding-top: 2rem !important;
+        padding-bottom: 2rem !important;
+    }
+
+    h1 {
+        font-size: 1.9rem;
+    }
+
+    h2 {
+        font-size: 1.3rem;
+    }
+}
+
+@media (max-width: 768px) {
+    main .row {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    header.container {
+        max-width: 90%;
+        margin-left: auto;
+        margin-right: auto;
+        border-radius: var(--radius-lg);
+        padding: 2rem 1.25rem !important;
+    }
+}
+
+/* === Universal Music & Home Buttons === */
+#musicToggle,
 #homeButton {
     position: fixed;
-    top: 1rem;
-    left: 1rem;
     background: rgba(255, 255, 255, 0.2);
-    color: #fff;
+    color: var(--color-text);
     border: none;
     border-radius: 50%;
     width: 44px;
     height: 44px;
-    font-size: 1.4rem;
-    z-index: 30;
+    font-size: 1.3rem;
+    z-index: 20;
     transition: background 0.3s ease, transform 0.2s ease;
 }
 
+#musicToggle:hover,
 #homeButton:hover {
-    background: rgba(255, 255, 255, 0.4);
+    background: rgba(255, 255, 255, 0.35);
     transform: translateY(-2px) scale(1.05);
 }
 
+#musicToggle {
+    top: 1rem;
+    right: 1rem;
+}
+
+#homeButton {
+    top: 1rem;
+    left: 1rem;
+}
+
 @media (max-width: 768px) {
+
+    #musicToggle,
     #homeButton {
         width: 64px;
         height: 64px;
-        font-size: 1.8rem;
+        font-size: 1.5rem;
+    }
+}
+
+/* === Avatar / Hero Image === */
+.avatar {
+    display: block;
+    width: 100%;
+    max-width: 420px;
+    height: auto;
+    margin: 0 auto;
+    object-fit: contain;
+}
+
+/* === Responsive: stack + scale avatar on smaller screens === */
+@media (max-width: 768px) {
+    .avatar {
+        width: 60vw;
+        max-width: 420px;
+        height: auto;
+        margin: 0 auto 1.5rem;
+    }
+}
+
+/* === Responsive Layout Fix for Hover Rows === */
+@media (max-width: 768px) {
+    .hover-row {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 12px;
+        padding: 1rem 1.2rem;
+        margin: 0.75rem auto;
+        width: 90%;
+        text-align: left;
+        box-shadow: 0 0 8px rgba(255, 255, 255, 0.1);
+    }
+
+    .hover-row .col-3,
+    .hover-row .col-8,
+    .hover-row .col-1 {
+        all: unset;
+        /* remove Bootstrap grid constraints */
+        display: block;
+        width: 100%;
+        margin: 0.15rem 0;
+    }
+
+    /* Title line */
+    .hover-row .fw-semibold {
+        font-weight: 600;
+        color: var(--color-accent, #ffeb99);
+        font-size: 1.1rem;
+    }
+
+    /* Description */
+    .hover-row .text-start:not(.fw-semibold) {
+        font-size: 0.95rem;
+        opacity: 0.9;
+    }
+
+    /* Emoji icon bottom-right */
+    .hover-row .text-end {
+        text-align: right;
+        width: 100%;
+        font-size: 1.4rem;
+        margin-top: 0.25rem;
+    }
+
+    /* Hide table headers for mobile */
+    .row.fw-bold.text-uppercase {
+        display: none;
+    }
+
+    hr {
+        margin: 2rem auto;
+        width: 80%;
+    }
+}
+
+@media (max-width: 768px) {
+    .row.fw-bold.text-uppercase+a .hover-row:first-child {
+        margin-top: 1rem;
     }
 }

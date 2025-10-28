@@ -1,0 +1,119 @@
+/* ==========================================
+   VOID THEME — "Twilight Gradient"
+   ========================================== */
+
+:root {
+    --color-bg: linear-gradient(135deg, #2b1055, #7597de);
+    --color-text: #ffffff;
+    --color-accent: #ffeb99;
+    --color-muted: rgba(255, 255, 255, 0.6);
+}
+
+/* === Page background & text === */
+body {
+    background: var(--color-bg);
+    color: var(--color-text);
+}
+
+/* === Header === */
+header {
+    text-align: center;
+    padding: 3rem 1rem 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+}
+
+h1 {
+    text-shadow: 0 0 12px rgba(255, 255, 255, 0.4);
+}
+
+/* === Navigation === */
+nav.navbar {
+    background: rgba(255, 255, 255, 0.1);
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.nav-link {
+    color: var(--color-accent) !important;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    transition: all 0.25s ease;
+    position: relative;
+    z-index: 1;
+}
+
+.nav-link:hover {
+    color: #2b1055 !important;
+    background: linear-gradient(135deg, #ffd700, #fff7b0);
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+    transform: translateY(-1px);
+}
+/* === Avatar animation === */
+.avatar {
+    border-radius: 12px;
+    box-shadow: 0 0 25px rgba(255, 255, 255, 0.25);
+    animation: float 8s ease-in-out infinite;
+}
+
+
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-8px);
+    }
+}
+
+/* === Fancy divider === */
+hr {
+    border: none;
+    height: 3px;
+    border-radius: 2px;
+    background: linear-gradient(90deg, #ffd700, #ffb6ff, #7597de);
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
+    margin: 2rem 0;
+}
+
+/* === Footer === */
+footer {
+    background: rgba(0, 0, 0, 0.35);
+    border-top: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+footer .social-links a {
+    color: var(--color-accent);
+}
+
+footer .social-links a:hover {
+    color: var(--color-text);
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+}
+
+/* === Stars animation === */
+.star {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: #fff;
+    border-radius: 50%;
+    animation: twinkle 4s infinite ease-in-out;
+}
+
+@keyframes twinkle {
+
+    0%,
+    100% {
+        opacity: .2;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}

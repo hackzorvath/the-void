@@ -1,0 +1,144 @@
+/* ==========================================
+   Saskatchewan Polytechnic Theme
+   Palette Reference:
+   PMS 2603 #732181, PMS 7703 #009ABE,
+   PMS 376 #81BC00, PMS 144 #F38A00,
+   PMS 213 #EA1C75
+   ========================================== */
+
+:root {
+    --color-bg: linear-gradient(135deg, #512D6D, #009ABE);
+    --color-text: #ffffff;
+    --color-accent: #81BC00;
+    --color-accent-2: #F38A00;
+    --color-muted: rgba(255, 255, 255, 0.65);
+}
+
+/* === Base === */
+body {
+    background: var(--color-bg);
+    color: var(--color-text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+    position: relative;
+}
+
+/* === Header === */
+header {
+    background: rgba(255, 255, 255, 0.08);
+    border: 2px solid rgba(255, 255, 255, 0.25);
+    border-radius: 1rem;
+}
+
+header h1,
+header h2,
+header h3 {
+    color: var(--color-text);
+    text-shadow: 0 0 6px rgba(0, 0, 0, 0.3);
+}
+
+header a h2:hover {
+    color: var(--color-accent);
+    text-decoration: underline;
+}
+
+/* === Links === */
+a {
+    color: var(--color-accent) !important;
+    text-decoration: none;
+    transition: color 0.25s ease, text-shadow 0.25s ease;
+}
+
+a:hover {
+    color: var(--color-accent-2) !important;
+    text-shadow: 0 0 6px rgba(243, 138, 0, 0.6);
+}
+
+/* === Course Cards === */
+.hover-row {
+    color: var(--color-text);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.hover-row:hover {
+    background-color: rgba(255, 255, 255, 0.12);
+    transform: scale(1.01);
+}
+
+/* === Instructor Button === */
+.instructor-btn {
+    background: linear-gradient(135deg, var(--color-accent), var(--color-accent-2));
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.05rem;
+    padding: 0.6rem 1.2rem;
+    border-radius: 50rem;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease-in-out;
+}
+
+.instructor-btn:hover {
+    background: linear-gradient(135deg, var(--color-accent-2), var(--color-accent));
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 0 12px rgba(255, 255, 255, 0.5);
+}
+
+/* === Music Button === */
+#musicToggle {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    font-size: 1.3rem;
+    z-index: 20;
+    transition: background 0.3s ease;
+}
+
+#musicToggle:hover {
+    background: rgba(255, 255, 255, 0.4);
+}
+
+/* === Responsive Header Layout Tweaks === */
+@media (max-width: 992px) {
+    header.container {
+        padding-top: 2.5rem !important;
+        padding-bottom: 2.5rem !important;
+    }
+
+    header h1 {
+        font-size: 1.9rem;
+    }
+
+    header h2 {
+        font-size: 1.3rem;
+    }
+
+    header p {
+        margin-top: 0.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    header.container {
+        max-width: 90%;
+        margin-inline: auto;
+        padding: 2rem 1.25rem !important;
+        border-radius: 1rem;
+    }
+
+    #musicToggle {
+        width: 64px;
+        height: 64px;
+        font-size: 1.5rem;
+    }
+}
