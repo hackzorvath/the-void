@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Jeopardy!</title>
+    <style>
+        :root {
+            --jeopardy-blue: #060CE9;
+            --jeopardy-gold: #FFCC00;
+            --jeopardy-dark: #020873;
+            --jeopardy-white: #ffffff;
+        }
+
+        body {
+            margin: 0;
+            background-color: var(--jeopardy-dark);
+            color: var(--jeopardy-gold);
+            font-family: 'Trebuchet MS', Helvetica, sans-serif;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: var(--jeopardy-blue);
+            color: var(--jeopardy-gold);
+            padding: 1rem 0;
+            font-size: clamp(2rem, 6vw, 4rem);
+            font-weight: bold;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            text-shadow: 3px 3px #000;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+            border-bottom: 4px solid var(--jeopardy-gold);
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            /* fixed six columns */
+            grid-auto-rows: minmax(80px, 1fr);
+            gap: 6px;
+            width: 95vw;
+            max-width: 1200px;
+            aspect-ratio: 6 / 6.5;
+            /* keeps proportions consistent */
+            margin: 2rem auto;
+            border: 6px solid var(--jeopardy-blue);
+            background-color: var(--jeopardy-blue);
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.6);
+            border-radius: 20px;
+            padding: 6px;
+        }
+
+        .cell {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--jeopardy-blue);
+            border: 2px solid var(--jeopardy-dark);
+            color: var(--jeopardy-gold);
+            font-weight: bold;
+            text-transform: uppercase;
+            text-shadow: 2px 2px #000;
+            transition: background 0.3s, transform 0.1s, box-shadow 0.3s;
+            border-radius: 10px;
+            font-size: clamp(0.8rem, 1.5vw, 2rem);
+            height: 50px;
+        }
+
+        .cell:hover {
+            background-color: var(--jeopardy-dark);
+            transform: scale(1.05);
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+        }
+
+        .category {
+            background-color: var(--jeopardy-dark);
+            font-size: clamp(0.9rem, 1.8vw, 1.4rem);
+            font-weight: bold;
+            line-height: 1.3;
+            border-radius: 8px;
+        }
+
+        footer {
+            color: var(--jeopardy-white);
+            margin-top: auto;
+            padding: 1rem 0;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        @media (max-width: 600px) {
+            .board {
+                width: 98vw;
+                aspect-ratio: 6 / 7;
+                gap: 4px;
+            }
+
+            .cell {
+                font-size: clamp(0.6rem, 2vw, 1rem);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>Jeopardy!</header>
+
+    <main>
+        <div class="board">
+            <!-- Category Row -->
+            <div class="cell category">History</div>
+            <div class="cell category">Science</div>
+            <div class="cell category">Literature</div>
+            <div class="cell category">Pop Culture</div>
+            <div class="cell category">Geography</div>
+            <div class="cell category">Mystery</div>
+
+            <!-- Value Rows -->
+            <div class="cell value">$200</div>
+            <div class="cell value">$200</div>
+            <div class="cell value">$200</div>
+            <div class="cell value">$200</div>
+            <div class="cell value">$200</div>
+            <div class="cell value">$200</div>
+            <div class="cell value">$400</div>
+            <div class="cell value">$400</div>
+            <div class="cell value">$400</div>
+            <div class="cell value">$400</div>
+            <div class="cell value">$400</div>
+            <div class="cell value">$400</div>
+            <div class="cell value">$600</div>
+            <div class="cell value">$600</div>
+            <div class="cell value">$600</div>
+            <div class="cell value">$600</div>
+            <div class="cell value">$600</div>
+            <div class="cell value">$600</div>
+            <div class="cell value">$800</div>
+            <div class="cell value">$800</div>
+            <div class="cell value">$800</div>
+            <div class="cell value">$800</div>
+            <div class="cell value">$800</div>
+            <div class="cell value">$800</div>
+            <div class="cell value">$1000</div>
+            <div class="cell value">$1000</div>
+            <div class="cell value">$1000</div>
+            <div class="cell value">$1000</div>
+            <div class="cell value">$1000</div>
+            <div class="cell value">$1000</div>
+        </div>
+    </main>
+
+    <footer>© Reimagined Jeopardy Board — GitHub Pages Edition</footer>
+
+</body>
+
+</html>
