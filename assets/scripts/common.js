@@ -26,6 +26,22 @@ fetch(footerURL)
             footerPlaceholder.innerHTML = html;
             console.log(`[✨] Footer loaded successfully from ${footerURL}`);
 
+            // --- Normalize footer image paths ---
+            const footerImages = footerPlaceholder.querySelectorAll("img.social-icon");
+            footerImages.forEach(img => {
+                const rawSrc = img.getAttribute("src"); // read literal src
+                if (!rawSrc) return;
+
+                if (rawSrc.startsWith("../")) {
+                    img.src = `${basePath}/assets/${rawSrc.replace("../assets/", "")}`;
+                } else if (rawSrc.startsWith("assets/")) {
+                    img.src = `${basePath}/${rawSrc}`;
+                } else if (!rawSrc.includes("/assets/")) {
+                    img.src = `${basePath}/assets/img/buttons/${rawSrc.split('/').pop()}`;
+                }
+            });
+            console.log("[🖼️] Footer image paths normalized (attribute-based).");
+
             // Inject footer stylesheet with repo-safe absolute path
             const cssLink = document.createElement("link");
             cssLink.rel = "stylesheet";
