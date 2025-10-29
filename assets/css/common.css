@@ -128,47 +128,6 @@ a:hover {
     }
 }
 
-/* === Universal Music & Home Buttons === */
-#musicToggle,
-#homeButton {
-    position: fixed;
-    background: rgba(255, 255, 255, 0.2);
-    color: var(--color-text);
-    border: none;
-    border-radius: 50%;
-    width: 44px;
-    height: 44px;
-    font-size: 1.3rem;
-    z-index: 20;
-    transition: background 0.3s ease, transform 0.2s ease;
-}
-
-#musicToggle:hover,
-#homeButton:hover {
-    background: rgba(255, 255, 255, 0.35);
-    transform: translateY(-2px) scale(1.05);
-}
-
-#musicToggle {
-    top: 1rem;
-    right: 1rem;
-}
-
-#homeButton {
-    top: 1rem;
-    left: 1rem;
-}
-
-@media (max-width: 768px) {
-
-    #musicToggle,
-    #homeButton {
-        width: 64px;
-        height: 64px;
-        font-size: 1.5rem;
-    }
-}
-
 /* === Avatar / Hero Image === */
 .avatar {
     display: block;
@@ -251,3 +210,71 @@ a:hover {
         margin-top: 1rem;
     }
 }
+
+/* === Floating Control Buttons (Unified) === */
+.floating-btn {
+    position: fixed;
+    background: rgba(255, 255, 255, 0.15);
+    color: var(--color-text);
+    border: none;
+    border-radius: 50%;
+    width: 56px;
+    height: 56px;
+    font-size: 1.3rem;
+    z-index: 9999;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+}
+
+/* Positioning */
+#musicToggle {
+    top: 1rem;
+    right: 1rem;
+}
+
+#homeButton {
+    top: 1rem;
+    left: 1rem;
+}
+
+/* Hover shimmer */
+.floating-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px) scale(1.05);
+}
+
+/* === Icon Styling === */
+.floating-btn img.icon {
+    width: 70%;
+    height: 70%;
+    object-fit: contain;
+    pointer-events: none;
+    transition: transform 0.3s ease, filter 0.3s ease;
+    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.3));
+}
+
+.floating-btn:hover img.icon {
+    transform: scale(1.15);
+}
+
+/* Aura effects */
+#homeButton img.icon {
+    filter: drop-shadow(0 0 8px rgba(186, 85, 211, 0.8));
+    /* Spiritomb violet */
+}
+
+#musicToggle img.icon {
+    filter: drop-shadow(0 0 8px rgba(64, 224, 208, 0.8));
+    /* Meloetta teal */
+}
+
+@media (max-width: 768px) {
+    .floating-btn {
+        width: 72px;
+        height: 72px;
+    }
+}
+/* ==========================================
+   END OF COMMON.CSS
+   ========================================== */

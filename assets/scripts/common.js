@@ -1,12 +1,12 @@
-// ==========================================
-// 🎭 common.js  —  Dynamic component loader (v3)
-// ==========================================
+// ======================================== //
+//  common.js  —  Dynamic component loader  //
+// ======================================== //
 
 console.log("[🎭] load-common.js initialized");
 
 // --- Environment Detection ---
 const isGitHub = window.location.hostname.includes("github.io");
-const repoName = "the-void"; // 🪐 change if you rename repo
+const repoName = "the-void";
 const basePath = isGitHub ? `/${repoName}` : "";
 
 // --- Core Paths ---
@@ -34,31 +34,14 @@ fetch(footerURL)
             console.log(`[🎨] Footer CSS loaded from ${cssLink.href}`);
         }
 
-        // Re-add home button *after* footer finishes loading
-        ensureHomeButton();
+        // Ensure floating controls exist
+        initFloatingButtons();
     })
     .catch((err) => console.error("[💀] Footer load error:", err));
 
 // === DOM-level behavior ===
 document.addEventListener("DOMContentLoaded", () => {
-    // 🎵 Music toggle
-    const bgm = document.getElementById("bgm");
-    const btn = document.getElementById("musicToggle");
-    if (bgm && btn) {
-        btn.onclick = () => {
-            if (bgm.paused) {
-                bgm.play();
-                btn.textContent = "🔇";
-            } else {
-                bgm.pause();
-                btn.textContent = "🎵";
-            }
-        };
-        console.log("[🎶] Music toggle initialized");
-    }
-
-    // 🏠 Ensure home button exists (will run again after footer)
-    ensureHomeButton();
+    initFloatingButtons();
 
     // 💬 Bootstrap tooltips
     if (typeof bootstrap !== "undefined") {
@@ -70,37 +53,68 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
-// === Helper: Home Button Generator ===
-function ensureHomeButton() {
-    if (document.getElementById("homeButton")) return;
+// ======================================== //
+//  🌀 Floating Button System (Unified)     //
+// ======================================== //
 
-    const homeBtn = document.createElement("button");
-    homeBtn.id = "homeButton";
-    homeBtn.title = "Return to the Void";
-    homeBtn.textContent = "🌑";
-    homeBtn.style.position = "fixed";
-    homeBtn.style.top = "1rem";
-    homeBtn.style.left = "1rem";
-    homeBtn.style.background = "rgba(255, 255, 255, 0.2)";
-    homeBtn.style.border = "none";
-    homeBtn.style.borderRadius = "50%";
-    homeBtn.style.width = "44px";
-    homeBtn.style.height = "44px";
-    homeBtn.style.fontSize = "1.3rem";
-    homeBtn.style.color = "#fff";
-    homeBtn.style.cursor = "pointer";
-    homeBtn.style.zIndex = "9999";
+function createFloatingButton(id, title, iconPath, onClick) {
+    if (document.getElementById(id)) return; // prevent duplicates
 
-    homeBtn.addEventListener("mouseenter", () => {
-        homeBtn.style.background = "rgba(255,255,255,0.35)";
-        homeBtn.style.transform = "translateY(-2px) scale(1.05)";
-    });
-    homeBtn.addEventListener("mouseleave", () => {
-        homeBtn.style.background = "rgba(255,255,255,0.2)";
-        homeBtn.style.transform = "none";
-    });
-    homeBtn.onclick = () => (window.location.href = homeURL);
+    const btn = document.createElement("button");
+    btn.id = id;
+    btn.className = "floating-btn";
+    btn.title = title;
 
-    document.body.appendChild(homeBtn);
-    console.log(`[🏠] Home button → ${homeURL}`);
+    const img = document.createElement("img");
+    img.src = iconPath;
+    img.alt = title;
+    img.className = "icon";
+    btn.appendChild(img);
+
+    btn.addEventListener("click", onClick);
+    document.body.appendChild(btn);
+    console.log(`[✨] ${id} created`);
+}
+
+function initFloatingButtons() {
+    const base = `${basePath}/assets/img/buttons`;
+    const bgm = document.getElementById("bgm");
+    if (!bgm) {
+        console.warn("[⚠️] No background music element found.");
+        return;
+    }
+
+    // === Spiritomb → Home Button ===
+    createFloatingButton(
+        "homeButton",
+        "Return to the Void",
+        `${base}/spiritomb.png`,
+        () => (window.location.href = homeURL)
+    );
+
+    // === Meloetta → Music Button (Toggle Forms) ===
+    const meloettaAria = `${base}/meloetta-aria.png`;
+    const meloettaPirouette = `${base}/meloetta-pirouette.png`;
+
+    createFloatingButton(
+        "musicToggle",
+        "Toggle Music",
+        meloettaAria,
+        () => {
+            const icon = document.querySelector("#musicToggle img.icon");
+            if (bgm.paused) {
+                bgm.play();
+                icon.src = meloettaPirouette;
+                icon.alt = "Meloetta (Pirouette Form)";
+                console.log("[🎶] Meloetta switches to Pirouette Form!");
+            } else {
+                bgm.pause();
+                icon.src = meloettaAria;
+                icon.alt = "Meloetta (Aria Form)";
+                console.log("[🎵] Meloetta returns to Aria Form.");
+            }
+        }
+    );
+
+    console.log("[🏠] Spiritomb & Meloetta buttons initialized.");
 }
