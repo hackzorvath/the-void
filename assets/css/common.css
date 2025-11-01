@@ -62,7 +62,7 @@ a {
 
 a:hover {
     color: var(--color-muted);
-    text-decoration: underline;
+    text-decoration: none;
 }
 
 /* === Buttons === */
