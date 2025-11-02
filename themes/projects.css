@@ -1,0 +1,153 @@
+/* ==========================================
+   THE VOID: NEON NOIR THEME
+   Mood: electric, mysterious, theatrical
+   Palette:
+   Deep Background: #0a0a0f
+   Neon Pink: #ff4ecb
+   Mint Teal: #29f0b4
+   Acid Yellow: #ffe74c
+   Violet Mist: #6a4c93
+   ========================================== */
+
+:root {
+    --color-bg: linear-gradient(135deg, #0a0a0f, #24153c, #00303c);
+    --color-text: #e8e8e8;
+    --color-accent: #ff4ecb;
+    --color-accent-2: #29f0b4;
+    --color-highlight: #ffe74c;
+    --color-muted: rgba(255, 255, 255, 0.6);
+}
+
+/* === Base === */
+body {
+    background: var(--color-bg);
+    color: var(--color-text);
+    min-height: 100vh;
+    font-family: 'DM Sans', sans-serif;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+    position: relative;
+}
+
+/* === Header === */
+header {
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(255, 255, 255, 0.15);
+    border-radius: 1rem;
+    backdrop-filter: blur(6px);
+    box-shadow: 0 0 20px rgba(255, 78, 203, 0.25);
+    transition: all 0.4s ease;
+}
+
+header:hover {
+    box-shadow: 0 0 40px rgba(41, 240, 180, 0.35);
+}
+
+header h1,
+header h2 {
+    color: var(--color-highlight);
+    text-shadow: 0 0 8px rgba(255, 78, 203, 0.6);
+}
+
+header p {
+    color: var(--color-muted);
+}
+
+/* === Links === */
+a {
+    color: var(--color-accent);
+    text-decoration: none;
+    transition: color 0.25s ease, text-shadow 0.25s ease;
+}
+
+a:hover {
+    color: var(--color-accent-2);
+    text-shadow: 0 0 10px var(--color-accent-2);
+}
+
+/* === Project Cards === */
+.card {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    transition: all 0.3s ease-in-out;
+    backdrop-filter: blur(6px);
+}
+
+.card:hover {
+    border-color: var(--color-accent);
+    box-shadow: 0 0 18px rgba(255, 78, 203, 0.5);
+    transform: translateY(-4px) scale(1.02);
+}
+
+.card h5 {
+    color: var(--color-accent);
+    font-weight: 700;
+}
+
+.card p {
+    color: var(--color-muted);
+}
+
+/* === Section Titles === */
+h3 {
+    color: var(--color-highlight);
+    text-shadow: 0 0 6px rgba(255, 231, 76, 0.4);
+    font-weight: 700;
+}
+
+/* === Hover Rows === */
+.hover-row:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+    transition: all 0.3s ease;
+}
+
+/* === Borders and Dividers === */
+hr {
+    border: none;
+    border-top: 2px dashed rgba(255, 255, 255, 0.2);
+}
+
+/* === Buttons or Interactives (optional) === */
+.button-neon {
+    background: linear-gradient(90deg, var(--color-accent), var(--color-accent-2));
+    border: none;
+    border-radius: 3rem;
+    color: #fff;
+    font-weight: 600;
+    padding: 0.6rem 1.4rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 12px rgba(255, 78, 203, 0.4);
+}
+
+.button-neon:hover {
+    background: linear-gradient(90deg, var(--color-accent-2), var(--color-accent));
+    transform: scale(1.05);
+    box-shadow: 0 0 24px rgba(41, 240, 180, 0.6);
+}
+
+/* === Footer Placeholder (optional) === */
+#footer-placeholder {
+    margin-top: auto;
+    padding: 1.5rem 0;
+    text-align: center;
+    color: var(--color-muted);
+    font-size: 0.9rem;
+}
+
+/* === Responsive Tweaks === */
+@media (max-width: 768px) {
+    header.container {
+        padding: 2rem 1.25rem !important;
+        max-width: 90%;
+        margin-inline: auto;
+    }
+
+    h1 {
+        font-size: 1.75rem;
+    }
+
+    h2 {
+        font-size: 1.25rem;
+    }
+}
