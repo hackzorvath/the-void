@@ -1,0 +1,103 @@
+/* ==========================================
+   VOID THEME — "Rowan Doctrine: Parchment Edition"
+   Inspired by Professor Rowan (Sinnoh)
+   ========================================== */
+
+:root {
+    --color-bg: linear-gradient(135deg, #f7f3eb, #e6dcc6);
+    /* parchment to antique ivory */
+    --color-text: #2d2a26;
+    /* dark graphite ink */
+    --color-accent: #6b8daf;
+    /* scholarly blue of his vest */
+    --color-accent-2: #b08b58;
+    /* brass warmth from suitcase and tie */
+    --color-muted: rgba(45, 42, 38, 0.65);
+    --color-shadow: rgba(80, 60, 40, 0.2);
+}
+
+/* === Body === */
+body {
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-family: "Merriweather", "DM Sans", Georgia, serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+    position: relative;
+    line-height: 1.7;
+}
+
+/* === Header === */
+header {
+    text-align: center;
+    padding: 3rem 1rem 1.5rem;
+    background: rgba(255, 255, 255, 0.4);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    box-shadow: 0 2px 10px var(--color-shadow);
+}
+
+h1,
+h2,
+h3 {
+    color: var(--color-text);
+    text-shadow: 0 0 6px rgba(176, 139, 88, 0.2);
+    letter-spacing: 0.5px;
+    font-weight: 700;
+}
+
+/* === Navigation === */
+nav.navbar {
+    background: rgba(255, 255, 255, 0.5);
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    backdrop-filter: blur(6px);
+}
+
+.nav-link {
+    color: var(--color-accent) !important;
+    font-weight: 600;
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    transition: all 0.25s ease;
+}
+
+.nav-link:hover {
+    color: var(--color-text) !important;
+    background: linear-gradient(135deg, #dce6f3, #f2e5c0);
+    box-shadow: 0 0 12px rgba(107, 141, 175, 0.4);
+    transform: translateY(-1px);
+}
+
+/* === Divider === */
+hr {
+    border: none;
+    height: 2px;
+    border-radius: 2px;
+    background: linear-gradient(90deg, #6b8daf, #b08b58);
+    box-shadow: 0 0 10px rgba(176, 139, 88, 0.3);
+    margin: 2.5rem 0;
+}
+
+/* === Footer === */
+footer {
+    background: rgba(255, 255, 255, 0.5);
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+    text-align: center;
+    padding: 2rem 0;
+    font-size: 0.95rem;
+    color: var(--color-muted);
+}
+
+footer .social-links a {
+    color: var(--color-accent);
+    transition: color 0.2s ease, text-shadow 0.2s ease;
+}
+
+footer .social-links a:hover {
+    color: var(--color-accent-2);
+    text-shadow: 0 0 8px var(--color-accent);
+}
+
+/* ========================================== */

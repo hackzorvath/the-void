@@ -1,0 +1,93 @@
+/* ==========================================
+   VOID THEME — "Colress Compression Edition"
+   Inspired by Pokémon Professor Colress
+   ========================================== */
+
+:root {
+    --color-bg: linear-gradient(135deg, #0e1b2b, #2a4375);
+    --color-text: #e8f6ff;
+    --color-accent: #6fc4ff;
+    --color-accent-2: #ffd966;
+    --color-muted: rgba(255, 255, 255, 0.7);
+    --color-shadow: rgba(47, 91, 160, 0.6);
+}
+
+/* === Page Background === */
+body {
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-family: "DM Sans", "Poppins", system-ui, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+    position: relative;
+}
+
+/* === Header === */
+header {
+    text-align: center;
+    padding: 3rem 1rem 1.5rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 0 20px var(--color-shadow);
+}
+
+h1,
+h2,
+h3 {
+    text-shadow: 0 0 16px rgba(110, 200, 255, 0.4);
+    letter-spacing: 1px;
+}
+
+/* === Navigation === */
+nav.navbar {
+    background: rgba(255, 255, 255, 0.08);
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.nav-link {
+    color: var(--color-accent) !important;
+    font-weight: 600;
+    padding: 0.6rem 1.2rem;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.nav-link:hover {
+    color: var(--color-bg) !important;
+    background: linear-gradient(135deg, var(--color-accent), var(--color-accent-2));
+    box-shadow: 0 0 20px rgba(111, 196, 255, 0.6);
+    transform: translateY(-2px);
+}
+
+/* === Divider === */
+hr {
+    border: none;
+    height: 3px;
+    border-radius: 2px;
+    background: linear-gradient(90deg, #6fc4ff, #ffd966, #6fc4ff);
+    box-shadow: 0 0 15px rgba(111, 196, 255, 0.6);
+    margin: 2.5rem 0;
+}
+
+/* === Footer === */
+footer {
+    background: rgba(0, 0, 0, 0.4);
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    text-align: center;
+    padding: 2rem 0;
+}
+
+footer .social-links a {
+    color: var(--color-accent);
+    transition: color 0.2s ease, text-shadow 0.2s ease;
+}
+
+footer .social-links a:hover {
+    color: var(--color-accent-2);
+    text-shadow: 0 0 12px var(--color-accent);
+}
