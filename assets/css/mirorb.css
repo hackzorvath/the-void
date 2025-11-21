@@ -1,0 +1,126 @@
+/* ==========================================
+   THE VOID — "Miror B. Theme"
+   Neon-noir disco chaos, flamboyant brilliance.
+   ========================================== */
+
+:root {
+    --color-bg: radial-gradient(circle at top, #ff006e 0%, #7b2ff7 40%, #0f0c29 100%);
+    --color-text: #ffffff;
+    --color-accent: #ffd700;
+    --color-accent-2: #ff65c3;
+    --color-muted: rgba(255, 255, 255, 0.7);
+    --font-display: "Monoton", cursive;
+    --font-body: "DM Sans", sans-serif;
+}
+
+/* === Body === */
+body {
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-body);
+    overflow-x: hidden;
+    min-height: 100vh;
+    position: relative;
+}
+
+/* === Header === */
+header {
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+    animation: pulseGlow 8s infinite ease-in-out;
+}
+
+header .avatar {
+    max-width: 180px;
+    filter: drop-shadow(0 0 12px var(--color-accent-2));
+    animation: spin 4s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes pulseGlow {
+
+    0%,
+    100% {
+        text-shadow: 0 0 10px var(--color-accent);
+    }
+
+    50% {
+        text-shadow: 0 0 25px var(--color-accent-2);
+    }
+}
+
+.text-accent {
+    color: var(--color-accent);
+    font-family: var(--font-display);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+/* === Game Cards === */
+.game-card {
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.25);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+    backdrop-filter: blur(6px);
+}
+
+.game-card:hover {
+    transform: translateY(-6px) scale(1.03);
+    box-shadow: 0 0 25px rgba(255, 215, 0, 0.6);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.05));
+}
+
+h3 {
+    color: var(--color-accent);
+    margin-bottom: 0.5rem;
+}
+
+/* === Footer === */
+footer {
+    background: rgba(0, 0, 0, 0.25);
+    color: var(--color-muted);
+    font-size: 0.9rem;
+    letter-spacing: 0.5px;
+}
+
+hr {
+    border: none;
+    height: 3px;
+    background: linear-gradient(90deg, var(--color-accent), var(--color-accent-2), var(--color-accent));
+    border-radius: 2px;
+    opacity: 0.8;
+}
+
+/* === Music Toggle === */
+#musicToggle {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    background: rgba(255, 255, 255, 0.15);
+    color: var(--color-accent);
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    font-size: 1.4rem;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+    transition: all 0.3s ease;
+    z-index: 50;
+}
+
+#musicToggle:hover {
+    background: rgba(255, 255, 255, 0.4);
+    color: var(--color-accent-2);
+    transform: scale(1.1);
+}
