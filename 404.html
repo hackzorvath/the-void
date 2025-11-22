@@ -17,13 +17,37 @@
             font-size: 40px;
             text-shadow: 0 0 10px #ffcc00, 0 0 20px #ffaa00;
         }
+
+        .void-img-button {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: gold;
+            font-family: "Cinzel", serif;
+            transition: 0.2s;
+        }
+
+        .void-img-button img {
+            width: 120px;
+            transition: 0.2s;
+        }
+
+        .void-img-button:hover img {
+            transform: scale(1.05);
+        }
     </style>
 </head>
 
+
 <body>
-    <h1 class="glow">404 — This Path Does Not Exist</h1>
-    <p>You’ve wandered too far into the Void. Fear not; mirth awaits back on the main page.</p>
-    <a href="/" style="color: gold;">Return Home</a>
+        <h1 class="glow">404 — This Path Does Not Exist</h1>
+    <p>Have you tried turning the void off and on again? Ha ha ha</p>
+    <a href="index.html" class="void-img-button">
+        <img src="assets/img/buttons/spiritomb.png" alt="">
+        <span>Return to The Void</span>
+    </a>
+
 </body>
 
 </html>
