@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Travel</title>
+  <link rel="shortcut icon" type="image/x-icon" href="../favicon.ico">
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Your CSS -->
+  <link rel="stylesheet" href="style.css">
+
+  <!-- AmCharts -->
+  <script src="https://cdn.amcharts.com/lib/5/index.js"></script>
+  <script src="https://cdn.amcharts.com/lib/5/map.js"></script>
+  <script src="https://cdn.amcharts.com/lib/5/geodata/worldLow.js"></script>
+  <script src="https://cdn.amcharts.com/lib/5/themes/Animated.js"></script>
+
+  <script src="https://cdn.amcharts.com/lib/5/index.js"></script>
+  <script src="https://cdn.amcharts.com/lib/5/map.js"></script>
+  <script src="https://cdn.amcharts.com/lib/5/geodata/worldLow.js"></script>
+  <script src="https://cdn.amcharts.com/lib/5/themes/Animated.js"></script>
+
+
+  <style>
+    /* Remove scrollbars */
+    ::-webkit-scrollbar {
+      display: none;
+    }
+
+    header {
+      background-image: url("../img/pano/hotel.jpg");
+      background-size: cover;
+      background-position: center;
+      height: 32vh;
+      /* ⬅️ smaller than 45vh */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    header {
+      height: 32vh;
+    }
+
+    @media (max-width: 768px) {
+      header {
+        height: 22vh;
+      }
+    }
+
+
+
+    header h1 {
+      color: white;
+      text-shadow: 2px 2px 4px black;
+      font-family: verdana;
+      font-size: clamp(2rem, 6vw, 64px);
+    }
+
+    /* NAV BUTTONS */
+    .nav-btn {
+      background: transparent;
+      font-family: verdana;
+      font-size: 16px;
+      color: white !important;
+      padding: 6px 12px;
+      border: 2px solid white;
+      border-radius: 16px;
+      text-decoration: none;
+      margin: 0 8px;
+      transition: 0.2s;
+      display: inline-block;
+    }
+
+    .nav-btn:hover {
+      background: white;
+      color: black !important;
+    }
+
+    /* PAGE SECTIONS */
+    section {
+      padding-top: 40px;
+    }
+
+    h2,
+    h3 {
+      text-align: center;
+      font-family: verdana;
+    }
+
+    h2 {
+      font-size: 32px;
+    }
+
+    h3 {
+      font-size: 24px;
+      font-family: palatino;
+    }
+
+    article {
+      font-family: palatino;
+      text-align: center;
+    }
+
+    /* Gallery buttons */
+    .gallery {
+      color: black;
+      margin: 10px;
+      padding: 6px 12px;
+      border: 2px solid black;
+      border-radius: 16px;
+      text-decoration: none;
+      display: inline-block;
+      transition: 0.2s;
+    }
+
+    .gallery:hover {
+      background: black;
+      color: white;
+    }
+
+    /* Map */
+    #chartdiv {
+      width: 100%;
+      height: 600px;
+    }
+
+    /* Footer */
+    footer {
+      background: gray;
+      height: 50px;
+    }
+
+    footer img {
+      height: 32px;
+      width: 32px;
+      margin: 10px;
+    }
+  </style>
+
+  <script>
+    am5.ready(function () {
+
+      // Root
+      var root = am5.Root.new("chartdiv");
+
+      root.setThemes([
+        am5themes_Animated.new(root)
+      ]);
+
+      // Chart
+      var chart = root.container.children.push(
+        am5map.MapChart.new(root, {
+          projection: am5map.geoMercator()
+        })
+      );
+
+      // Series
+      var polygonSeries = chart.series.push(
+        am5map.MapPolygonSeries.new(root, {
+          geoJSON: am5geodata_worldLow
+        })
+      );
+
+    });
+  </script>
+
+</head>
+
+<body>
+  <section class="container">
+
+    <h2>Set sail for adventure</h2>
+    <div id="chartdiv" style="width: 100%; height: 600px;"></div>
+  </section>
+
+  <div id="footer-container"></div>
+
+
+  <div id="footer-placeholder"></div>
+  <script src="../assets/scripts/common.js"></script>
+</body>
+
+</html>
