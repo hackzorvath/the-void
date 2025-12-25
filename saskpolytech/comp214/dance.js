@@ -105,11 +105,10 @@ document.getElementById('submitGrades').addEventListener('click', () => {
     const groupInput = document.getElementById('groupName');
     const group = groupInput ? groupInput.value.trim() : '';
 
-    const rows = document.querySelectorAll('#teamTable tbody tr');
+    // only collect main team rows (not their subitem rows)
+    const rows = document.querySelectorAll('#teamTable tbody tr.team-main-row');
     const members = [];
     rows.forEach(r => {
-        // skip template rows
-        if (r.id && r.id.includes('template')) return;
         const nameInput = r.querySelector('input[name="team_name[]"]');
         const name = nameInput ? nameInput.value.trim() : '';
         const gradeSpan = r.querySelector('.team-grade');
@@ -119,6 +118,122 @@ document.getElementById('submitGrades').addEventListener('click', () => {
 
     const output = { group, members };
     console.log(JSON.stringify(output, null, 2));
+});
+
+// --- Team fixed subitems management ---
+function insertFixedTeamSubitems(mainRow) {
+    // labels and maxima for the fixed subitems
+    const items = [
+        { label: 'Peer Review', max: 10 },
+        { label: 'Sponsor Review', max: 10 },
+        { label: 'Attendance', max: 20 }
+    ];
+
+    const template = document.getElementById('team-fixed-subitem-template');
+    if (!template) return;
+
+    // avoid inserting if fixed subitems already present immediately after this main row
+    try {
+        if ($(mainRow).next().hasClass('team-fixed-sub')) return;
+    } catch (e) { /* ignore */ }
+
+    // insert each subitem sequentially after the main row
+    let insertAfter = mainRow;
+    items.forEach(it => {
+        const clone = template.cloneNode(true);
+        clone.id = '';
+        clone.classList.remove('d-none');
+        // mark as fixed so we only count these when computing team grade
+        clone.classList.add('team-fixed-sub');
+        const label = clone.querySelector('.sub-label'); if (label) label.textContent = it.label;
+        const maxSpan = clone.querySelector('.sub-max'); if (maxSpan) maxSpan.textContent = it.max;
+        const maxHidden = clone.querySelector('.sub-max-hidden'); if (maxHidden) maxHidden.value = it.max;
+        const scoreInput = clone.querySelector('.sub-score'); if (scoreInput) { scoreInput.value = ''; scoreInput.setAttribute('max', it.max); }
+        insertAfter.insertAdjacentElement('afterend', clone);
+        insertAfter = clone;
+    });
+    // after inserting, recalc the team grade for this main row
+    try { recalcTeamGrade($(mainRow)); } catch (e) { /* ignore if recalc not yet defined */ }
+}
+
+function addTeamMember(name) {
+    const tbody = document.querySelector('#teamTable tbody');
+    const tr = document.createElement('tr');
+    tr.className = 'main-row team-main-row';
+    const safeName = String(name || '').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+    tr.innerHTML = `
+        <td><input type="text" name="team_name[]" class="form-control" placeholder="Student name" value="${safeName}"></td>
+        <td class="align-middle"><span class="form-control-plaintext team-grade">--</span></td>
+        <td><textarea name="team_comment[]" class="form-control" placeholder="Comments..." rows="2" style="resize:vertical;"></textarea></td>
+        <td class="text-center align-middle"></td>
+    `;
+    tbody.appendChild(tr);
+    insertFixedTeamSubitems(tr);
+}
+
+// initialize: add fixed subitems for existing team main rows
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('#teamTable tbody tr.team-main-row').forEach(r => insertFixedTeamSubitems(r));
+
+    // wire up Add Team Member modal + button
+    const addBtn = document.getElementById('addTeamMemberBtn');
+    const addModalEl = document.getElementById('addTeamMemberModal');
+    if (addBtn && addModalEl) {
+        const addModal = new bootstrap.Modal(addModalEl);
+        addBtn.addEventListener('click', () => {
+            document.getElementById('newTeamMemberName').value = '';
+            addModal.show();
+        });
+
+        document.getElementById('addTeamMemberForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = document.getElementById('newTeamMemberName').value.trim() || 'New Student';
+            addTeamMember(name);
+            addModal.hide();
+        });
+    }
+});
+
+// Recalculate a single team member's grade (weighted sum out of total max -> percentage)
+function recalcTeamGrade(mainRow) {
+    if (!mainRow || mainRow.length === 0) return;
+    const main = $(mainRow);
+    let next = main.next();
+    let sum = 0;
+    let totalMax = 0;
+    while (next.length && next.hasClass('sub-row')) {
+        // only consider fixed team subitems we created
+        if (!next.hasClass('team-fixed-sub')) { next = next.next(); continue; }
+        const scoreInput = next.find('.sub-score');
+        const maxHidden = next.find('.sub-max-hidden');
+        let v = parseFloat(scoreInput.val());
+        if (!isFinite(v)) v = 0;
+        let m = parseFloat(maxHidden.val());
+        if (!isFinite(m)) {
+            // try attribute
+            m = parseFloat(scoreInput.attr('max')) || 0;
+        }
+        sum += v;
+        totalMax += (isFinite(m) ? m : 0);
+        next = next.next();
+    }
+
+    const gradeSpan = main.find('.team-grade');
+    if (!totalMax || totalMax <= 0) {
+        gradeSpan.text('--');
+        return;
+    }
+    const pct = (sum / totalMax) * 100;
+    const display = Number(pct.toFixed(2)) + '%';
+    gradeSpan.text(display);
+}
+
+// live update when any team sub-score changes
+$(document).on('input', '#teamTable .sub-score', function () {
+    const tr = $(this).closest('tr');
+    // find the parent main row (the nearest preceding .team-main-row)
+    const main = tr.prevAll('tr.team-main-row').first();
+    if (main && main.length) recalcTeamGrade(main);
 });
 
 // Recalculate phase scores: average of subcategory scores (each out of 10), scaled to phase max (e.g., 40)
