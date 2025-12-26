@@ -172,8 +172,9 @@
                 <table id="teamTable" class="table table-bordered table-sm align-middle">
                     <thead class="table-light">
                         <tr>
-                            <th style="width: 40%">Name</th>
-                            <th style="width: 15%">Grade</th>
+                            <th style="width: 35%">Name</th>
+                            <th style="width: 10%">Grade</th>
+                            <th style="width: 10%">Final Grade</th>
                             <th>Notes...</th>
                             <th style="width:5%;">Actions</th>
                         </tr>
@@ -184,7 +185,8 @@
                             <td><input type="text" name="team_name[]" class="form-control" placeholder="Student name">
                             </td>
                             <td class="align-middle"><span class="form-control-plaintext team-grade"
-                                    data-index="0">--</span></td>
+                                        data-index="0">--</span></td>
+                                <td class="align-middle"><span class="form-control-plaintext team-final" data-index="0">--</span></td>
                             <td><textarea name="team_comment[]" class="form-control" placeholder="Comments..." rows="2"
                                     style="resize:vertical;"></textarea>
                             </td>
@@ -199,7 +201,8 @@
                             <td><input type="text" name="team_name[]" class="form-control" placeholder="Student name">
                             </td>
                             <td class="align-middle"><span class="form-control-plaintext team-grade"
-                                    data-index="1">--</span></td>
+                                        data-index="1">--</span></td>
+                                <td class="align-middle"><span class="form-control-plaintext team-final" data-index="1">--</span></td>
                             <td><textarea name="team_comment[]" class="form-control" placeholder="Comments..." rows="2"
                                     style="resize:vertical;"></textarea>
                             </td>
@@ -214,7 +217,8 @@
                             <td><input type="text" name="team_name[]" class="form-control" placeholder="Student name">
                             </td>
                             <td class="align-middle"><span class="form-control-plaintext team-grade"
-                                    data-index="2">--</span></td>
+                                        data-index="2">--</span></td>
+                                <td class="align-middle"><span class="form-control-plaintext team-final" data-index="2">--</span></td>
                             <td><textarea name="team_comment[]" class="form-control" placeholder="Comments..." rows="2"
                                     style="resize:vertical;"></textarea>
                             </td>
@@ -229,7 +233,8 @@
                             <td><input type="text" name="team_name[]" class="form-control" placeholder="Student name">
                             </td>
                             <td class="align-middle"><span class="form-control-plaintext team-grade"
-                                    data-index="3">--</span></td>
+                                        data-index="3">--</span></td>
+                                <td class="align-middle"><span class="form-control-plaintext team-final" data-index="3">--</span></td>
                             <td><textarea name="team_comment[]" class="form-control" placeholder="Comments..." rows="2"
                                     style="resize:vertical;"></textarea>
                             </td>
@@ -242,16 +247,16 @@
                         </tr>
 
                         <!-- team subitem template (hidden) -->
-                        <tr id="team-subitem-template" class="sub-row d-none">
-                            <td style="padding-left: 2rem;"><input type="text"
-                                    class="form-control form-control-sm sub-label-input" placeholder="Sub-item name">
-                            </td>
-                            <td class="align-middle"><input type="number" class="form-control form-control-sm sub-score"
-                                    min="0" step="0.01" placeholder="0"></td>
-                            <td class="align-middle"></td>
-                            <td class="text-center align-middle"><button type="button"
-                                    class="btn btn-sm btn-outline-secondary remove-subitem">✕</button></td>
-                        </tr>
+            <tr id="team-subitem-template" class="sub-row d-none">
+                <td style="padding-left: 2rem;"><input type="text"
+                    class="form-control form-control-sm sub-label-input" placeholder="Sub-item name">
+                </td>
+                <td class="align-middle"><input type="number" class="form-control form-control-sm sub-score"
+                    min="0" step="0.01" placeholder="0"></td>
+                <td class="text-start align-middle"><input type="number" class="form-control form-control-sm sub-max-input" min="0" step="0.01" placeholder="Max"></td>
+                <td class="text-center align-middle"><span class="form-control-plaintext small sub-pct">--</span>
+                <button type="button" class="btn btn-sm btn-outline-secondary remove-subitem">✕</button></td>
+            </tr>
                         <!-- fixed team subitem template (hidden) - used for Peer/Sponsor/Attendance -->
                         <tr id="team-fixed-subitem-template" class="sub-row d-none">
                             <td style="padding-left: 2rem;">
@@ -259,10 +264,8 @@
                             </td>
                             <td class="align-middle"><input type="number" class="form-control form-control-sm sub-score"
                                     min="0" step="0.01" placeholder="0"></td>
-                            <td class="align-middle"></td>
-                            <td class="text-center align-middle"><span
-                                    class="form-control-plaintext small sub-max">10</span><input type="hidden"
-                                    class="sub-max-hidden" value="10"></td>
+                            <td class="text-start align-middle"><span class="form-control-plaintext small sub-max">10</span><input type="hidden" class="sub-max-hidden" value="10"></td>
+                            <td class="text-start align-middle"><span class="form-control-plaintext small sub-pct">--</span></td>
                         </tr>
                     </tbody>
                 </table>

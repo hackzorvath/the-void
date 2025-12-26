@@ -140,11 +140,24 @@ function insertFixedTeamSubitems(mainRow) {
 
     // avoid inserting if fixed subitems already present immediately after this main row
     try {
-        if ($(mainRow).next().hasClass('team-fixed-sub')) return;
+        const nxt = $(mainRow).next();
+        if (nxt.hasClass('team-fixed-sub') || nxt.hasClass('sub-header')) return;
     } catch (e) { /* ignore */ }
 
-    // insert each subitem sequentially after the main row
-    let insertAfter = mainRow;
+    // insert a header row (collapsed) for the subitems: Category | Grade | Maximum Grade
+    const header = document.createElement('tr');
+    header.className = 'sub-row sub-header d-none';
+    header.innerHTML = `
+        <td style="padding-left: 2rem;"><strong>Category</strong></td>
+        <td><strong>Grade</strong></td>
+        <td class="text-start align-middle"><strong>Maximum Grade</strong></td>
+        <td class="text-start align-middle"><strong>Percentage</strong></td>
+    `;
+    insertAfter = mainRow;
+    insertAfter.insertAdjacentElement('afterend', header);
+
+    // insert each subitem sequentially after the header/main row
+    let insertAfterRow = header;
     items.forEach(it => {
         const clone = template.cloneNode(true);
         clone.id = '';
@@ -153,11 +166,12 @@ function insertFixedTeamSubitems(mainRow) {
         // mark as fixed so we only count these when computing team grade
         clone.classList.add('team-fixed-sub');
         const label = clone.querySelector('.sub-label'); if (label) label.textContent = it.label;
-        const maxSpan = clone.querySelector('.sub-max'); if (maxSpan) maxSpan.textContent = it.max;
-        const maxHidden = clone.querySelector('.sub-max-hidden'); if (maxHidden) maxHidden.value = it.max;
+    const maxSpan = clone.querySelector('.sub-max'); if (maxSpan) maxSpan.textContent = it.max;
+    const maxHidden = clone.querySelector('.sub-max-hidden'); if (maxHidden) maxHidden.value = it.max;
+    const pctSpan = clone.querySelector('.sub-pct'); if (pctSpan) pctSpan.textContent = '--';
         const scoreInput = clone.querySelector('.sub-score'); if (scoreInput) { scoreInput.value = ''; scoreInput.setAttribute('max', it.max); }
-        insertAfter.insertAdjacentElement('afterend', clone);
-        insertAfter = clone;
+        insertAfterRow.insertAdjacentElement('afterend', clone);
+        insertAfterRow = clone;
     });
     // after inserting, recalc the team grade for this main row
     try { recalcTeamGrade($(mainRow)); } catch (e) { /* ignore if recalc not yet defined */ }
@@ -172,7 +186,12 @@ function addTeamMember(name) {
         <td><input type="text" name="team_name[]" class="form-control" placeholder="Student name" value="${safeName}"></td>
         <td class="align-middle"><span class="form-control-plaintext team-grade">--</span></td>
         <td><textarea name="team_comment[]" class="form-control" placeholder="Comments..." rows="2" style="resize:vertical;"></textarea></td>
-        <td class="text-center align-middle"><button type="button" class="btn btn-sm btn-danger remove-member" title="Remove member">✕</button></td>
+        <td class="text-center align-middle">
+            <div class="btn-group" role="group" aria-label="Actions">
+                <button type="button" class="btn btn-sm btn-outline-secondary toggle-subitems" title="Show sub-items" aria-expanded="false">▾</button>
+                <button type="button" class="btn btn-sm btn-danger remove-member" title="Remove member">✕</button>
+            </div>
+        </td>
     `;
     tbody.appendChild(tr);
     // create the three fixed subitems (Peer Review 10, Sponsor Review 10, Attendance 20)
@@ -189,8 +208,8 @@ function addTeamMember(name) {
         sub.innerHTML = `
             <td style="padding-left: 2rem;"><div class="form-text small">⤷ <span class="sub-label">${it.label}</span></div></td>
             <td class="align-middle"><input type="number" class="form-control form-control-sm sub-score" min="0" step="0.01" placeholder="0"></td>
-            <td class="align-middle"></td>
-            <td class="text-center align-middle"><span class="form-control-plaintext small sub-max">${it.max}</span><input type="hidden" class="sub-max-hidden" value="${it.max}"></td>
+            <td class="text-start align-middle"><span class="form-control-plaintext small sub-max">${it.max}</span><input type="hidden" class="sub-max-hidden" value="${it.max}"></td>
+            <td class="text-start align-middle"><span class="form-control-plaintext small sub-pct">--</span></td>
         `;
         insertAfter.insertAdjacentElement('afterend', sub);
         insertAfter = sub;
@@ -280,11 +299,49 @@ function recalcTeamGrade(mainRow) {
     const gradeSpan = main.find('.team-grade');
     if (!totalMax || totalMax <= 0) {
         gradeSpan.text('--');
+        // still compute final as '--'
+        main.find('.team-final').text('--');
         return;
     }
-    const pct = (sum / totalMax) * 100;
-    const display = Number(pct.toFixed(2)) + '%';
+    // display raw sum out of the total max (e.g. "32 / 40")
+    const display = Number(sum.toFixed(2)) + ' / ' + Number(totalMax);
     gradeSpan.text(display);
+
+    // compute final grade:
+    // Assumption: final = individual_sum + (groupPct/100 * 40) * (attendance_raw / attendance_max)
+    // - groupPct comes from group subtotal average (0-100)
+    // - we scale group contribution to a 40-point scale, then multiply by attendance fraction (0-1)
+    let attendanceRaw = 0, attendanceMax = 0;
+    // find attendance subrow among following sub-rows
+    let scan = main.next();
+    while (scan.length && scan.hasClass('sub-row')) {
+        try {
+            const label = (scan.find('.sub-label').text() || '').trim();
+            if (label.toLowerCase().includes('attendance')) {
+                const v = parseFloat(scan.find('.sub-score').val()); if (isFinite(v)) attendanceRaw = v;
+                const m = parseFloat(scan.find('.sub-max-hidden').val()); if (isFinite(m)) attendanceMax = m;
+                // also check visible max input if present
+                if (!isFinite(attendanceMax)) {
+                    const mv = parseFloat(scan.find('.sub-max-input').val()); if (isFinite(mv)) attendanceMax = mv;
+                }
+                break;
+            }
+        } catch (e) { /* ignore */ }
+        scan = scan.next();
+    }
+
+    const groupEl = $('#groupSubtotalValue');
+    let groupPct = parseFloat(groupEl.data('pct'));
+    if (!isFinite(groupPct)) {
+        const parsed = parseFloat(groupEl.text()); groupPct = isFinite(parsed) ? parsed : 0;
+    }
+    const groupPoints = (groupPct / 100) * 40; // scale to 40-point contribution
+    let groupContribution = 0;
+    if (attendanceMax && attendanceMax > 0) {
+        groupContribution = groupPoints * (attendanceRaw / attendanceMax);
+    }
+    const finalVal = Number((sum + groupContribution).toFixed(2));
+    main.find('.team-final').text(finalVal);
 }
 
 // live update when any team sub-score changes
@@ -292,8 +349,28 @@ $(document).on('input', '#teamTable .sub-score', function() {
     const tr = $(this).closest('tr');
     // find the parent main row (the nearest preceding .team-main-row)
     const main = tr.prevAll('tr.team-main-row').first();
+    // update this subitem's percentage display
+    updateSubitemPercentage(tr);
     if (main && main.length) recalcTeamGrade(main);
 });
+
+// update percentage for a subitem row (score / max)
+function updateSubitemPercentage(subRow) {
+    try {
+        const r = $(subRow);
+        const scoreInput = r.find('.sub-score');
+        const maxHidden = r.find('.sub-max-hidden');
+        let v = parseFloat(scoreInput.val()); if (!isFinite(v)) { r.find('.sub-pct').text('--'); return; }
+        let m = parseFloat(maxHidden.val());
+        if (!isFinite(m)) {
+            // try a visible max input (for arbitrary team subitems)
+            m = parseFloat(r.find('.sub-max-input').val());
+        }
+        if (!isFinite(m) || m === 0) { r.find('.sub-pct').text('--'); return; }
+        const pct = (v / m) * 100;
+        r.find('.sub-pct').text(Number(pct.toFixed(2)) + '%');
+    } catch (e) { /* ignore */ }
+}
 
 // Remove a team member (main row + any following sub-rows)
 $(document).on('click', '.remove-member', function() {
@@ -330,6 +407,10 @@ function recalcGroupSubtotal() {
     if (count === 0) { outEl.text('--'); return; }
     const avg = sumPct / count;
     outEl.text(Number(avg.toFixed(2)) + '%');
+    // store numeric pct for other calculations
+    outEl.data('pct', Number(avg));
+    // update all team final grades since group pct changed
+    try { $('#teamTable tbody tr.team-main-row').each(function() { recalcTeamGrade($(this)); }); } catch (e) {}
 }
 
 // Recalculate phase scores: average of subcategory scores (each out of 10), scaled to phase max (e.g., 40)
@@ -366,10 +447,12 @@ function recalcAllPhases() {
         const avg = (count > 0) ? (sum / count) : 0; // average out of 10
         // scale to phase max
         const phaseMax = parseFloat(main.find('input[name="max[]"]').val()) || 40;
-        const phaseScore = (avg / 10) * phaseMax;
-        const display = Number((phaseScore).toFixed(2));
-        main.find('.phase-score').text(display);
-        main.find('.phase-score-hidden').val(display);
+    const phaseScore = (avg / 10) * phaseMax;
+    const phaseScoreNum = Number(phaseScore.toFixed(2));
+    // show as raw score out of max (e.g. "32.00 / 40") while keeping hidden numeric value for calculations
+    const displayStr = phaseScoreNum + ' / ' + Number(phaseMax);
+    main.find('.phase-score').text(displayStr);
+    main.find('.phase-score-hidden').val(phaseScoreNum);
     });
     // update group subtotal after recalculating all phases
     try { recalcGroupSubtotal(); } catch (e) { /* ignore if not available */ }
