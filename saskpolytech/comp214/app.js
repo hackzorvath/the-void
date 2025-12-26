@@ -148,7 +148,8 @@ function insertFixedTeamSubitems(mainRow) {
     items.forEach(it => {
         const clone = template.cloneNode(true);
         clone.id = '';
-        clone.classList.remove('d-none');
+        // keep fixed subitems collapsed/hidden by default
+        clone.classList.add('d-none');
         // mark as fixed so we only count these when computing team grade
         clone.classList.add('team-fixed-sub');
         const label = clone.querySelector('.sub-label'); if (label) label.textContent = it.label;
@@ -183,7 +184,8 @@ function addTeamMember(name) {
     let insertAfter = tr;
     fixedItems.forEach(it => {
         const sub = document.createElement('tr');
-        sub.className = 'sub-row team-fixed-sub';
+        // create collapsed (hidden) subrows by default
+        sub.className = 'sub-row team-fixed-sub d-none';
         sub.innerHTML = `
             <td style="padding-left: 2rem;"><div class="form-text small">⤷ <span class="sub-label">${it.label}</span></div></td>
             <td class="align-middle"><input type="number" class="form-control form-control-sm sub-score" min="0" step="0.01" placeholder="0"></td>
@@ -195,6 +197,36 @@ function addTeamMember(name) {
     });
     try { recalcTeamGrade($(tr)); } catch (e) {}
 }
+
+// Toggle subitems visibility for a team member (expand/collapse)
+$(document).on('click', '.toggle-subitems', function () {
+    const btn = $(this);
+    const main = btn.closest('tr.team-main-row');
+    if (!main || !main.length) return;
+    // iterate following rows that are sub-rows until next main row
+    let next = main.next();
+    let anyHidden = false;
+    // determine desired action: if first sub-row is hidden, we'll show; otherwise hide
+    if (next.length && next.hasClass('sub-row')) {
+        anyHidden = next.hasClass('d-none');
+    }
+    while (next.length && next.hasClass('sub-row')) {
+        if (anyHidden) next.removeClass('d-none'); else next.addClass('d-none');
+        next = next.next();
+    }
+    // flip arrow and aria-expanded
+    if (anyHidden) {
+        btn.text('▴');
+        btn.attr('aria-expanded', 'true');
+        btn.attr('title', 'Hide sub-items');
+    } else {
+        btn.text('▾');
+        btn.attr('aria-expanded', 'false');
+        btn.attr('title', 'Show sub-items');
+    }
+    // ensure grade is up-to-date when expanded
+    try { recalcTeamGrade(main); } catch (e) {}
+});
 
 // initialize: add fixed subitems for existing team main rows
 document.addEventListener('DOMContentLoaded', () => {

@@ -38,7 +38,7 @@
                                 <!-- Phase main rows -->
                                 <tr class="main-row">
                                     <td>
-                                        <div class="form-text">1 Initiation</div>
+                                        <div class="form-text">1 - Initiation</div>
                                     </td>
                                     <td class="align-middle"><span
                                             class="form-control-plaintext phase-score">--</span><input type="hidden"
@@ -55,7 +55,7 @@
 
                                 <tr class="main-row">
                                     <td>
-                                        <div class="form-text">2 Planning</div>
+                                        <div class="form-text">2 - Planning</div>
                                     </td>
                                     <td class="align-middle"><span
                                             class="form-control-plaintext phase-score">--</span><input type="hidden"
@@ -72,7 +72,7 @@
 
                                 <tr class="main-row">
                                     <td>
-                                        <div class="form-text">3 Execution</div>
+                                        <div class="form-text">3 - Execution</div>
                                     </td>
                                     <td class="align-middle"><span
                                             class="form-control-plaintext phase-score">--</span><input type="hidden"
@@ -89,7 +89,7 @@
 
                                 <tr class="main-row">
                                     <td>
-                                        <div class="form-text">4 Closing</div>
+                                        <div class="form-text">4 - Closing</div>
                                     </td>
                                     <td class="align-middle"><span
                                             class="form-control-plaintext phase-score">--</span><input type="hidden"
@@ -175,7 +175,7 @@
                             <th style="width: 40%">Name</th>
                             <th style="width: 15%">Grade</th>
                             <th>Notes...</th>
-                            <th style="width:5%;">Max. Grade</th>
+                            <th style="width:5%;">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -188,7 +188,12 @@
                             <td><textarea name="team_comment[]" class="form-control" placeholder="Comments..." rows="2"
                                     style="resize:vertical;"></textarea>
                             </td>
-                            <td class="text-center align-middle"><button type="button" class="btn btn-sm btn-danger remove-member" title="Remove member">✕</button></td>
+                            <td class="text-center align-middle">
+                                <div class="btn-group" role="group" aria-label="Actions">
+                                    <button type="button" class="btn btn-sm btn-outline-secondary toggle-subitems" title="Show sub-items" aria-expanded="false">▾</button>
+                                    <button type="button" class="btn btn-sm btn-danger remove-member" title="Remove member">✕</button>
+                                </div>
+                            </td>
                         </tr>
                         <tr class="main-row team-main-row">
                             <td><input type="text" name="team_name[]" class="form-control" placeholder="Student name">
@@ -198,7 +203,12 @@
                             <td><textarea name="team_comment[]" class="form-control" placeholder="Comments..." rows="2"
                                     style="resize:vertical;"></textarea>
                             </td>
-                            <td class="text-center align-middle"><button type="button" class="btn btn-sm btn-danger remove-member" title="Remove member">✕</button></td>
+                            <td class="text-center align-middle">
+                                <div class="btn-group" role="group" aria-label="Actions">
+                                    <button type="button" class="btn btn-sm btn-outline-secondary toggle-subitems" title="Show sub-items" aria-expanded="false">▾</button>
+                                    <button type="button" class="btn btn-sm btn-danger remove-member" title="Remove member">✕</button>
+                                </div>
+                            </td>
                         </tr>
                         <tr class="main-row team-main-row">
                             <td><input type="text" name="team_name[]" class="form-control" placeholder="Student name">
@@ -208,7 +218,12 @@
                             <td><textarea name="team_comment[]" class="form-control" placeholder="Comments..." rows="2"
                                     style="resize:vertical;"></textarea>
                             </td>
-                            <td class="text-center align-middle"><button type="button" class="btn btn-sm btn-danger remove-member" title="Remove member">✕</button></td>
+                            <td class="text-center align-middle">
+                                <div class="btn-group" role="group" aria-label="Actions">
+                                    <button type="button" class="btn btn-sm btn-outline-secondary toggle-subitems" title="Show sub-items" aria-expanded="false">▾</button>
+                                    <button type="button" class="btn btn-sm btn-danger remove-member" title="Remove member">✕</button>
+                                </div>
+                            </td>
                         </tr>
                         <tr class="main-row team-main-row">
                             <td><input type="text" name="team_name[]" class="form-control" placeholder="Student name">
@@ -218,7 +233,12 @@
                             <td><textarea name="team_comment[]" class="form-control" placeholder="Comments..." rows="2"
                                     style="resize:vertical;"></textarea>
                             </td>
-                            <td class="text-center align-middle"><button type="button" class="btn btn-sm btn-danger remove-member" title="Remove member">✕</button></td>
+                            <td class="text-center align-middle">
+                                <div class="btn-group" role="group" aria-label="Actions">
+                                    <button type="button" class="btn btn-sm btn-outline-secondary toggle-subitems" title="Show sub-items" aria-expanded="false">▾</button>
+                                    <button type="button" class="btn btn-sm btn-danger remove-member" title="Remove member">✕</button>
+                                </div>
+                            </td>
                         </tr>
 
                         <!-- team subitem template (hidden) -->
