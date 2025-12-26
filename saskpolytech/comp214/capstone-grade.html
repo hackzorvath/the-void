@@ -48,8 +48,8 @@
                                     <td><input type="text" name="comment[]" class="form-control"
                                             placeholder="Comments..."></td>
                                     <td class="text-center align-middle">
-                                        <button type="button" class="btn btn-sm btn-outline-secondary add-subitem"
-                                            title="Add sub-item" data-table="phases">▾</button>
+                                        <button type="button" class="btn btn-sm btn-primary add-subitem"
+                                            title="Add sub-item" data-table="phases">+</button>
                                     </td>
                                 </tr>
 
@@ -65,8 +65,8 @@
                                     <td><input type="text" name="comment[]" class="form-control"
                                             placeholder="Comments..."></td>
                                     <td class="text-center align-middle">
-                                        <button type="button" class="btn btn-sm btn-outline-secondary add-subitem"
-                                            title="Add sub-item" data-table="phases">▾</button>
+                                        <button type="button" class="btn btn-sm btn-primary add-subitem"
+                                            title="Add sub-item" data-table="phases">+</button>
                                     </td>
                                 </tr>
 
@@ -82,8 +82,8 @@
                                     <td><input type="text" name="comment[]" class="form-control"
                                             placeholder="Comments..."></td>
                                     <td class="text-center align-middle">
-                                        <button type="button" class="btn btn-sm btn-outline-secondary add-subitem"
-                                            title="Add sub-item" data-table="phases">▾</button>
+                                        <button type="button" class="btn btn-sm btn-primary add-subitem"
+                                            title="Add sub-item" data-table="phases">+</button>
                                     </td>
                                 </tr>
 
@@ -99,8 +99,8 @@
                                     <td><input type="text" name="comment[]" class="form-control"
                                             placeholder="Comments..."></td>
                                     <td class="text-center align-middle">
-                                        <button type="button" class="btn btn-sm btn-outline-secondary add-subitem"
-                                            title="Add sub-item" data-table="phases">▾</button>
+                                        <button type="button" class="btn btn-sm btn-primary add-subitem"
+                                            title="Add sub-item" data-table="phases">+</button>
                                     </td>
                                 </tr>
 
@@ -127,12 +127,36 @@
 
             <div class="row mt-3">
                 <div class="col-auto">
-                    <button type="submit" class="btn btn-primary">Save</button>
-                </div>
-                <div class="col-auto">
-                    <button type="button" id="addRow" class="btn btn-outline-secondary">Add Row</button>
+                    <button type="button" id="addRow" class="btn btn-primary">Add Row</button>
                 </div>
             </div>
+
+            <!-- Group subtotal (averaged percentage of all phase rows) -->
+            <div class="row mt-3">
+                <div class="col-12">
+                    <div class="table-responsive">
+                        <table id="groupSubtotalTable" class="table table-sm table-borderless w-100">
+                            <colgroup>
+                                <col style="width:15%;">
+                                <col style="width:20%;">
+                                <col style="width:15%;">
+                                <col style="width:45%;">
+                                <col style="width:5%;">
+                            </colgroup>
+                            <tbody>
+                                <tr>
+                                    <td class="align-middle">Group Subtotal</td>
+                                    <td class="align-middle"><span id="groupSubtotalValue" class="fw-bold">--</span></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
         </form>
 
         <!-- Team members table -->
@@ -141,8 +165,8 @@
                 <div class="d-flex justify-content-between align-items-center mb-2">
                     <h2 class="h5 mb-0">Team Members</h2>
                     <div>
-                        <button id="addTeamMemberBtn" type="button" class="btn btn-sm btn-outline-primary"
-                            title="Add New Team Member">+</button>
+                        <button id="addTeamMemberBtn" type="button" class="btn btn-sm btn-primary"
+                            title="Add New Team Member">Add Team Member</button>
                     </div>
                 </div>
                 <table id="teamTable" class="table table-bordered table-sm align-middle">
@@ -164,7 +188,7 @@
                             <td><textarea name="team_comment[]" class="form-control" placeholder="Comments..." rows="2"
                                     style="resize:vertical;"></textarea>
                             </td>
-                            <td class="text-center align-middle"></td>
+                            <td class="text-center align-middle"><button type="button" class="btn btn-sm btn-danger remove-member" title="Remove member">✕</button></td>
                         </tr>
                         <tr class="main-row team-main-row">
                             <td><input type="text" name="team_name[]" class="form-control" placeholder="Student name">
@@ -174,7 +198,7 @@
                             <td><textarea name="team_comment[]" class="form-control" placeholder="Comments..." rows="2"
                                     style="resize:vertical;"></textarea>
                             </td>
-                            <td class="text-center align-middle"></td>
+                            <td class="text-center align-middle"><button type="button" class="btn btn-sm btn-danger remove-member" title="Remove member">✕</button></td>
                         </tr>
                         <tr class="main-row team-main-row">
                             <td><input type="text" name="team_name[]" class="form-control" placeholder="Student name">
@@ -184,7 +208,7 @@
                             <td><textarea name="team_comment[]" class="form-control" placeholder="Comments..." rows="2"
                                     style="resize:vertical;"></textarea>
                             </td>
-                            <td class="text-center align-middle"></td>
+                            <td class="text-center align-middle"><button type="button" class="btn btn-sm btn-danger remove-member" title="Remove member">✕</button></td>
                         </tr>
                         <tr class="main-row team-main-row">
                             <td><input type="text" name="team_name[]" class="form-control" placeholder="Student name">
@@ -194,7 +218,7 @@
                             <td><textarea name="team_comment[]" class="form-control" placeholder="Comments..." rows="2"
                                     style="resize:vertical;"></textarea>
                             </td>
-                            <td class="text-center align-middle"></td>
+                            <td class="text-center align-middle"><button type="button" class="btn btn-sm btn-danger remove-member" title="Remove member">✕</button></td>
                         </tr>
 
                         <!-- team subitem template (hidden) -->
@@ -225,11 +249,11 @@
             </div>
             <div class="row mt-3">
                 <div class="col-12 text-end">
+                    <button id="convertToPdf" type="button" class="btn btn-success">Convert to PDF</button>
                     <button id="submitGrades" type="button" class="btn btn-success">Submit</button>
                 </div>
                 <p class="text-muted small">Grades for each team member will be populated automatically based on the
                     main grade calculations.</p>
-
             </div>
         </div>
     </div>
@@ -317,7 +341,7 @@
     <!-- jQuery (for reactive calculations) -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-    <script src="dance.js"></script>
+    <script src="app.js"></script>
 </body>
 
 </html>

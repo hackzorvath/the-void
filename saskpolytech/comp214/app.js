@@ -2,6 +2,8 @@
 function appendRow(itemName, maxValue) {
     const tbody = document.querySelector('table tbody');
     const tr = document.createElement('tr');
+    // mark as a main phase row so recalculation routines find it
+    tr.className = 'main-row';
     // escape simple text for safety
     const safeName = String(itemName).replaceAll('<', '&lt;').replaceAll('>', '&gt;');
     tr.innerHTML = `
@@ -9,9 +11,13 @@ function appendRow(itemName, maxValue) {
                 <td class="align-middle"><span class="form-control-plaintext phase-score">--</span><input type="hidden" name="score[]" class="phase-score-hidden" value=""></td>
                 <td class="align-middle"><span class="form-control-plaintext">${Number(maxValue)}</span><input type="hidden" name="max[]" value="${Number(maxValue)}"></td>
                 <td><input type="text" name="comment[]" class="form-control" placeholder="Comments..."></td>
-                <td class="text-center align-middle"><button type="button" class="btn btn-sm btn-outline-secondary add-subitem" data-table="phases">▾</button></td>
+                <td class="text-center align-middle"><button type="button" class="btn btn-sm btn-primary add-subitem" title="Add sub-item" data-table="phases">+</button></td>
             `;
     tbody.appendChild(tr);
+    // recalc group subtotal when a new phase row is added
+    try { recalcGroupSubtotal(); } catch (e) { /* ignore if function not yet defined */ }
+    // ensure phase recalculation runs for the new row
+    try { recalcAllPhases(); } catch (e) {}
 }
 
 // Bootstrap modal instance
@@ -165,10 +171,29 @@ function addTeamMember(name) {
         <td><input type="text" name="team_name[]" class="form-control" placeholder="Student name" value="${safeName}"></td>
         <td class="align-middle"><span class="form-control-plaintext team-grade">--</span></td>
         <td><textarea name="team_comment[]" class="form-control" placeholder="Comments..." rows="2" style="resize:vertical;"></textarea></td>
-        <td class="text-center align-middle"></td>
+        <td class="text-center align-middle"><button type="button" class="btn btn-sm btn-danger remove-member" title="Remove member">✕</button></td>
     `;
     tbody.appendChild(tr);
-    insertFixedTeamSubitems(tr);
+    // create the three fixed subitems (Peer Review 10, Sponsor Review 10, Attendance 20)
+    const fixedItems = [
+        { label: 'Peer Review', max: 10 },
+        { label: 'Sponsor Review', max: 10 },
+        { label: 'Attendance', max: 20 }
+    ];
+    let insertAfter = tr;
+    fixedItems.forEach(it => {
+        const sub = document.createElement('tr');
+        sub.className = 'sub-row team-fixed-sub';
+        sub.innerHTML = `
+            <td style="padding-left: 2rem;"><div class="form-text small">⤷ <span class="sub-label">${it.label}</span></div></td>
+            <td class="align-middle"><input type="number" class="form-control form-control-sm sub-score" min="0" step="0.01" placeholder="0"></td>
+            <td class="align-middle"></td>
+            <td class="text-center align-middle"><span class="form-control-plaintext small sub-max">${it.max}</span><input type="hidden" class="sub-max-hidden" value="${it.max}"></td>
+        `;
+        insertAfter.insertAdjacentElement('afterend', sub);
+        insertAfter = sub;
+    });
+    try { recalcTeamGrade($(tr)); } catch (e) {}
 }
 
 // initialize: add fixed subitems for existing team main rows
@@ -192,6 +217,8 @@ document.addEventListener('DOMContentLoaded', () => {
             addModal.hide();
         });
     }
+    // initial group subtotal calc
+    try { recalcGroupSubtotal(); } catch (e) {}
 });
 
 // Recalculate a single team member's grade (weighted sum out of total max -> percentage)
@@ -229,12 +256,49 @@ function recalcTeamGrade(mainRow) {
 }
 
 // live update when any team sub-score changes
-$(document).on('input', '#teamTable .sub-score', function () {
+$(document).on('input', '#teamTable .sub-score', function() {
     const tr = $(this).closest('tr');
     // find the parent main row (the nearest preceding .team-main-row)
     const main = tr.prevAll('tr.team-main-row').first();
     if (main && main.length) recalcTeamGrade(main);
 });
+
+// Remove a team member (main row + any following sub-rows)
+$(document).on('click', '.remove-member', function() {
+    const btn = $(this);
+    const main = btn.closest('tr.team-main-row');
+    if (!main || !main.length) return;
+    // remove following sub-rows until next main row
+    let next = main.next();
+    while (next.length && next.hasClass('sub-row')) {
+        const toRemove = next;
+        next = next.next();
+        toRemove.remove();
+    }
+    main.remove();
+});
+
+// Recalculate group subtotal: average percentage across all phase main rows
+function recalcGroupSubtotal() {
+    const phaseRows = $('#gradesForm table').first().find('tr.main-row');
+    let sumPct = 0;
+    let count = 0;
+    phaseRows.each(function() {
+        const r = $(this);
+        const scoreVal = parseFloat(r.find('.phase-score-hidden').val());
+        const maxVal = parseFloat(r.find('input[name="max[]"]').val());
+        if (!isFinite(maxVal) || maxVal === 0) return; // skip
+        const s = isFinite(scoreVal) ? scoreVal : 0;
+        const pct = (s / maxVal) * 100;
+        sumPct += pct;
+        count += 1;
+    });
+
+    const outEl = $('#groupSubtotalValue');
+    if (count === 0) { outEl.text('--'); return; }
+    const avg = sumPct / count;
+    outEl.text(Number(avg.toFixed(2)) + '%');
+}
 
 // Recalculate phase scores: average of subcategory scores (each out of 10), scaled to phase max (e.g., 40)
 function recalcAllPhases() {
@@ -243,12 +307,13 @@ function recalcAllPhases() {
     const phasesMainRows = $('#gradesForm table').first().find('tr.main-row');
     phasesMainRows.each(function () {
         const main = $(this);
-        let subRows = [];
-        let next = main.next();
-        while (next.length && next.hasClass('sub-row')) {
-            subRows.push(next);
-            next = next.next();
-        }
+                let subRows = [];
+                let next = main.next();
+                while (next.length && next.hasClass('sub-row')) {
+                    // skip hidden template rows (they have d-none)
+                    if (!next.hasClass('d-none')) subRows.push(next);
+                    next = next.next();
+                }
 
         if (subRows.length === 0) {
             // no subitems => phase score 0
@@ -274,6 +339,8 @@ function recalcAllPhases() {
         main.find('.phase-score').text(display);
         main.find('.phase-score-hidden').val(display);
     });
+    // update group subtotal after recalculating all phases
+    try { recalcGroupSubtotal(); } catch (e) { /* ignore if not available */ }
 }
 
 // Recalculate when any sub-score input changes
