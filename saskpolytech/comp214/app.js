@@ -1,12 +1,15 @@
 // helper: append a new row to the table body
 function appendRow(itemName, maxValue) {
-    const tbody = document.querySelector('table tbody');
+    // append to the last phase-like table (adds to the lower Item table by default)
+    const phaseTables = document.querySelectorAll('.phase-table');
+    const tbody = (phaseTables.length ? phaseTables[phaseTables.length - 1].querySelector('tbody') : document.querySelector('table tbody'));
     const tr = document.createElement('tr');
     // mark as a main phase row so recalculation routines find it
     tr.className = 'main-row';
     // escape simple text for safety
     const safeName = String(itemName).replaceAll('<', '&lt;').replaceAll('>', '&gt;');
     tr.innerHTML = `
+                <td class="text-center align-middle"><div class="form-text phase-no"></div></td>
                 <td><div class="form-text">${safeName}</div></td>
                 <td class="align-middle"><span class="form-control-plaintext phase-score">--</span><input type="hidden" name="score[]" class="phase-score-hidden" value=""></td>
                 <td class="align-middle"><span class="form-control-plaintext">${Number(maxValue)}</span><input type="hidden" name="max[]" value="${Number(maxValue)}"></td>
@@ -14,10 +17,21 @@ function appendRow(itemName, maxValue) {
                 <td class="text-center align-middle"><button type="button" class="btn btn-sm btn-primary add-subitem" title="Add sub-item" data-table="phases">+</button></td>
             `;
     tbody.appendChild(tr);
+    // renumber phases so the new row gets the next number
+    try { renumberPhases(); } catch (e) {}
     // recalc group subtotal when a new phase row is added
     try { recalcGroupSubtotal(); } catch (e) { /* ignore if function not yet defined */ }
     // ensure phase recalculation runs for the new row
     try { recalcAllPhases(); } catch (e) {}
+}
+
+// keep phase numbering in sync (No. column) across all phase-like tables in document order
+function renumberPhases() {
+    const rows = $('.phase-table').find('tr.main-row');
+    rows.each(function(i) {
+        const noCell = $(this).find('.phase-no').first();
+        if (noCell && noCell.length) noCell.text(i + 1);
+    });
 }
 
 // Bootstrap modal instance
@@ -185,6 +199,7 @@ function addTeamMember(name) {
     tr.innerHTML = `
         <td><input type="text" name="team_name[]" class="form-control" placeholder="Student name" value="${safeName}"></td>
         <td class="align-middle"><span class="form-control-plaintext team-grade">--</span></td>
+        <td class="align-middle"><span class="form-control-plaintext team-final">--</span></td>
         <td><textarea name="team_comment[]" class="form-control" placeholder="Comments..." rows="2" style="resize:vertical;"></textarea></td>
         <td class="text-center align-middle">
             <div class="btn-group" role="group" aria-label="Actions">
@@ -335,13 +350,19 @@ function recalcTeamGrade(mainRow) {
     if (!isFinite(groupPct)) {
         const parsed = parseFloat(groupEl.text()); groupPct = isFinite(parsed) ? parsed : 0;
     }
-    const groupPoints = (groupPct / 100) * 40; // scale to 40-point contribution
+    // Adjusted final calculation to produce a score out of 100.
+    // Split weights: individual contribution = 60 points, group contribution = 40 points (attendance scales group contribution)
+    const individualFraction = totalMax > 0 ? (sum / totalMax) : 0; // 0..1
+    const individualContribution = individualFraction * 60; // out of 60
+    const groupPoints = (groupPct / 100) * 40; // group's raw contribution out of 40
     let groupContribution = 0;
     if (attendanceMax && attendanceMax > 0) {
         groupContribution = groupPoints * (attendanceRaw / attendanceMax);
     }
-    const finalVal = Number((sum + groupContribution).toFixed(2));
-    main.find('.team-final').text(finalVal);
+    let finalVal = Number((individualContribution + groupContribution).toFixed(2));
+    // cap at 100
+    if (finalVal > 100) finalVal = 100;
+    main.find('.team-final').text(finalVal + ' / 100');
 }
 
 // live update when any team sub-score changes
