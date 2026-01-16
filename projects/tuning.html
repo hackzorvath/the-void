@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Ukulele Tuning</title>
+
+    <link rel="icon" type="image/x-icon" href="../assets/rose.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600&display=swap" rel="stylesheet">
+
+    <!-- Void Styles -->
+    <link rel="stylesheet" href="../assets/css/common.css">
+    <link rel="stylesheet" href="../themes/courses/comp215.css">
+</head>
+
+<body>
+
+    <!-- Audio Elements -->
+    <audio id="g" loop src="g.mp4"></audio>
+    <audio id="c" loop src="c.mp4"></audio>
+    <audio id="e" loop src="e.mp4"></audio>
+    <audio id="a" loop src="a.mp4"></audio>
+
+    <!-- Header -->
+    <header class="container my-4 p-4 shadow-sm text-center text-bg-dark rounded-4 border border-secondary">
+        <h1 class="fw-bold text-warning display-6">🎵 Ukulele Tuning 🎵</h1>
+        <p class="text-secondary small mt-2">
+            Four strings. One instrument. Infinite calm.
+        </p>
+    </header>
+
+    <!-- Main -->
+    <main class="container py-4 text-center">
+
+        <!-- Steven -->
+        <div class="mb-4">
+            <img src="steven.png"
+                 alt="Steven Universe"
+                 class="img-fluid rounded-4 shadow-sm"
+                 style="max-width: 300px;">
+        </div>
+
+        <!-- Buttons -->
+        <div class="row justify-content-center g-3">
+            <div class="col-6 col-md-3">
+                <button class="btn btn-dark w-100 py-3 rounded-4 border border-secondary"
+                        onclick="playString('g')">
+                    🎶 G
+                </button>
+            </div>
+
+            <div class="col-6 col-md-3">
+                <button class="btn btn-dark w-100 py-3 rounded-4 border border-secondary"
+                        onclick="playString('c')">
+                    🎶 C
+                </button>
+            </div>
+
+            <div class="col-6 col-md-3">
+                <button class="btn btn-dark w-100 py-3 rounded-4 border border-secondary"
+                        onclick="playString('e')">
+                    🎶 E
+                </button>
+            </div>
+
+            <div class="col-6 col-md-3">
+                <button class="btn btn-dark w-100 py-3 rounded-4 border border-secondary"
+                        onclick="playString('a')">
+                    🎶 A
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+    <div id="footer-placeholder"></div>
+    <script src="../assets/scripts/common.js"></script>
+
+    <!-- Simple Audio Controller -->
+    <script>
+        function playString(note) {
+            const strings = ['g', 'c', 'e', 'a'];
+
+            strings.forEach(id => {
+                const audio = document.getElementById(id);
+                if (id === note) {
+                    audio.paused ? audio.play() : audio.pause();
+                } else {
+                    audio.pause();
+                    audio.currentTime = 0;
+                }
+            });
+        }
+    </script>
+
+</body>
+</html>
