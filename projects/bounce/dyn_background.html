@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Bounce</title>
+
+    <style>
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
+            background: #000;
+            /* fallback */
+        }
+
+        canvas {
+            position: fixed;
+            inset: 0;
+            width: 100vw;
+            height: 100vh;
+            display: block;
+        }
+
+        /* Optional debug overlay (currently unused, but kept from your original) */
+        #data {
+            position: fixed;
+            left: 12px;
+            top: 10px;
+            margin: 0;
+            font: 12px/1.4 system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+            color: rgba(255, 255, 255, 0.8);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+            user-select: none;
+            pointer-events: none;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="canvas"></canvas>
+    <p id="data"></p>
+
+    <script src="bounce.js"></script>
+</body>
+
+</html>
