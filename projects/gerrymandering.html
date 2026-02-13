@@ -1,0 +1,584 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Regina Geo Hex Overlay (City Hall Center) — OSM + WebGL</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/pixi.js@7.4.2/dist/pixi.min.js"></script>
+
+  <style>
+    :root{
+      --bg:#0b0f14;
+      --panel: rgba(18, 24, 33, 0.92);
+      --border: rgba(255,255,255,0.12);
+      --text: rgba(255,255,255,0.92);
+      --muted: rgba(255,255,255,0.65);
+      --shadow: 0 20px 60px rgba(0,0,0,0.55);
+
+      --red:   rgba(255, 60, 60, 0.92);
+      --green: rgba(70, 255, 140, 0.92);
+      --blue:  rgba(60, 160, 255, 0.92);
+    }
+
+    html, body { margin:0; height:100%; background:var(--bg); overscroll-behavior:none; }
+
+    #stage {
+      position:relative;
+      width:100vw;
+      height:100vh;
+      overflow:hidden;
+      touch-action:none;
+      cursor: grab;
+    }
+    #stage.dragging { cursor: grabbing; }
+
+    canvas { display:block; width:100%; height:100%; }
+
+    #attrib{
+      position:absolute; left:10px; bottom:10px; z-index:20;
+      background:rgba(0,0,0,0.45);
+      border:1px solid rgba(255,255,255,0.12);
+      color:rgba(255,255,255,0.85);
+      padding:6px 10px;
+      border-radius:12px;
+      font: 12px/1.2 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+      pointer-events:none;
+      backdrop-filter: blur(8px);
+    }
+
+    /* Modal */
+    .modal-backdrop{
+      position:absolute; inset:0; display:none;
+      align-items:center; justify-content:center;
+      background:rgba(0,0,0,0.55);
+      z-index: 50;
+    }
+    .modal{
+      width:min(420px,calc(100% - 24px));
+      background:var(--panel);
+      border:1px solid var(--border);
+      border-radius:16px;
+      box-shadow:var(--shadow);
+      overflow:hidden;
+      color: var(--text);
+      font-family: system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+    }
+    .modal .hd{
+      padding:14px 16px; display:flex; align-items:center; justify-content:space-between;
+      border-bottom:1px solid var(--border);
+      font-weight: 800;
+    }
+    .modal .hd button{
+      background:transparent; border:0; color:var(--muted);
+      font-size:18px; cursor:pointer; line-height:1;
+    }
+    .modal .bd{ padding:14px 16px; }
+    .modal .bd p{ margin:0 0 12px; color:var(--muted); font-size:13px; }
+    .color-row{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; }
+    .color-btn{
+      border:1px solid var(--border);
+      border-radius:14px;
+      padding:12px 10px;
+      cursor:pointer;
+      font-weight:900;
+      color:rgba(0,0,0,0.75);
+      user-select:none;
+    }
+    .color-btn:active{ transform: translateY(1px); }
+    .modal .ft{
+      padding:14px 16px; display:flex; justify-content:flex-end;
+      border-top:1px solid var(--border);
+    }
+    .btn{
+      border:1px solid var(--border);
+      background:rgba(255,255,255,0.06);
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:12px;
+      cursor:pointer;
+      font-weight:800;
+    }
+    .btn:active{ transform: translateY(1px); }
+  </style>
+</head>
+
+<body>
+  <div id="stage">
+    <div id="attrib">© OpenStreetMap contributors</div>
+
+    <div class="modal-backdrop" id="modalBackdrop">
+      <div class="modal">
+        <div class="hd">
+          <div>Paint Hex</div>
+          <button id="modalClose" aria-label="Close">✕</button>
+        </div>
+        <div class="bd">
+          <p>Tap a color to apply immediately.</p>
+          <div class="color-row">
+            <button class="color-btn" id="btnRed"   style="background: var(--red);"   type="button">Red</button>
+            <button class="color-btn" id="btnGreen" style="background: var(--green);" type="button">Green</button>
+            <button class="color-btn" id="btnBlue"  style="background: var(--blue);"  type="button">Blue</button>
+          </div>
+        </div>
+        <div class="ft">
+          <button class="btn" id="modalCancel" type="button">Cancel / Exit</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+(() => {
+  // ============================================================
+  // OSM + WebMercator (EPSG:3857) + Geo-anchored Hex Grid
+  // Default view: whole Regina-ish, centered on Regina City Hall.
+  // Fix: drag pan MUST NOT open modal afterwards.
+  // ============================================================
+
+  const TILE_SIZE = 256;
+  const tileURL = (z, x, y) => `https://tile.openstreetmap.org/${z}/${x}/${y}.png`;
+
+  // Regina City Hall / 2476 Victoria Ave (lat/lon)
+  // Source: multiple map listings for this address put it here.
+  const ANCHOR = { lat: 50.4481494, lon: -104.6159225 };
+
+  // Default zoom to show most/all of Regina (tweak as desired)
+  let zFloat = 10.6;
+  const MIN_Z = 3, MAX_Z = 19;
+
+  // Hexes in meters (anchored)
+  const HEX_RADIUS_M = 500;
+  const HEX_RINGS = 30;
+
+  const COLOR_MAP = {
+    red:   { fill: 0xFF3C3C, line: 0xFFD0D0 },
+    green: { fill: 0x46FF8C, line: 0xD3FFE2 },
+    blue:  { fill: 0x3CA0FF, line: 0xD6EAFF },
+  };
+
+  // --- Modal wiring
+  const stageEl    = document.getElementById("stage");
+  const backdrop   = document.getElementById("modalBackdrop");
+  const closeBtn   = document.getElementById("modalClose");
+  const cancelBtn  = document.getElementById("modalCancel");
+  const btnRed     = document.getElementById("btnRed");
+  const btnGreen   = document.getElementById("btnGreen");
+  const btnBlue    = document.getElementById("btnBlue");
+
+  let selectedHex = null;
+  const openModal  = () => backdrop.style.display = "flex";
+  const closeModal = () => { backdrop.style.display = "none"; selectedHex = null; };
+
+  closeBtn.addEventListener("click", closeModal);
+  cancelBtn.addEventListener("click", closeModal);
+  backdrop.addEventListener("click", (e) => { if (e.target === backdrop) closeModal(); });
+
+  // --- WebMercator meters helpers (EPSG:3857)
+  const R = 6378137;
+  const ORIGIN_SHIFT = Math.PI * R;
+
+  function lonLatToMeters(lon, lat) {
+    const x = R * (lon * Math.PI / 180);
+    const y = R * Math.log(Math.tan(Math.PI/4 + (lat * Math.PI / 180)/2));
+    return { x, y };
+  }
+
+  function metersToWorldPx(m, z) {
+    const initialRes = 2 * Math.PI * R / TILE_SIZE;
+    const res = initialRes / (2 ** z);
+    return {
+      x: (m.x + ORIGIN_SHIFT) / res,
+      y: (ORIGIN_SHIFT - m.y) / res
+    };
+  }
+
+  function worldPxToMeters(p, z) {
+    const initialRes = 2 * Math.PI * R / TILE_SIZE;
+    const res = initialRes / (2 ** z);
+    return {
+      x: p.x * res - ORIGIN_SHIFT,
+      y: ORIGIN_SHIFT - p.y * res
+    };
+  }
+
+  function mod(n, m){ return ((n % m) + m) % m; }
+  function clamp(v, min, max){ return Math.max(min, Math.min(max, v)); }
+
+  // --- Pixi setup
+  const app = new PIXI.Application({
+    resizeTo: stageEl,
+    backgroundColor: 0x0b0f14,
+    antialias: true,
+    autoDensity: true,
+    resolution: window.devicePixelRatio || 1
+  });
+  stageEl.prepend(app.view);
+
+  app.stage.eventMode = "static";
+  app.stage.hitArea = app.screen;
+
+  const camera = new PIXI.Container();
+  app.stage.addChild(camera);
+
+  const mapLayer = new PIXI.Container();
+  const hexLayer = new PIXI.Container();
+  const markerLayer = new PIXI.Container();
+  camera.addChild(mapLayer);
+  camera.addChild(hexLayer);
+  camera.addChild(markerLayer);
+
+  // --- Tile cache
+  const tileTextureCache = new Map();
+  const tileKey = (z,x,y) => `${z}/${x}/${y}`;
+  function getTileTexture(z, x, y) {
+    const key = tileKey(z,x,y);
+    if (tileTextureCache.has(key)) return tileTextureCache.get(key);
+    const tex = PIXI.Texture.from(tileURL(z,x,y));
+    tileTextureCache.set(key, tex);
+    return tex;
+  }
+
+  // --- Camera state in meters (CENTERED ON CITY HALL)
+  let centerM = lonLatToMeters(ANCHOR.lon, ANCHOR.lat);
+  let tileZ = Math.floor(zFloat);
+
+  function screenCenter() { return { x: app.renderer.width/2, y: app.renderer.height/2 }; }
+  function centerWorldPx() { return metersToWorldPx(centerM, tileZ); }
+
+  function updateCameraTransform() {
+    const fracScale = 2 ** (zFloat - tileZ);
+    camera.scale.set(fracScale);
+    const sc = screenCenter();
+    const cW = centerWorldPx();
+    camera.position.set(sc.x - cW.x * fracScale, sc.y - cW.y * fracScale);
+  }
+
+  // --- Hex grid (geo anchored)
+  function axialToMeters(q, r, sizeM) {
+    // Flat-top axial layout
+    const x = sizeM * (3/2) * q;
+    const y = sizeM * Math.sqrt(3) * (r + q/2);
+    return { x, y };
+  }
+
+  function hexPointsFlatWorldPx(radiusPx) {
+    const pts = [];
+    for (let i = 0; i < 6; i++) {
+      const a = (Math.PI / 180) * (60 * i);
+      pts.push(new PIXI.Point(radiusPx * Math.cos(a), radiusPx * Math.sin(a)));
+    }
+    return pts;
+  }
+
+  function hexRadiusWorldPx() {
+    const c = metersToWorldPx(centerM, tileZ);
+    const p = metersToWorldPx({ x: centerM.x + HEX_RADIUS_M, y: centerM.y }, tileZ);
+    return Math.abs(p.x - c.x);
+  }
+
+  function defaultColorForHex(q, r) {
+    // Simple “district-ish” split (placeholder)
+    if (r < -HEX_RINGS * 0.20) return "blue";
+    if (q >  HEX_RINGS * 0.18) return "red";
+    return "green";
+  }
+
+  function redrawHex(hexObj, hovered=false) {
+    const { gfx, colorName } = hexObj;
+    const c = COLOR_MAP[colorName];
+    const rPx = hexRadiusWorldPx();
+    const pts = hexPointsFlatWorldPx(rPx);
+
+    gfx.clear();
+    gfx.beginFill(c.fill, 0.30);
+    gfx.lineStyle(hovered ? 2 : 1, c.line, hovered ? 0.95 : 0.28, 0.5);
+
+    gfx.moveTo(pts[0].x, pts[0].y);
+    for (let i = 1; i < pts.length; i++) gfx.lineTo(pts[i].x, pts[i].y);
+    gfx.closePath();
+    gfx.endFill();
+
+    gfx.hitArea = new PIXI.Polygon(pts);
+  }
+
+  const hexes = [];
+
+  // Hard suppression window after a drag ends
+  let lastDragEndedAt = 0;
+  const DRAG_TAP_BLOCK_MS = 350;
+
+  function buildGeoHexGrid() {
+    hexLayer.removeChildren();
+    hexes.length = 0;
+
+    for (let q = -HEX_RINGS; q <= HEX_RINGS; q++) {
+      const r1 = Math.max(-HEX_RINGS, -q - HEX_RINGS);
+      const r2 = Math.min( HEX_RINGS, -q + HEX_RINGS);
+
+      for (let r = r1; r <= r2; r++) {
+        const localM = axialToMeters(q, r, HEX_RADIUS_M);
+        const m = { x: centerM.x + localM.x, y: centerM.y + localM.y };
+        const w = metersToWorldPx(m, tileZ);
+
+        const gfx = new PIXI.Graphics();
+        gfx.position.set(w.x, w.y);
+        gfx.eventMode = "static";
+        gfx.cursor = "pointer";
+
+        const hexObj = { q, r, meterPos: m, gfx, colorName: defaultColorForHex(q, r) };
+        redrawHex(hexObj, false);
+
+        gfx.on("pointerover", (e) => { e.stopPropagation(); redrawHex(hexObj, true); });
+        gfx.on("pointerout",  (e) => { e.stopPropagation(); redrawHex(hexObj, false); });
+
+        gfx.on("pointertap", (e) => {
+          e.stopPropagation();
+
+          // If we just dragged, ignore this tap.
+          if ((performance.now() - lastDragEndedAt) < DRAG_TAP_BLOCK_MS) return;
+
+          selectedHex = hexObj;
+          openModal();
+        });
+
+        hexes.push(hexObj);
+        hexLayer.addChild(gfx);
+      }
+    }
+  }
+
+  function applyColor(colorName) {
+    if (!selectedHex) return;
+    selectedHex.colorName = colorName;
+    redrawHex(selectedHex, false);
+    closeModal();
+  }
+  btnRed.addEventListener("click",   () => applyColor("red"));
+  btnGreen.addEventListener("click", () => applyColor("green"));
+  btnBlue.addEventListener("click",  () => applyColor("blue"));
+
+  // --- City Hall marker (visual confirmation)
+  const hallMarker = new PIXI.Graphics();
+  markerLayer.addChild(hallMarker);
+
+  function drawHallMarker() {
+    hallMarker.clear();
+    const centerW = metersToWorldPx(centerM, tileZ);
+    hallMarker.position.set(centerW.x, centerW.y);
+
+    // Small dot + ring (in world px); camera scaling makes it grow/shrink naturally.
+    hallMarker.lineStyle(2, 0xffffff, 0.9);
+    hallMarker.beginFill(0x000000, 0.45);
+    hallMarker.drawCircle(0, 0, 10);
+    hallMarker.endFill();
+
+    hallMarker.beginFill(0xffd700, 0.85);
+    hallMarker.drawCircle(0, 0, 4);
+    hallMarker.endFill();
+  }
+
+  // --- Tile rendering
+  function clearTiles() { mapLayer.removeChildren(); }
+
+  function renderTiles() {
+    const newTileZ = Math.floor(zFloat);
+    if (newTileZ !== tileZ) {
+      tileZ = newTileZ;
+
+      // Update hex positions + hit areas
+      for (const h of hexes) {
+        const w = metersToWorldPx(h.meterPos, tileZ);
+        h.gfx.position.set(w.x, w.y);
+        redrawHex(h, false);
+      }
+    }
+
+    updateCameraTransform();
+    clearTiles();
+
+    const n = 2 ** tileZ;
+    const scale = camera.scale.x;
+
+    const leftW   = (0 - camera.position.x) / scale;
+    const rightW  = (app.renderer.width - camera.position.x) / scale;
+    const topW    = (0 - camera.position.y) / scale;
+    const bottomW = (app.renderer.height - camera.position.y) / scale;
+
+    const minTileX = Math.floor(leftW / TILE_SIZE) - 1;
+    const maxTileX = Math.floor(rightW / TILE_SIZE) + 1;
+    const minTileY = Math.floor(topW / TILE_SIZE) - 1;
+    const maxTileY = Math.floor(bottomW / TILE_SIZE) + 1;
+
+    for (let ty = minTileY; ty <= maxTileY; ty++) {
+      if (ty < 0 || ty >= n) continue;
+      for (let tx = minTileX; tx <= maxTileX; tx++) {
+        const wrappedX = mod(tx, n);
+        const tex = getTileTexture(tileZ, wrappedX, ty);
+        const spr = new PIXI.Sprite(tex);
+        spr.position.set(tx * TILE_SIZE, ty * TILE_SIZE);
+        spr.width = TILE_SIZE;
+        spr.height = TILE_SIZE;
+        mapLayer.addChild(spr);
+      }
+    }
+
+    drawHallMarker();
+  }
+
+  // ============================================================
+  // PAN (DOM pointer events) — disables hex interaction while dragging
+  // ============================================================
+  const DRAG_THRESHOLD_PX = 10; // slightly higher to avoid accidental “micro-drags”
+  let isPointerDown = false;
+  let isDragging = false;
+  let pointerIdActive = null;
+
+  let downStart = null;
+  let centerStartM = null;
+
+  function disableHexPicking() {
+    hexLayer.eventMode = "none";
+  }
+  function enableHexPicking() {
+    hexLayer.eventMode = "static";
+  }
+
+  app.view.addEventListener("pointerdown", (e) => {
+    if (backdrop.style.display === "flex") return;
+    if (e.button !== undefined && e.button !== 0) return;
+
+    isPointerDown = true;
+    isDragging = false;
+    pointerIdActive = e.pointerId;
+
+    downStart = { x: e.clientX, y: e.clientY };
+    centerStartM = { x: centerM.x, y: centerM.y };
+
+    stageEl.classList.add("dragging");
+    app.view.setPointerCapture(e.pointerId);
+  });
+
+  app.view.addEventListener("pointermove", (e) => {
+    if (!isPointerDown || e.pointerId !== pointerIdActive) return;
+
+    const dx = e.clientX - downStart.x;
+    const dy = e.clientY - downStart.y;
+
+    if (!isDragging) {
+      const dist2 = dx*dx + dy*dy;
+      if (dist2 < DRAG_THRESHOLD_PX * DRAG_THRESHOLD_PX) return;
+
+      isDragging = true;
+      disableHexPicking();
+    }
+
+    const scale = camera.scale.x;
+    const dxWorldPx = dx / scale;
+    const dyWorldPx = dy / scale;
+
+    const cW = metersToWorldPx(centerStartM, tileZ);
+    const newW = { x: cW.x - dxWorldPx, y: cW.y - dyWorldPx };
+    centerM = worldPxToMeters(newW, tileZ);
+
+    renderTiles();
+  });
+
+  function endPointer(e) {
+    if (!isPointerDown || e.pointerId !== pointerIdActive) return;
+
+    isPointerDown = false;
+    pointerIdActive = null;
+    stageEl.classList.remove("dragging");
+
+    try { app.view.releasePointerCapture(e.pointerId); } catch {}
+
+    if (isDragging) {
+      isDragging = false;
+      lastDragEndedAt = performance.now();
+      // Re-enable hex picking on next tick so Pixi doesn’t interpret release as tap
+      setTimeout(() => enableHexPicking(), 0);
+    }
+  }
+
+  app.view.addEventListener("pointerup", endPointer);
+  app.view.addEventListener("pointercancel", endPointer);
+
+  // ============================================================
+  // ZOOM (wheel throttled to RAF; keeps point under cursor fixed)
+  // ============================================================
+  let pendingWheel = 0;
+  let wheelRAF = 0;
+  let lastWheelEvent = null;
+
+  function normalizeWheel(e) {
+    let dy = e.deltaY;
+    if (e.deltaMode === 1) dy *= 16;
+    if (e.deltaMode === 2) dy *= 120;
+    return dy;
+  }
+
+  function onWheelRAF() {
+    wheelRAF = 0;
+    if (!lastWheelEvent) return;
+    const e = lastWheelEvent;
+    lastWheelEvent = null;
+
+    if (backdrop.style.display === "flex") return;
+
+    const dy = pendingWheel;
+    pendingWheel = 0;
+
+    const zoomSpeed = 0.0018;
+    const dz = -dy * zoomSpeed;
+
+    const oldZ = zFloat;
+    const newZ = clamp(oldZ + dz, MIN_Z, MAX_Z);
+    if (newZ === oldZ) return;
+
+    const mouse = { x: e.offsetX, y: e.offsetY };
+
+    updateCameraTransform();
+    const scaleOld = camera.scale.x;
+
+    const worldUnderMousePx = {
+      x: (mouse.x - camera.position.x) / scaleOld,
+      y: (mouse.y - camera.position.y) / scaleOld
+    };
+    const metersUnderMouse = worldPxToMeters(worldUnderMousePx, tileZ);
+
+    zFloat = newZ;
+    renderTiles();
+
+    const newWorldUnderMousePx = metersToWorldPx(metersUnderMouse, tileZ);
+
+    updateCameraTransform();
+    const scaleNew = camera.scale.x;
+    const sc = screenCenter();
+
+    const centerWorldPxNew = {
+      x: newWorldUnderMousePx.x - (mouse.x - sc.x) / scaleNew,
+      y: newWorldUnderMousePx.y - (mouse.y - sc.y) / scaleNew
+    };
+
+    centerM = worldPxToMeters(centerWorldPxNew, tileZ);
+    renderTiles();
+  }
+
+  app.view.addEventListener("wheel", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const dy = normalizeWheel(e);
+    pendingWheel += dy;
+    lastWheelEvent = e;
+    if (!wheelRAF) wheelRAF = requestAnimationFrame(onWheelRAF);
+  }, { passive: false });
+
+  // Boot
+  buildGeoHexGrid();
+  renderTiles();
+  window.addEventListener("resize", () => renderTiles());
+})();
+</script>
+</body>
+</html>

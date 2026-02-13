@@ -1,0 +1,1043 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Voidgotchi Menagerie</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #06060a;
+      --panel: #0e0f17;
+      --panel2: #0a0b12;
+      --text: #e9e6ff;
+      --muted: #a8a2c7;
+      --gold: #d6b35e;
+      --border: rgba(214, 179, 94, .35);
+      --shadow: rgba(0, 0, 0, .55);
+    }
+
+    body {
+      background:
+        radial-gradient(1100px 700px at 20% 10%, rgba(122, 167, 255, .10), transparent 60%),
+        radial-gradient(900px 600px at 80% 30%, rgba(214, 179, 94, .10), transparent 55%),
+        radial-gradient(700px 500px at 40% 90%, rgba(61, 220, 151, .07), transparent 55%),
+        var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    .void-card {
+      background: linear-gradient(180deg, rgba(255, 255, 255, .03), transparent 55%), var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: 0 18px 55px var(--shadow);
+    }
+
+    .subtle {
+      color: var(--muted);
+    }
+
+    .brandline {
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--gold);
+      font-weight: 700;
+      font-size: .85rem;
+    }
+
+    .divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(214, 179, 94, .35), transparent);
+      margin: 1rem 0;
+    }
+
+    .btn-void {
+      background: rgba(214, 179, 94, .12);
+      border: 1px solid rgba(214, 179, 94, .40);
+      color: var(--text);
+    }
+
+    .btn-void:hover {
+      background: rgba(214, 179, 94, .18);
+      border-color: rgba(214, 179, 94, .55);
+      color: var(--text);
+    }
+
+    .btn-ghost {
+      background: rgba(255, 255, 255, .06);
+      border: 1px solid rgba(255, 255, 255, .10);
+      color: var(--text);
+    }
+
+    .btn-ghost:hover {
+      background: rgba(255, 255, 255, .10);
+      border-color: rgba(255, 255, 255, .16);
+      color: var(--text);
+    }
+
+    .mood-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      padding: .35rem .7rem;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, .10);
+      background: rgba(0, 0, 0, .20);
+      font-size: .9rem;
+      color: var(--text);
+    }
+
+    .stat-label {
+      font-size: .8rem;
+      color: var(--muted);
+      margin-bottom: .25rem;
+    }
+
+    .progress {
+      height: 10px;
+      background: rgba(255, 255, 255, .06);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .log {
+      background: var(--panel2);
+      border: 1px solid rgba(255, 255, 255, .08);
+      border-radius: 14px;
+      padding: .75rem;
+      max-height: 200px;
+      overflow: auto;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: .85rem;
+    }
+
+    /* Menagerie list */
+    .pet-row {
+      display: flex;
+      gap: .75rem;
+      align-items: center;
+      padding: .65rem .6rem;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, .08);
+      background: rgba(0, 0, 0, .18);
+      cursor: pointer;
+      transition: transform .06s ease, background .15s ease, border-color .15s ease;
+    }
+
+    .pet-row:hover {
+      transform: translateY(-1px);
+      background: rgba(255, 255, 255, .06);
+      border-color: rgba(214, 179, 94, .22);
+    }
+
+    .pet-row.active {
+      background: rgba(214, 179, 94, .12);
+      border-color: rgba(214, 179, 94, .45);
+    }
+
+    .pet-mini {
+      width: 54px;
+      height: 54px;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, .10);
+      background: rgba(0, 0, 0, .18);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      flex: 0 0 auto;
+    }
+
+    .scene-wrap {
+      border-radius: 18px;
+      border: 1px solid rgba(255, 255, 255, .10);
+      background: rgba(0, 0, 0, .22);
+      overflow: hidden;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .tag {
+      font-size: .78rem;
+      color: var(--muted);
+      border: 1px solid rgba(255, 255, 255, .10);
+      border-radius: 999px;
+      padding: .1rem .55rem;
+      display: inline-flex;
+      gap: .4rem;
+      align-items: center;
+      background: rgba(0, 0, 0, .15);
+    }
+
+    .danger-soft {
+      background: rgba(255, 77, 109, .12);
+      border-color: rgba(255, 77, 109, .35);
+      color: var(--text);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container py-4 py-md-5" style="max-width: 1100px;">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+      <div>
+        <div class="brandline">The Void • Menagerie Office</div>
+        <h1 class="h3 mb-0">Voidgotchi Menagerie</h1>
+        <div class="subtle">Many small souls. One shared lawn. Infinite judgement.</div>
+      </div>
+      <div class="d-flex gap-2 flex-wrap">
+        <button class="btn btn-ghost" id="btnExportAll">Export</button>
+        <button class="btn btn-ghost" id="btnImportAll">Import</button>
+        <button class="btn btn-outline-danger" id="btnResetAll">Reset</button>
+      </div>
+    </div>
+
+    <div class="row g-3">
+      <!-- Menagerie -->
+      <div class="col-lg-4">
+        <div class="void-card p-3 p-md-4">
+          <div class="d-flex justify-content-between align-items-center">
+            <h2 class="h5 mb-0">Menagerie</h2>
+            <button class="btn btn-void btn-sm" id="btnAdd">➕ Add Familiar</button>
+          </div>
+          <div class="subtle mt-2">Select a creature to manage. Retired ones remain as relics.</div>
+
+          <div class="divider"></div>
+          <div class="d-grid gap-2" id="petList"></div>
+
+          <div class="divider"></div>
+          <div class="d-flex gap-2 flex-wrap">
+            <button class="btn btn-ghost btn-sm" id="btnRename">Rename</button>
+            <button class="btn btn-ghost btn-sm" id="btnFlavor">Edit Flavor</button>
+            <button class="btn btn-ghost btn-sm" id="btnVibe">Vibe</button>
+            <button class="btn btn-ghost btn-sm danger-soft" id="btnRetire">Retire</button>
+            <button class="btn btn-outline-danger btn-sm" id="btnDelete">Delete</button>
+          </div>
+
+          <div class="mt-3 subtle" id="menagerieNote"></div>
+        </div>
+      </div>
+
+      <!-- Active Familiar -->
+      <div class="col-lg-8">
+        <div class="void-card p-3 p-md-4">
+          <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap">
+            <div>
+              <div class="d-flex align-items-center gap-2 flex-wrap">
+                <h2 class="h4 mb-0" id="petName">—</h2>
+                <span class="tag" id="petStage">stage</span>
+                <span class="tag" id="petVibe">vibe</span>
+                <span class="tag" id="petAlive">status</span>
+              </div>
+              <div class="subtle" id="petFlavor">—</div>
+            </div>
+            <div class="mood-pill" id="moodPill">🙂 <span id="petMood">fine</span></div>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="scene-wrap mb-3">
+            <!-- Main scene canvas -->
+            <canvas id="scene" width="960" height="420"></canvas>
+          </div>
+
+          <div class="row g-3">
+            <div class="col-sm-6">
+              <div class="stat-label">Hunger</div>
+              <div class="progress">
+                <div class="progress-bar bg-danger" id="barHunger" style="width:60%"></div>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="stat-label">Happiness</div>
+              <div class="progress">
+                <div class="progress-bar bg-primary" id="barHappy" style="width:70%"></div>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="stat-label">Energy</div>
+              <div class="progress">
+                <div class="progress-bar bg-success" id="barEnergy" style="width:55%"></div>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="stat-label">Cleanliness</div>
+              <div class="progress">
+                <div class="progress-bar" id="barClean" style="width:65%"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="d-grid d-md-flex gap-2">
+            <button class="btn btn-void flex-fill" id="btnFeed">🍖 Feed</button>
+            <button class="btn btn-void flex-fill" id="btnPlay">🎲 Play</button>
+            <button class="btn btn-void flex-fill" id="btnClean">🫧 Clean</button>
+            <button class="btn btn-void flex-fill" id="btnSleep">🛌 Sleep</button>
+            <button class="btn btn-ghost flex-fill" id="btnPause">Pause</button>
+            <button class="btn btn-ghost flex-fill" id="btnSpeed">Speed: 1×</button>
+          </div>
+
+          <div class="mt-3 d-flex flex-wrap gap-2 align-items-center">
+            <span class="subtle" id="ageLine">Age: —</span>
+            <span class="ms-auto subtle" id="statusLine">—</span>
+          </div>
+
+          <div class="divider"></div>
+
+          <h3 class="h6 mb-2">Chronicle</h3>
+          <div class="log" id="log"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ===========================
+    // Assets
+    // ===========================
+    const ASSET_PATHS = {
+      pawnSheet: "assets/Pawn_Purple.png",
+      tilemap: "assets/Tilemap_Flat.png",
+      castle: "assets/Castle_Yellow.png"
+    };
+
+    // Pawn sheet appears to be a 6x6 grid of 192px cells (1152x1152).
+    // We’ll treat each cell as a frame and loop rows as “animations”.
+    const PAWN_CELL = 192;
+    const PAWN_COLS = 6;
+
+    // Tilemap has big 256x256 tiles at x=0 and x=320 (grass/sand).
+    const TILE_BIG = 256;
+
+    // ===========================
+    // Storage
+    // ===========================
+    const STORAGE_KEY = "voidgotchi_menagerie_v1";
+
+    const clamp = (n, a = 0, b = 100) => Math.max(a, Math.min(b, n));
+    const now = () => Date.now();
+    const uid = () => Math.random().toString(16).slice(2) + "-" + Math.random().toString(16).slice(2);
+
+    function defaultPet() {
+      return {
+        id: uid(),
+        name: "Unnamed Thing",
+        flavor: "It stares back, politely.",
+        vibe: "🕯️",
+        hunger: 70,
+        happiness: 70,
+        energy: 65,
+        clean: 75,
+        bornAt: now(),
+        lastTickAt: now(),
+        isSleeping: false,
+        alive: true,
+        stage: "egg", // egg -> blob -> gremlin -> elder
+        speed: 1,
+        // cosmetic: each familiar gets a slight “stance” offset so they feel distinct
+        stance: (Math.random() * 2 - 1) * 10
+      };
+    }
+
+    function defaultState() {
+      const p = defaultPet();
+      return { version: 1, activeId: p.id, pets: [p], isPaused: false };
+    }
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return null;
+        const parsed = JSON.parse(raw);
+        if (!parsed || !Array.isArray(parsed.pets)) return null;
+        return parsed;
+      } catch { return null; }
+    }
+
+    function saveState() {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch { }
+    }
+
+    let state = loadState() ?? defaultState();
+
+    // ===========================
+    // DOM
+    // ===========================
+    const el = {
+      petList: document.getElementById("petList"),
+      menagerieNote: document.getElementById("menagerieNote"),
+
+      petName: document.getElementById("petName"),
+      petFlavor: document.getElementById("petFlavor"),
+      petStage: document.getElementById("petStage"),
+      petVibe: document.getElementById("petVibe"),
+      petAlive: document.getElementById("petAlive"),
+      petMood: document.getElementById("petMood"),
+      moodPill: document.getElementById("moodPill"),
+
+      barHunger: document.getElementById("barHunger"),
+      barHappy: document.getElementById("barHappy"),
+      barEnergy: document.getElementById("barEnergy"),
+      barClean: document.getElementById("barClean"),
+
+      ageLine: document.getElementById("ageLine"),
+      statusLine: document.getElementById("statusLine"),
+      log: document.getElementById("log"),
+
+      scene: document.getElementById("scene"),
+
+      btnAdd: document.getElementById("btnAdd"),
+      btnRename: document.getElementById("btnRename"),
+      btnFlavor: document.getElementById("btnFlavor"),
+      btnVibe: document.getElementById("btnVibe"),
+      btnRetire: document.getElementById("btnRetire"),
+      btnDelete: document.getElementById("btnDelete"),
+
+      btnFeed: document.getElementById("btnFeed"),
+      btnPlay: document.getElementById("btnPlay"),
+      btnClean: document.getElementById("btnClean"),
+      btnSleep: document.getElementById("btnSleep"),
+      btnPause: document.getElementById("btnPause"),
+      btnSpeed: document.getElementById("btnSpeed"),
+
+      btnExportAll: document.getElementById("btnExportAll"),
+      btnImportAll: document.getElementById("btnImportAll"),
+      btnResetAll: document.getElementById("btnResetAll"),
+    };
+
+    // ===========================
+    // Logging
+    // ===========================
+    function escapeHtml(s) {
+      return String(s)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function logLine(msg) {
+      const t = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      el.log.innerHTML = `[${t}] ${escapeHtml(msg)}<br>` + el.log.innerHTML;
+    }
+
+    // ===========================
+    // Helpers
+    // ===========================
+    function getPet(id) { return state.pets.find(p => p.id === id) ?? null; }
+    function activePet() { return getPet(state.activeId) ?? state.pets[0]; }
+
+    function vibeNoun(v) {
+      const map = {
+        "🕯️": "candlelit", "🦇": "nocturnal", "🕳️": "abyssal", "🪐": "cosmic", "🫀": "dramatic",
+        "🧿": "warded", "🎭": "theatrical", "💾": "archival", "🪦": "macabre", "🧃": "silly"
+      };
+      return map[v] || "enigmatic";
+    }
+
+    function computeStage(p) {
+      const ageHrs = (now() - p.bornAt) / 36e5;
+      if (ageHrs >= 12 && p.stage === "egg") p.stage = "blob";
+      if (ageHrs >= 36 && p.stage === "blob") p.stage = "gremlin";
+      if (ageHrs >= 96 && p.stage === "gremlin") p.stage = "elder";
+    }
+
+    function wellbeing(p) {
+      return (p.hunger + p.happiness + p.energy + p.clean) / 4;
+    }
+
+    function computeMood(p) {
+      if (!p.alive) return { label: "retired", emoji: "🪦", anim: "still" };
+      if (p.isSleeping) return { label: "sleeping", emoji: "💤", anim: "sleep" };
+      const w = wellbeing(p);
+      if (w >= 80) return { label: "radiant", emoji: "✨", anim: "cheer" };
+      if (w >= 65) return { label: "fine", emoji: "🙂", anim: "idle" };
+      if (w >= 50) return { label: "peevish", emoji: "😒", anim: "idle2" };
+      if (w >= 35) return { label: "wretched", emoji: "🥀", anim: "idle2" };
+      return { label: "dire", emoji: "⚠️", anim: "dire" };
+    }
+
+    // ===========================
+    // Sprite + Scene Rendering
+    // ===========================
+    const ctx = el.scene.getContext("2d");
+
+    // Smooth scaling (NOT pixelated)
+    ctx.imageSmoothingEnabled = true;
+
+    const images = {
+      pawn: new Image(),
+      tile: new Image(),
+      castle: new Image(),
+      ready: { pawn: false, tile: false, castle: false }
+    };
+
+    images.pawn.onload = () => { images.ready.pawn = true; };
+    images.tile.onload = () => { images.ready.tile = true; };
+    images.castle.onload = () => { images.ready.castle = true; };
+
+    images.pawn.src = ASSET_PATHS.pawnSheet;
+    images.tile.src = ASSET_PATHS.tilemap;
+    images.castle.src = ASSET_PATHS.castle;
+
+    // Animation rows (based on how your sheet looks arranged)
+    // 0: idle, 1: alt idle, 2: toss/cast, 3: sweep, 4: cheer, 5: idle alt
+    const ANIMS = {
+      idle: { row: 0, frames: [0, 1, 2, 3, 4, 5], fps: 5 },
+      idle2: { row: 1, frames: [0, 1, 2, 3, 4, 5], fps: 5 },
+      cast: { row: 2, frames: [0, 1, 2, 3, 4, 5], fps: 10 },
+      sweep: { row: 3, frames: [0, 1, 2, 3, 4, 5], fps: 10 },
+      cheer: { row: 4, frames: [0, 1, 2, 3, 4, 5], fps: 7 },
+      sleep: { row: 5, frames: [0, 1, 2, 3, 4, 5], fps: 3 },
+      still: { row: 0, frames: [0], fps: 1 },
+      dire: { row: 1, frames: [0, 1, 0, 2], fps: 2 }
+    };
+
+    let animOverride = null; // {name, untilMs}
+    function playAnim(name, ms = 900) {
+      animOverride = { name, untilMs: now() + ms };
+    }
+
+    function drawBigTilePattern() {
+      // Use the big grass tile (0..255) as a subtle repeating background
+      if (!images.ready.tile) return;
+
+      const grassX = 0, grassY = 0;
+
+      // We’ll paint a tiled field by repeatedly drawing the big tile scaled down
+      const tileW = 170; // scale down for a “soft illustrated” look
+      const tileH = 170;
+
+      for (let y = 0; y < el.scene.height; y += tileH) {
+        for (let x = 0; x < el.scene.width; x += tileW) {
+          ctx.globalAlpha = 0.18;
+          ctx.drawImage(images.tile, grassX, grassY, TILE_BIG, TILE_BIG, x, y, tileW, tileH);
+        }
+      }
+
+      ctx.globalAlpha = 1;
+    }
+
+    function drawCastle() {
+      if (!images.ready.castle) return;
+      // small, distant
+      const w = 220;
+      const h = (images.castle.height / images.castle.width) * w;
+      ctx.globalAlpha = 0.9;
+      ctx.drawImage(images.castle, el.scene.width - w - 22, 18, w, h);
+      ctx.globalAlpha = 1;
+    }
+
+    function drawGround() {
+      // a soft vignette + “ground” oval
+      const w = el.scene.width, h = el.scene.height;
+
+      // vignette
+      const g = ctx.createRadialGradient(w * 0.5, h * 0.45, 30, w * 0.5, h * 0.45, Math.max(w, h) * 0.65);
+      g.addColorStop(0, "rgba(0,0,0,0)");
+      g.addColorStop(1, "rgba(0,0,0,0.55)");
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, w, h);
+
+      // ground glow
+      ctx.fillStyle = "rgba(214,179,94,0.09)";
+      ctx.beginPath();
+      ctx.ellipse(w * 0.5, h * 0.78, w * 0.33, h * 0.10, 0, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    function drawPawnFrame(frameCol, frameRow, x, y, scale) {
+      if (!images.ready.pawn) return;
+
+      const sx = frameCol * PAWN_CELL;
+      const sy = frameRow * PAWN_CELL;
+
+      const dw = PAWN_CELL * scale;
+      const dh = PAWN_CELL * scale;
+
+      // soft shadow
+      ctx.globalAlpha = 0.25;
+      ctx.fillStyle = "black";
+      ctx.beginPath();
+      ctx.ellipse(x, y + dh * 0.72, dw * 0.22, dh * 0.06, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.globalAlpha = 1;
+
+      // gentle “halo”
+      ctx.globalAlpha = 0.10;
+      ctx.fillStyle = "rgba(214,179,94,1)";
+      ctx.beginPath();
+      ctx.ellipse(x, y + dh * 0.55, dw * 0.20, dh * 0.12, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.globalAlpha = 1;
+
+      // sprite (centered)
+      ctx.drawImage(
+        images.pawn,
+        sx, sy, PAWN_CELL, PAWN_CELL,
+        x - dw / 2, y - dh / 2,
+        dw, dh
+      );
+    }
+
+    function drawScene() {
+      const p = activePet();
+      if (!p) return;
+
+      computeStage(p);
+
+      // clear
+      ctx.clearRect(0, 0, el.scene.width, el.scene.height);
+
+      // background layer
+      drawBigTilePattern();
+      drawCastle();
+      drawGround();
+
+      // decide animation
+      const mood = computeMood(p);
+      let animName = mood.anim;
+
+      if (animOverride && now() < animOverride.untilMs) {
+        animName = animOverride.name;
+      } else {
+        animOverride = null;
+      }
+
+      const anim = ANIMS[animName] ?? ANIMS.idle;
+
+      // frame selection
+      const t = now() / 1000;
+      const idx = Math.floor(t * anim.fps) % anim.frames.length;
+      const col = anim.frames[idx];
+      const row = anim.row;
+
+      // main pawn position
+      const centerX = el.scene.width * 0.38;
+      const centerY = el.scene.height * 0.62 + p.stance;
+
+      // scale based on stage
+      const stageScale = (p.stage === "egg") ? 0.65 :
+        (p.stage === "blob") ? 0.78 :
+          (p.stage === "gremlin") ? 0.90 : 0.95;
+
+      // if retired, dim it
+      if (!p.alive) ctx.globalAlpha = 0.55;
+
+      drawPawnFrame(col, row, centerX, centerY, stageScale);
+
+      ctx.globalAlpha = 1;
+
+      // draw other familiars (as “spectators”) along the bottom
+      const others = state.pets.filter(q => q.id !== p.id).slice(0, 6);
+      const baseY = el.scene.height * 0.80;
+      const startX = el.scene.width * 0.12;
+      const gap = 110;
+
+      others.forEach((q, i) => {
+        const m = computeMood(q);
+        const a = ANIMS[m.anim] ?? ANIMS.idle;
+        const j = Math.floor((t + i * 0.3) * a.fps) % a.frames.length;
+        const c = a.frames[j];
+        const r = a.row;
+
+        const sx = startX + i * gap;
+        const sy = baseY + (q.stance * 0.35);
+
+        const sc = q.alive ? 0.42 : 0.42;
+        ctx.globalAlpha = q.alive ? 0.85 : 0.42;
+        drawPawnFrame(c, r, sx, sy, sc);
+        ctx.globalAlpha = 1;
+      });
+
+      // small label
+      ctx.globalAlpha = 0.9;
+      ctx.font = "16px system-ui";
+      ctx.fillStyle = "rgba(233,230,255,0.95)";
+      ctx.fillText(p.name, el.scene.width * 0.08, 28);
+      ctx.globalAlpha = 1;
+    }
+
+    function raf() {
+      drawScene();
+      requestAnimationFrame(raf);
+    }
+
+    // ===========================
+    // Menagerie UI
+    // ===========================
+    function renderMenagerie() {
+      const a = activePet();
+      el.petList.innerHTML = "";
+
+      state.pets.forEach(p => {
+        const mood = computeMood(p);
+        const row = document.createElement("div");
+        row.className = "pet-row" + (p.id === state.activeId ? " active" : "");
+        row.title = "Select familiar";
+
+        const mini = document.createElement("div");
+        mini.className = "pet-mini";
+        mini.textContent = p.vibe;
+
+        const meta = document.createElement("div");
+        meta.className = "flex-grow-1";
+
+        const name = document.createElement("div");
+        name.className = "fw-semibold";
+        name.textContent = p.name;
+
+        const sub = document.createElement("div");
+        sub.className = "subtle";
+        sub.style.fontSize = ".85rem";
+        sub.textContent = `${mood.emoji} ${mood.label} • ${p.stage}${p.alive ? "" : " • retired"}`;
+
+        meta.appendChild(name);
+        meta.appendChild(sub);
+
+        row.appendChild(mini);
+        row.appendChild(meta);
+
+        row.addEventListener("click", () => {
+          state.activeId = p.id;
+          logLine(`Selected ${p.name}. The menagerie shifts its gaze.`);
+          renderAll();
+          saveState();
+        });
+
+        el.petList.appendChild(row);
+      });
+
+      const aliveCount = state.pets.filter(p => p.alive).length;
+      el.menagerieNote.textContent = `Familiars: ${state.pets.length} total • ${aliveCount} active • ${state.pets.length - aliveCount} retired`;
+    }
+
+    function renderActiveUI() {
+      const p = activePet();
+      if (!p) return;
+
+      computeStage(p);
+      const mood = computeMood(p);
+
+      el.petName.textContent = p.name;
+      el.petFlavor.textContent = p.flavor;
+
+      el.petStage.textContent = `stage: ${p.stage}`;
+      el.petVibe.textContent = `${p.vibe} ${vibeNoun(p.vibe)}`;
+      el.petAlive.textContent = p.alive ? "status: alive" : "status: retired";
+
+      el.petMood.textContent = mood.label;
+      el.moodPill.firstChild.textContent = mood.emoji + " ";
+
+      el.barHunger.style.width = `${p.hunger}%`;
+      el.barHappy.style.width = `${p.happiness}%`;
+      el.barEnergy.style.width = `${p.energy}%`;
+      el.barClean.style.width = `${p.clean}%`;
+
+      el.barClean.className = "progress-bar";
+      if (p.clean >= 66) el.barClean.classList.add("bg-success");
+      else if (p.clean >= 33) el.barClean.classList.add("bg-warning");
+      else el.barClean.classList.add("bg-danger");
+
+      const ageHrs = Math.floor((now() - p.bornAt) / 36e5);
+      const ageMin = Math.floor(((now() - p.bornAt) % 36e5) / 60000);
+      el.ageLine.textContent = `Age: ${ageHrs}h ${ageMin}m`;
+      el.statusLine.textContent = state.isPaused ? "time: paused" : `time: flowing • speed ${p.speed}×`;
+
+      // buttons
+      const disabled = !p.alive;
+      el.btnFeed.disabled = disabled || p.isSleeping;
+      el.btnPlay.disabled = disabled || p.isSleeping;
+      el.btnClean.disabled = disabled || p.isSleeping;
+      el.btnSleep.disabled = disabled;
+
+      el.btnSpeed.textContent = `Speed: ${p.speed}×`;
+      el.btnPause.textContent = state.isPaused ? "Resume" : "Pause";
+    }
+
+    function renderAll() {
+      renderMenagerie();
+      renderActiveUI();
+    }
+
+    // ===========================
+    // Game Loop (tick)
+    // ===========================
+    function tick() {
+      if (state.isPaused) return;
+
+      const t = now();
+      state.pets.forEach(p => {
+        if (!p.alive) return;
+
+        const dtMs = t - (p.lastTickAt || t);
+        p.lastTickAt = t;
+
+        const dt = (dtMs / 1000) * (p.speed || 1);
+
+        if (p.isSleeping) {
+          p.energy = clamp(p.energy + 2.2 * dt);
+          p.hunger = clamp(p.hunger - 0.6 * dt);
+          p.clean = clamp(p.clean - 0.25 * dt);
+          p.happiness = clamp(p.happiness - 0.18 * dt);
+
+          if (p.energy >= 95) {
+            p.isSleeping = false;
+            if (p.id === state.activeId) logLine(`${p.name} wakes, ${vibeNoun(p.vibe)} and judgmental.`);
+          }
+        } else {
+          p.hunger = clamp(p.hunger - 1.1 * dt);
+          p.happiness = clamp(p.happiness - 0.65 * dt);
+          p.energy = clamp(p.energy - 0.75 * dt);
+          p.clean = clamp(p.clean - 0.50 * dt);
+        }
+
+        const lowCount = [p.hunger, p.happiness, p.energy, p.clean].filter(v => v < 15).length;
+        if (lowCount >= 2) {
+          p.happiness = clamp(p.happiness - 0.55 * dt);
+        }
+
+        // “retire” condition (gentle): if hunger and energy hit 0, we mark retired
+        if (p.hunger <= 0 && p.energy <= 0) {
+          p.alive = false;
+          p.isSleeping = false;
+          if (p.id === state.activeId) logLine(`${p.name} slips into retirement. The lawn grows quiet.`);
+        }
+
+        computeStage(p);
+      });
+
+      renderActiveUI();
+      renderMenagerie();
+      saveState();
+    }
+
+    setInterval(tick, 2500);
+
+    // ===========================
+    // Actions (active pet)
+    // ===========================
+    function canAct() {
+      const p = activePet();
+      if (!p) return false;
+      if (!p.alive) { logLine("It is retired. Its union contract is ironclad."); return false; }
+      if (p.isSleeping) { logLine(`${p.name} is sleeping. Respect the ritual.`); return false; }
+      return true;
+    }
+
+    el.btnFeed.addEventListener("click", () => {
+      const p = activePet();
+      if (!canAct()) return;
+      const gain = 18 + Math.random() * 10;
+      p.hunger = clamp(p.hunger + gain);
+      p.clean = clamp(p.clean - 3);
+      logLine(`${p.name} devours a suspicious offering. Hunger +${gain.toFixed(0)}.`);
+      playAnim("cast", 850);
+      renderAll(); saveState();
+    });
+
+    el.btnPlay.addEventListener("click", () => {
+      const p = activePet();
+      if (!canAct()) return;
+      const gain = 14 + Math.random() * 12;
+      p.happiness = clamp(p.happiness + gain);
+      p.energy = clamp(p.energy - 6);
+      logLine(`${p.name} plays a game it insists it invented. Happiness +${gain.toFixed(0)}.`);
+      playAnim("cheer", 950);
+      renderAll(); saveState();
+    });
+
+    el.btnClean.addEventListener("click", () => {
+      const p = activePet();
+      if (!canAct()) return;
+      const gain = 20 + Math.random() * 10;
+      p.clean = clamp(p.clean + gain);
+      p.happiness = clamp(p.happiness - 2);
+      logLine(`${p.name} is purified against its will. Cleanliness +${gain.toFixed(0)}.`);
+      playAnim("sweep", 900);
+      renderAll(); saveState();
+    });
+
+    el.btnSleep.addEventListener("click", () => {
+      const p = activePet();
+      if (!p || !p.alive) return;
+      p.isSleeping = !p.isSleeping;
+      logLine(p.isSleeping ? `${p.name} curls into a tiny eclipse. 💫` : `${p.name} wakes early, offended by your optimism.`);
+      renderAll(); saveState();
+    });
+
+    el.btnPause.addEventListener("click", () => {
+      state.isPaused = !state.isPaused;
+      logLine(state.isPaused ? "Time is held at the throat." : "Time resumes its petty tyranny.");
+      renderAll(); saveState();
+    });
+
+    el.btnSpeed.addEventListener("click", () => {
+      const p = activePet();
+      if (!p) return;
+      const s = p.speed || 1;
+      p.speed = (s === 1) ? 2 : (s === 2) ? 4 : 1;
+      logLine(`Time accelerates to ${p.speed}×. ${p.name} feels *everything* more.`);
+      renderAll(); saveState();
+    });
+
+    // ===========================
+    // Menagerie controls
+    // ===========================
+    el.btnAdd.addEventListener("click", () => {
+      const p = defaultPet();
+      p.name = `Familiar ${state.pets.length + 1}`;
+      state.pets.unshift(p);
+      state.activeId = p.id;
+      logLine(`A new familiar arrives: ${p.name}. The lawn makes room.`);
+      renderAll(); saveState();
+    });
+
+    el.btnRename.addEventListener("click", () => {
+      const p = activePet();
+      if (!p) return;
+      const name = prompt("Name your familiar (one name, chosen, dramatic):", p.name);
+      if (name === null) return;
+      const trimmed = name.trim().slice(0, 40);
+      if (!trimmed) return;
+      p.name = trimmed;
+      logLine(`It answers (begrudgingly) to: ${p.name}.`);
+      renderAll(); saveState();
+    });
+
+    el.btnFlavor.addEventListener("click", () => {
+      const p = activePet();
+      if (!p) return;
+      const txt = prompt("Flavor text (a short prophecy, a silly note, a warning):", p.flavor);
+      if (txt === null) return;
+      p.flavor = txt.trim().slice(0, 140) || p.flavor;
+      logLine(`The inscription changes. The familiar approves.`);
+      renderAll(); saveState();
+    });
+
+    el.btnVibe.addEventListener("click", () => {
+      const p = activePet();
+      if (!p) return;
+      const choices = ["🕯️", "🦇", "🕳️", "🪐", "🫀", "🧿", "🎭", "💾", "🪦", "🧃"];
+      const current = p.vibe;
+      const next = choices[(choices.indexOf(current) + 1 + choices.length) % choices.length];
+      p.vibe = next;
+      logLine(`${p.name} adopts a new vibe: ${p.vibe} (${vibeNoun(p.vibe)}).`);
+      renderAll(); saveState();
+    });
+
+    el.btnRetire.addEventListener("click", () => {
+      const p = activePet();
+      if (!p) return;
+      if (!p.alive) { logLine(`${p.name} is already retired.`); return; }
+      const ok = confirm(`Retire ${p.name}? (It will remain in the menagerie as a relic.)`);
+      if (!ok) return;
+      p.alive = false;
+      p.isSleeping = false;
+      logLine(`${p.name} retires. The lawn keeps its memory.`);
+      renderAll(); saveState();
+    });
+
+    el.btnDelete.addEventListener("click", () => {
+      const p = activePet();
+      if (!p) return;
+      const ok = confirm(`Delete ${p.name} permanently? (This cannot be undone.)`);
+      if (!ok) return;
+
+      state.pets = state.pets.filter(q => q.id !== p.id);
+      if (state.pets.length === 0) {
+        state = defaultState();
+      } else {
+        state.activeId = state.pets[0].id;
+      }
+      logLine("A familiar is erased from the ledger.");
+      renderAll(); saveState();
+    });
+
+    // ===========================
+    // Export / Import / Reset
+    // ===========================
+    el.btnExportAll.addEventListener("click", async () => {
+      try {
+        const data = JSON.stringify(state, null, 2);
+        await navigator.clipboard.writeText(data);
+        logLine("Menagerie exported to clipboard. Guard it like a relic.");
+      } catch {
+        alert("Could not copy to clipboard. Your browser is feeling mysterious today.");
+      }
+    });
+
+    el.btnImportAll.addEventListener("click", () => {
+      const raw = prompt("Paste a Menagerie JSON save here:");
+      if (raw === null) return;
+      try {
+        const parsed = JSON.parse(raw);
+        if (!parsed || !Array.isArray(parsed.pets)) throw new Error("bad");
+        state = parsed;
+        logLine("The menagerie returns from exile. It remembers everything.");
+        renderAll(); saveState();
+      } catch {
+        alert("That doesn’t look like valid Menagerie JSON.");
+      }
+    });
+
+    el.btnResetAll.addEventListener("click", () => {
+      const ok = confirm("Reset the entire Menagerie? This will erase all familiars from local storage.");
+      if (!ok) return;
+      state = defaultState();
+      el.log.innerHTML = "";
+      logLine("A new egg appears. The cycle begins again.");
+      renderAll(); saveState();
+    });
+
+    // ===========================
+    // Boot
+    // ===========================
+    function catchUp() {
+      // Gentle catch-up for the active pet only (keeps it sane)
+      const p = activePet();
+      if (!p || !p.alive) return;
+
+      const t = now();
+      const last = p.lastTickAt || t;
+      const awayMs = Math.min(6 * 3600e3, Math.max(0, t - last)); // cap 6 hours
+
+      if (awayMs > 10e3) {
+        const dt = (awayMs / 1000) * (p.speed || 1);
+        if (p.isSleeping) {
+          p.energy = clamp(p.energy + 2.2 * dt);
+          p.hunger = clamp(p.hunger - 0.6 * dt);
+          p.clean = clamp(p.clean - 0.25 * dt);
+          p.happiness = clamp(p.happiness - 0.18 * dt);
+        } else {
+          p.hunger = clamp(p.hunger - 1.1 * dt);
+          p.happiness = clamp(p.happiness - 0.65 * dt);
+          p.energy = clamp(p.energy - 0.75 * dt);
+          p.clean = clamp(p.clean - 0.50 * dt);
+        }
+        logLine(`Time passed while you were away (${Math.floor(awayMs / 60000)} min). The familiar noticed.`);
+      }
+    }
+
+    catchUp();
+    renderAll();
+    saveState();
+    logLine(`${activePet().name} emerges, ${vibeNoun(activePet().vibe)} and expectant.`);
+
+    // start scene animation
+    requestAnimationFrame(raf);
+  </script>
+</body>
+
+</html>

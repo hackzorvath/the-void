@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Jack's Pyramid of Greatness</title>
+    <link rel="shortcut icon" type="image/x-icon" href="../favicon.ico" />
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --void-bg: #0b0d10;
+            --void-panel: rgba(16, 18, 22, 0.92);
+
+            /* softened rim */
+            --ember: rgba(180, 90, 70, 0.35);
+            --ember-strong: rgba(200, 110, 90, 0.65);
+
+            --void-text: #e8e8ea;
+            --void-muted: rgba(232, 232, 234, 0.72);
+            --void-border: rgba(255, 255, 255, 0.12);
+
+            /* Pyramid sizing */
+            --card-w: 180px;
+            --card-min-h: 110px;
+            --gap: 14px;
+        }
+
+        html,
+        body {
+            height: 100%;
+        }
+
+        body {
+            background: var(--void-bg);
+            color: var(--void-text);
+            overflow-y: auto;
+            /* allow scrolling */
+            overflow-x: hidden;
+        }
+
+        /* Void-ish header/footer */
+        .void-header,
+        .void-footer {
+            background: rgba(11, 13, 16, 0.88);
+            backdrop-filter: blur(8px);
+            border-color: var(--void-border) !important;
+        }
+
+        .page-wrap {
+            max-width: 1200px;
+        }
+
+        .tier-label {
+            text-transform: uppercase;
+            letter-spacing: .14em;
+            font-size: .75rem;
+            color: rgba(255, 255, 255, 0.35);
+        }
+
+        /* True pyramid rows */
+        .tier-row {
+            display: flex;
+            justify-content: center;
+            gap: var(--gap);
+            flex-wrap: nowrap;
+            /* desktop pyramid */
+            margin-bottom: 14px;
+        }
+
+        /* Allow wrap on smaller screens so it doesn't become microscopic */
+        @media (max-width: 992px) {
+            .tier-row {
+                flex-wrap: wrap;
+            }
+        }
+
+        .pyr-card {
+            width: var(--card-w);
+            min-height: var(--card-min-h);
+            background: var(--void-panel);
+            border: 1px solid var(--ember);
+            border-radius: 1.1rem;
+            padding: 14px 14px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            text-align: center;
+            transition: transform 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
+        }
+
+        .pyr-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--ember-strong);
+            box-shadow:
+                0 0 0 1px rgba(200, 110, 90, 0.12),
+                0 12px 26px rgba(0, 0, 0, 0.45);
+        }
+
+        .pyr-title {
+            margin: 0;
+            font-size: 1.05rem;
+            font-weight: 650;
+            letter-spacing: .2px;
+        }
+
+        .pyr-text {
+            margin: .35rem 0 0 0;
+            font-size: .9rem;
+            font-style: italic;
+            color: var(--void-muted);
+            line-height: 1.25rem;
+        }
+
+        /* Footer banner */
+        .footer-banner {
+            border: 1px solid var(--ember);
+            border-radius: 1.25rem;
+            padding: 1.1rem 1.25rem;
+            background: rgba(16, 18, 22, 0.9);
+            text-align: center;
+            margin-top: 18px;
+        }
+
+        .footer-banner h1 {
+            margin: 0;
+            font-size: 1.35rem;
+            font-weight: 750;
+        }
+
+        .footer-banner p {
+            margin: .35rem 0 0 0;
+            color: var(--void-muted);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header (swap in your canonical Void header markup if you like) -->
+    <header class="void-header border-bottom">
+        <div class="container-fluid py-2 d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-2">
+                <span class="fw-semibold">The Void</span>
+                <span class="text-secondary">/ Jack's Pyramid</span>
+            </div>
+            <div class="text-secondary small">Objectively hilarious since 2017</div>
+        </div>
+    </header>
+
+    <main class="container py-4 page-wrap">
+
+        <hr class="border-secondary opacity-25 my-3">
+
+        <!-- Tier I -->
+        <div class="text-center mb-2">
+            <div class="tier-label mb-2">Tier I</div>
+        </div>
+        <div class="tier-row">
+            <div class="pyr-card">
+                <h2 class="pyr-title">Valor</h2>
+                <p class="pyr-text">Be a man</p>
+            </div>
+        </div>
+
+        <!-- Tier II -->
+        <div class="text-center mb-2">
+            <div class="tier-label mb-2">Tier II</div>
+        </div>
+        <div class="tier-row">
+            <div class="pyr-card">
+                <h2 class="pyr-title">Socks</h2>
+                <p class="pyr-text">Like a good haircut, high and tight</p>
+            </div>
+            <div class="pyr-card">
+                <h2 class="pyr-title">Hats</h2>
+                <p class="pyr-text">Acceptable instead of doing your hair</p>
+            </div>
+        </div>
+
+        <!-- Tier III -->
+        <div class="text-center mb-2">
+            <div class="tier-label mb-2">Tier III</div>
+        </div>
+        <div class="tier-row">
+            <div class="pyr-card">
+                <h2 class="pyr-title">Veganism</h2>
+                <p class="pyr-text">The only acceptable alternative diet</p>
+            </div>
+            <div class="pyr-card">
+                <h2 class="pyr-title">Vegetarianism</h2>
+                <p class="pyr-text">Half-assed vegans too weak to comit</p>
+            </div>
+            <div class="pyr-card">
+                <h2 class="pyr-title">Animal Meat</h2>
+                <p class="pyr-text">They died so I don't</p>
+            </div>
+        </div>
+
+        <!-- Tier IV -->
+        <div class="text-center mb-2">
+            <div class="tier-label mb-2">Tier IV</div>
+        </div>
+        <div class="tier-row">
+            <div class="pyr-card">
+                <h2 class="pyr-title">Canada</h2>
+                <p class="pyr-text">The True North<br>Strong and Free</p>
+            </div>
+            <div class="pyr-card">
+                <h2 class="pyr-title">America</h2>
+                <p class="pyr-text">What happens when Captialism goes unchecked</p>
+            </div>
+            <div class="pyr-card">
+                <h2 class="pyr-title">Quebec</h2>
+                <p class="pyr-text">The French ... enough said</p>
+            </div>
+            <div class="pyr-card">
+                <h2 class="pyr-title">Donald Trump</h2>
+                <p class="pyr-text">Successfully turned the US Government into reality TV</p>
+            </div>
+        </div>
+
+        <!-- Tier V -->
+        <div class="text-center mb-2">
+            <div class="tier-label mb-2">Tier V</div>
+        </div>
+        <div class="tier-row">
+            <div class="pyr-card">
+                <h2 class="pyr-title">Guns</h2>
+                <p class="pyr-text">Murder Machines</p>
+            </div>
+            <div class="pyr-card">
+                <h2 class="pyr-title">Movers</h2>
+                <p class="pyr-text">People that just move money from place to place</p>
+            </div>
+            <div class="pyr-card">
+                <h2 class="pyr-title">Utility</h2>
+                <p class="pyr-text">Results &gt; Feelings</p>
+            </div>
+            <div class="pyr-card">
+                <h2 class="pyr-title">Self-Reliance</h2>
+                <p class="pyr-text">If you want it done right, do it yourself</p>
+            </div>
+            <div class="pyr-card">
+                <h2 class="pyr-title">Teamwork</h2>
+                <p class="pyr-text">Largely irrelevant, thanks to computers</p>
+            </div>
+        </div>
+
+        <!-- Tier VI -->
+        <div class="text-center mb-2">
+            <div class="tier-label mb-2">Tier VI</div>
+        </div>
+        <div class="tier-row">
+            <div class="pyr-card">
+                <h2 class="pyr-title">Integrity</h2>
+                <p class="pyr-text">Stand by everything you say. Or else say something else</p>
+            </div>
+            <div class="pyr-card">
+                <h2 class="pyr-title">Socialism</h2>
+                <p class="pyr-text">A wonderful medium between Capitalism and Communism</p>
+            </div>
+            <div class="pyr-card">
+                <h2 class="pyr-title">Ignorance</h2>
+                <p class="pyr-text">Not an excuse because it's 2017 and Google exists</p>
+            </div>
+            <div class="pyr-card">
+                <h2 class="pyr-title">Self-Esteem</h2>
+                <p class="pyr-text">Deep down, you know you are literally all that matters</p>
+            </div>
+            <div class="pyr-card">
+                <h2 class="pyr-title">Open Source</h2>
+                <p class="pyr-text">The correct way to release software</p>
+            </div>
+            <div class="pyr-card">
+                <h2 class="pyr-title">Hangovers</h2>
+                <p class="pyr-text">God's way of saying you're too weak to consume alcohol</p>
+            </div>
+        </div>
+
+        <div class="footer-banner">
+            <h1>
+                Jack's Pyramid of Greatness</h1>
+            <p class="mb-0">A timeless monument to questionable certainty.</p>
+        </div>
+
+    </main>
+
+    <!-- Footer (swap in your canonical Void footer markup if you like) -->
+    <footer class="void-footer border-top">
+        <div class="container-fluid py-2 text-center text-secondary small">
+            © The Void
+        </div>
+    </footer>
+</body>
+
+</html>

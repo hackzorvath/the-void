@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Hex Map Mockup</title>
+
+  <!-- Pixi v7 (simpler init, very reliable) -->
+  <script src="https://cdn.jsdelivr.net/npm/pixi.js@7.4.2/dist/pixi.min.js"></script>
+
+  <style>
+    :root{
+      --bg:#0b0f14;
+      --panel: rgba(18, 24, 33, 0.92);
+      --border: rgba(255,255,255,0.12);
+      --text: rgba(255,255,255,0.92);
+      --muted: rgba(255,255,255,0.65);
+      --shadow: 0 20px 60px rgba(0,0,0,0.55);
+
+      --red:   rgba(255, 60, 60, 0.92);
+      --green: rgba(70, 255, 140, 0.92);
+      --blue:  rgba(60, 160, 255, 0.92);
+    }
+
+    html, body { margin: 0; height: 100%; background: var(--bg); }
+    /* Force visible space no matter what */
+    #stage { position: relative; width: 100vw; height: 100vh; overflow: hidden; }
+    canvas { display:block; width:100%; height:100%; }
+
+    /* Debug overlay (shows errors + basic status) */
+    #hud {
+      position: absolute; left: 10px; top: 10px; z-index: 20;
+      background: rgba(0,0,0,0.55);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: rgba(255,255,255,0.85);
+      padding: 8px 10px;
+      border-radius: 12px;
+      font: 12px/1.2 system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      pointer-events: none;
+      max-width: 70vw;
+      white-space: pre-wrap;
+    }
+
+    /* Modal */
+    .modal-backdrop{
+      position:absolute; inset:0; display:none;
+      align-items:center; justify-content:center;
+      background:rgba(0,0,0,0.55);
+      z-index: 50;
+    }
+    .modal{
+      width:min(420px,calc(100% - 24px));
+      background:var(--panel);
+      border:1px solid var(--border);
+      border-radius:16px;
+      box-shadow:var(--shadow);
+      overflow:hidden;
+      color: var(--text);
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+    }
+    .modal .hd{
+      padding:14px 16px; display:flex; align-items:center; justify-content:space-between;
+      border-bottom:1px solid var(--border);
+      font-weight: 800;
+    }
+    .modal .hd button{
+      background:transparent; border:0; color:var(--muted);
+      font-size:18px; cursor:pointer; line-height:1;
+    }
+    .modal .bd{ padding:14px 16px; }
+    .modal .bd p{ margin:0 0 12px; color:var(--muted); font-size:13px; }
+    .color-row{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; }
+    .color-btn{
+      border:1px solid var(--border);
+      border-radius:14px;
+      padding:12px 10px;
+      cursor:pointer;
+      font-weight:900;
+      color:rgba(0,0,0,0.75);
+      user-select:none;
+    }
+    .color-btn:active{ transform: translateY(1px); }
+    .modal .ft{
+      padding:14px 16px; display:flex; justify-content:flex-end;
+      border-top:1px solid var(--border);
+    }
+    .btn{
+      border:1px solid var(--border);
+      background:rgba(255,255,255,0.06);
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:12px;
+      cursor:pointer;
+      font-weight:800;
+    }
+    .btn:active{ transform: translateY(1px); }
+  </style>
+</head>
+
+<body>
+  <div id="stage">
+    <div id="hud">HUD: booting…</div>
+
+    <div class="modal-backdrop" id="modalBackdrop">
+      <div class="modal">
+        <div class="hd">
+          <div>Paint Hex</div>
+          <button id="modalClose" aria-label="Close">✕</button>
+        </div>
+        <div class="bd">
+          <p>Tap a color to apply immediately.</p>
+          <div class="color-row">
+            <button class="color-btn" id="btnRed"   style="background: var(--red);"   type="button">Red</button>
+            <button class="color-btn" id="btnGreen" style="background: var(--green);" type="button">Green</button>
+            <button class="color-btn" id="btnBlue"  style="background: var(--blue);"  type="button">Blue</button>
+          </div>
+        </div>
+        <div class="ft">
+          <button class="btn" id="modalCancel" type="button">Cancel / Exit</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+(() => {
+  const hud = document.getElementById("hud");
+  const stageEl = document.getElementById("stage");
+
+  function setHUD(msg) { hud.textContent = msg; }
+
+  try {
+    if (!window.PIXI) throw new Error("PIXI not found. CDN blocked or failed to load.");
+
+    setHUD(`HUD: PIXI ${PIXI.VERSION}\nInitializing…`);
+
+    // ---------- Config ----------
+    const HEX_RADIUS = 26;
+    const GRID_COLS  = 34;
+    const GRID_ROWS  = 22;
+
+    const COLOR_MAP = {
+      red:   { fill: 0xFF3C3C, line: 0xFFD0D0 },
+      green: { fill: 0x46FF8C, line: 0xD3FFE2 },
+      blue:  { fill: 0x3CA0FF, line: 0xD6EAFF },
+    };
+
+    function defaultColorFor(col, row) {
+      const rowNorm = row / (GRID_ROWS - 1);
+      const colNorm = col / (GRID_COLS - 1);
+      if (rowNorm < 0.35) return "blue";  // North
+      if (colNorm > 0.58) return "red";   // East
+      return "green";                     // South/West
+    }
+
+    // ---------- Modal ----------
+    const backdrop   = document.getElementById("modalBackdrop");
+    const closeBtn   = document.getElementById("modalClose");
+    const cancelBtn  = document.getElementById("modalCancel");
+    const btnRed     = document.getElementById("btnRed");
+    const btnGreen   = document.getElementById("btnGreen");
+    const btnBlue    = document.getElementById("btnBlue");
+
+    let selectedHex = null;
+
+    function openModal()  { backdrop.style.display = "flex"; }
+    function closeModal() { backdrop.style.display = "none"; selectedHex = null; }
+
+    closeBtn.addEventListener("click", closeModal);
+    cancelBtn.addEventListener("click", closeModal);
+    backdrop.addEventListener("click", (e) => { if (e.target === backdrop) closeModal(); });
+
+    // ---------- Pixi App (v7 style init) ----------
+    const app = new PIXI.Application({
+      resizeTo: stageEl,
+      backgroundColor: 0x0b0f14,
+      antialias: true,
+      autoDensity: true,
+      resolution: window.devicePixelRatio || 1,
+    });
+
+    stageEl.prepend(app.view);
+
+    // Ensure interactions are on
+    app.stage.eventMode = "static";
+    app.stage.hitArea = app.screen;
+
+    const root = new PIXI.Container();
+    const gridLayer = new PIXI.Container();
+    app.stage.addChild(root);
+    root.addChild(gridLayer);
+
+    // Background drag surface (for pan)
+    const dragSurface = new PIXI.Graphics();
+    dragSurface.eventMode = "static";
+    dragSurface.cursor = "grab";
+    root.addChildAt(dragSurface, 0);
+
+    function resizeDragSurface() {
+      dragSurface.clear();
+      dragSurface.beginFill(0x000000, 0);
+      dragSurface.drawRect(-app.renderer.width, -app.renderer.height, app.renderer.width*2, app.renderer.height*2);
+      dragSurface.endFill();
+    }
+
+    function centerRoot() {
+      root.position.set(app.renderer.width / 2, app.renderer.height / 2);
+    }
+
+    // ---------- Hex geometry (flat-top odd-r offset) ----------
+    function hexPointsFlat(radius) {
+      const pts = [];
+      for (let i = 0; i < 6; i++) {
+        const angle = (Math.PI / 180) * (60 * i);
+        pts.push(new PIXI.Point(radius * Math.cos(angle), radius * Math.sin(angle)));
+      }
+      return pts;
+    }
+
+    function offsetToPixel(col, row, size) {
+      const x = size * (3/2) * col;
+      const y = size * Math.sqrt(3) * (row + 0.5 * (col & 1));
+      return { x, y };
+    }
+
+    const hexPoly = new PIXI.Polygon(hexPointsFlat(HEX_RADIUS));
+
+    function drawHexPath(gfx, radius) {
+      const pts = hexPointsFlat(radius);
+      gfx.moveTo(pts[0].x, pts[0].y);
+      for (let i = 1; i < pts.length; i++) gfx.lineTo(pts[i].x, pts[i].y);
+      gfx.closePath();
+    }
+
+    function redrawHex(hexObj, hovered=false) {
+      const { gfx, colorName } = hexObj;
+      const c = COLOR_MAP[colorName];
+
+      gfx.clear();
+      gfx.beginFill(c.fill, 0.50);
+      gfx.lineStyle(hovered ? 2 : 1, c.line, hovered ? 0.95 : 0.28, 0.5);
+      drawHexPath(gfx, HEX_RADIUS);
+      gfx.endFill();
+    }
+
+    // Pixel-space blob cull so it’s not square
+    function insideCityBlob(px, py) {
+      const a = (GRID_COLS * HEX_RADIUS * 0.75);
+      const b = (GRID_ROWS * HEX_RADIUS * 0.85);
+      const nx = px / a;
+      const ny = py / b;
+      const e = (nx*nx) + (ny*ny);
+      const pinch = 0.08 * Math.abs(nx) * Math.abs(ny);
+      return (e + pinch) <= 1.0;
+    }
+
+    // ---------- Build grid ----------
+    function buildGrid() {
+      gridLayer.removeChildren();
+
+      const colOffset = Math.floor(GRID_COLS / 2);
+      const rowOffset = Math.floor(GRID_ROWS / 2);
+
+      let count = 0;
+
+      for (let row = 0; row < GRID_ROWS; row++) {
+        for (let col = 0; col < GRID_COLS; col++) {
+          const cc = col - colOffset;
+          const rr = row - rowOffset;
+          const p = offsetToPixel(cc, rr, HEX_RADIUS);
+
+          if (!insideCityBlob(p.x, p.y)) continue;
+
+          const gfx = new PIXI.Graphics();
+          gfx.position.set(p.x, p.y);
+          gfx.eventMode = "static";
+          gfx.cursor = "pointer";
+          gfx.hitArea = hexPoly;
+
+          const hexObj = { col, row, gfx, colorName: defaultColorFor(col, row) };
+          redrawHex(hexObj, false);
+
+          gfx.on("pointerover", (e) => { e.stopPropagation(); redrawHex(hexObj, true); });
+          gfx.on("pointerout",  (e) => { e.stopPropagation(); redrawHex(hexObj, false); });
+
+          gfx.on("pointertap", (e) => {
+            e.stopPropagation();
+            selectedHex = hexObj;
+            setHUD(`HUD: selected col=${col} row=${row} color=${hexObj.colorName}`);
+            openModal();
+          });
+
+          gridLayer.addChild(gfx);
+          count++;
+        }
+      }
+
+      setHUD(`HUD: PIXI ${PIXI.VERSION}\nGrid built: ${count} hexes\nClick a hex.`);
+    }
+
+    // ---------- Modal apply (one-tap) ----------
+    function applyColor(colorName) {
+      if (!selectedHex) return;
+      selectedHex.colorName = colorName;
+      redrawHex(selectedHex, false);
+      setHUD(`HUD: painted col=${selectedHex.col} row=${selectedHex.row} -> ${colorName}`);
+      closeModal();
+    }
+
+    btnRed.addEventListener("click",   () => applyColor("red"));
+    btnGreen.addEventListener("click", () => applyColor("green"));
+    btnBlue.addEventListener("click",  () => applyColor("blue"));
+
+    // ---------- Pan / Zoom ----------
+    let dragging = false;
+    let dragStart = null;
+    let rootStart = null;
+
+    dragSurface.on("pointerdown", (e) => {
+      dragging = true;
+      dragSurface.cursor = "grabbing";
+      dragStart = { x: e.global.x, y: e.global.y };
+      rootStart = { x: root.position.x, y: root.position.y };
+    });
+
+    dragSurface.on("pointermove", (e) => {
+      if (!dragging) return;
+      root.position.set(
+        rootStart.x + (e.global.x - dragStart.x),
+        rootStart.y + (e.global.y - dragStart.y)
+      );
+    });
+
+    const endDrag = () => { dragging = false; dragSurface.cursor = "grab"; };
+    dragSurface.on("pointerup", endDrag);
+    dragSurface.on("pointerupoutside", endDrag);
+
+    app.view.addEventListener("wheel", (e) => {
+      e.preventDefault();
+      const delta = Math.sign(e.deltaY);
+      const factor = delta > 0 ? 0.92 : 1.08;
+      const ns = Math.max(0.5, Math.min(3.5, root.scale.x * factor));
+      root.scale.set(ns);
+    }, { passive: false });
+
+    // ---------- Resize ----------
+    function onResize() {
+      app.stage.hitArea = app.screen;
+      centerRoot();
+      resizeDragSurface();
+    }
+    window.addEventListener("resize", onResize);
+
+    // boot
+    centerRoot();
+    resizeDragSurface();
+    buildGrid();
+
+  } catch (err) {
+    console.error(err);
+    setHUD("HUD ERROR:\n" + (err && err.stack ? err.stack : String(err)));
+  }
+})();
+</script>
+</body>
+</html>

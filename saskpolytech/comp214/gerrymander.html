@@ -1,0 +1,547 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Regina Hex Districts</title>
+    <style>
+        html,
+        body {
+            margin: 0;
+            height: 100%;
+            overflow: hidden;
+            background: #0b0b0b;
+        }
+
+        canvas {
+            width: 100vw;
+            height: 100vh;
+            display: block;
+        }
+
+        /* Modal */
+        .backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.55);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+
+        .modal {
+            width: min(420px, calc(100vw - 32px));
+            background: #111;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 14px;
+            box-shadow: 0 18px 60px rgba(0, 0, 0, 0.6);
+            padding: 16px;
+            color: #eee;
+            font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        .modal h2 {
+            margin: 0 0 10px;
+            font-size: 16px;
+            font-weight: 650;
+        }
+
+        .row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        select {
+            flex: 1;
+            background: #0c0c0c;
+            color: #eee;
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            border-radius: 10px;
+            padding: 10px 12px;
+            outline: none;
+            font-size: 14px;
+        }
+
+        button {
+            border: 0;
+            border-radius: 10px;
+            padding: 10px 12px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .primary {
+            background: #2d6cdf;
+            color: white;
+        }
+
+        .ghost {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            color: #eee;
+        }
+
+        .meta {
+            margin-top: 8px;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="c"></canvas>
+
+    <div class="backdrop" id="backdrop" role="dialog" aria-modal="true">
+        <div class="modal">
+            <h2>Edit tile</h2>
+            <div class="meta" id="tileMeta">Tile: —</div>
+            <div class="row">
+                <select id="colorSelect">
+                    <option value="0">Blue</option>
+                    <option value="1">Green</option>
+                    <option value="2">Orange</option>
+                    <option value="3">Red</option>
+                </select>
+            </div>
+            <div class="row" style="justify-content: flex-end;">
+                <button class="ghost" id="cancelBtn">Cancel</button>
+                <button class="primary" id="applyBtn">Apply</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        /**
+         * Fullscreen WebGPU hex grid with 1px white borders, click-to-edit modal.
+         * - Tiles are instanced hexes.
+         * - Fill + border done in a single fragment shader (border ring).
+         */
+
+        const canvas = document.getElementById("c");
+        const backdrop = document.getElementById("backdrop");
+        const colorSelect = document.getElementById("colorSelect");
+        const tileMeta = document.getElementById("tileMeta");
+        const cancelBtn = document.getElementById("cancelBtn");
+        const applyBtn = document.getElementById("applyBtn");
+
+        // ---- Config ---------------------------------------------------------------
+        const COLORS = [
+            [0.16, 0.47, 0.86, 1.0], // blue
+            [0.16, 0.67, 0.37, 1.0], // green
+            [0.94, 0.62, 0.16, 1.0], // orange
+            [0.86, 0.17, 0.17, 1.0], // red
+        ];
+
+        const BORDER_COLOR = [1, 1, 1, 1]; // white
+        const BORDER_PX = 1.0;            // requested
+
+        // Hex geometry (flat-top)
+        const HEX_RADIUS = 16; // in pixels (world units)
+        const SQRT3 = Math.sqrt(3);
+
+        // Grid size — adjust however you like
+        const GRID_COLS = 44;
+        const GRID_ROWS = 28;
+
+        // Initial district layout (simple “map-ish” split)
+        // You can replace this with a dataset later.
+        function initialColorFor(col, row) {
+            const nx = col / (GRID_COLS - 1);
+            const ny = row / (GRID_ROWS - 1);
+
+            // North: blue
+            if (ny < 0.45) return 0;
+
+            // South-west: green
+            if (nx < 0.48 && ny >= 0.45) return 1;
+
+            // East: orange
+            return 2;
+        }
+
+        // ---- WebGPU init ----------------------------------------------------------
+        if (!navigator.gpu) {
+            document.body.innerHTML = "<div style='padding:16px;color:white;font-family:system-ui'>WebGPU not supported in this browser.</div>";
+            throw new Error("WebGPU not supported");
+        }
+
+        const adapter = await navigator.gpu.requestAdapter();
+        if (!adapter) throw new Error("No GPU adapter found");
+        const device = await adapter.requestDevice();
+
+        const context = canvas.getContext("webgpu");
+        const format = navigator.gpu.getPreferredCanvasFormat();
+
+        function resizeCanvas() {
+            const dpr = Math.max(1, window.devicePixelRatio || 1);
+            const w = Math.floor(innerWidth * dpr);
+            const h = Math.floor(innerHeight * dpr);
+            canvas.width = w;
+            canvas.height = h;
+            context.configure({ device, format, alphaMode: "opaque" });
+            return { w, h, dpr };
+        }
+
+        let { w: W, h: H, dpr: DPR } = resizeCanvas();
+        addEventListener("resize", () => { ({ w: W, h: H, dpr: DPR } = resizeCanvas()); });
+
+        // ---- Build hex mesh (centered at origin) ---------------------------------
+        function buildHexVertices(radius) {
+            // 6 triangles around center: (0,0) + edge i + edge i+1
+            const verts = [];
+            const center = [0, 0];
+
+            function corner(i) {
+                // flat-top: angle starts at 0° pointing right
+                const angle = (Math.PI / 3) * i;
+                return [radius * Math.cos(angle), radius * Math.sin(angle)];
+            }
+
+            for (let i = 0; i < 6; i++) {
+                const a = corner(i);
+                const b = corner((i + 1) % 6);
+                // pos.xy, local.xy (for border distance calc)
+                verts.push(...center, ...center);
+                verts.push(...a, ...a);
+                verts.push(...b, ...b);
+            }
+            return new Float32Array(verts);
+        }
+
+        const hexVerts = buildHexVertices(HEX_RADIUS);
+        const vertexBuffer = device.createBuffer({
+            size: hexVerts.byteLength,
+            usage: GPUBufferUsage.VERTEX,
+            mappedAtCreation: true,
+        });
+        new Float32Array(vertexBuffer.getMappedRange()).set(hexVerts);
+        vertexBuffer.unmap();
+
+        // ---- Instances: position + colorIndex ------------------------------------
+        const instanceCount = GRID_COLS * GRID_ROWS;
+
+        // Instance buffer layout: vec2 pos (f32x2), u32 colorIndex, u32 pad
+        const INSTANCE_STRIDE = 16; // bytes
+        const instanceBuffer = device.createBuffer({
+            size: instanceCount * INSTANCE_STRIDE,
+            usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
+        });
+
+        const colorIndex = new Uint32Array(instanceCount);
+        const positions = new Float32Array(instanceCount * 2);
+
+        // Hex packing (flat-top):
+        // x step = 3/2 r
+        // y step = sqrt(3) r
+        const xStep = (3 / 2) * HEX_RADIUS;
+        const yStep = SQRT3 * HEX_RADIUS;
+
+        // Center the grid in view (in pixel space)
+        function computeLayout() {
+            const gridW = (GRID_COLS - 1) * xStep + 2 * HEX_RADIUS;
+            const gridH = (GRID_ROWS - 1) * yStep + 2 * HEX_RADIUS;
+            const originX = (W / DPR - gridW) / 2 + HEX_RADIUS;
+            const originY = (H / DPR - gridH) / 2 + HEX_RADIUS;
+
+            let idx = 0;
+            for (let r = 0; r < GRID_ROWS; r++) {
+                for (let c = 0; c < GRID_COLS; c++) {
+                    const x = originX + c * xStep;
+                    const y = originY + r * yStep + ((c & 1) ? (yStep / 2) : 0);
+                    positions[idx * 2 + 0] = x;
+                    positions[idx * 2 + 1] = y;
+                    idx++;
+                }
+            }
+        }
+        computeLayout();
+
+        // Initialize colors
+        for (let r = 0; r < GRID_ROWS; r++) {
+            for (let c = 0; c < GRID_COLS; c++) {
+                const i = r * GRID_COLS + c;
+                colorIndex[i] = initialColorFor(c, r);
+            }
+        }
+
+        function uploadInstances() {
+            // interleave into one ArrayBuffer for a single write
+            const buf = new ArrayBuffer(instanceCount * INSTANCE_STRIDE);
+            const f32 = new Float32Array(buf);
+            const u32 = new Uint32Array(buf);
+
+            for (let i = 0; i < instanceCount; i++) {
+                // float view: 4 floats per instance (16 bytes)
+                // [0]=x, [1]=y, [2]=asFloat(u32 color?), [3]=pad
+                f32[i * 4 + 0] = positions[i * 2 + 0];
+                f32[i * 4 + 1] = positions[i * 2 + 1];
+                u32[i * 4 + 2] = colorIndex[i]; // overlaps f32 slot 2
+                u32[i * 4 + 3] = 0;
+            }
+            device.queue.writeBuffer(instanceBuffer, 0, buf);
+        }
+        uploadInstances();
+
+        // If resized, recompute layout + upload
+        addEventListener("resize", () => {
+            computeLayout();
+            uploadInstances();
+        });
+
+        // ---- Uniforms -------------------------------------------------------------
+        const uniformBuffer = device.createBuffer({
+            size: 64, // mat4x4<f32>
+            usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+        });
+
+        // Orthographic matrix: convert pixel coords to clip space
+        function ortho(widthPx, heightPx) {
+            // left=0,right=width, bottom=height, top=0 (y down)
+            const l = 0, r = widthPx, t = 0, b = heightPx;
+            const near = -1, far = 1;
+            const m = new Float32Array(16);
+            m[0] = 2 / (r - l);
+            m[5] = 2 / (t - b);
+            m[10] = -2 / (far - near);
+            m[12] = -(r + l) / (r - l);
+            m[13] = -(t + b) / (t - b);
+            m[14] = -(far + near) / (far - near);
+            m[15] = 1;
+            return m;
+        }
+
+        function updateUniforms() {
+            const m = ortho(W / DPR, H / DPR);
+            device.queue.writeBuffer(uniformBuffer, 0, m);
+        }
+        updateUniforms();
+        addEventListener("resize", updateUniforms);
+
+        // ---- Shader ---------------------------------------------------------------
+        const shader = device.createShaderModule({
+            code: /* wgsl */`
+struct Uniforms { mvp : mat4x4<f32> };
+@group(0) @binding(0) var<uniform> U : Uniforms;
+
+struct VSIn {
+  @location(0) pos   : vec2<f32>;
+  @location(1) local : vec2<f32>;
+  @location(2) iPos  : vec2<f32>;
+  @location(3) iCol  : u32;
+};
+
+struct VSOut {
+  @builtin(position) clip : vec4<f32>;
+  @location(0) local : vec2<f32>;
+  @location(1) colIx : u32;
+};
+
+@vertex
+fn vs(in: VSIn) -> VSOut {
+  var out: VSOut;
+  let world = vec4<f32>(in.pos + in.iPos, 0.0, 1.0);
+  out.clip = U.mvp * world;
+  out.local = in.local;   // local position (pixels) relative to hex center
+  out.colIx = in.iCol;
+  return out;
+}
+
+// Flat-top hex SDF (approx) for border ring.
+// Returns signed distance: <0 inside, >0 outside.
+fn hexSDF(p: vec2<f32>, r: f32) -> f32 {
+  // Inigo Quilez style hex distance (pointy), adapted: swap axes for flat-top.
+  // We'll rotate by 30 degrees by using constants.
+  let k = vec3<f32>(-0.8660254, 0.5, 0.57735); // -sqrt(3)/2, 1/2, 1/sqrt(3)
+  var q = vec2<f32>(abs(p.x), abs(p.y));
+  q -= 2.0 * min(dot(k.xy, q), 0.0) * k.xy;
+  q -= vec2<f32>(clamp(q.x, -k.z*r, k.z*r), r);
+  return length(q) * sign(q.y);
+}
+
+@fragment
+fn fs(in: VSOut) -> @location(0) vec4<f32> {
+  // color palette (constant)
+  let blue   = vec4<f32>(0.16, 0.47, 0.86, 1.0);
+  let green  = vec4<f32>(0.16, 0.67, 0.37, 1.0);
+  let orange = vec4<f32>(0.94, 0.62, 0.16, 1.0);
+  let red    = vec4<f32>(0.86, 0.17, 0.17, 1.0);
+  let border = vec4<f32>(1.0, 1.0, 1.0, 1.0);
+
+  var fill = blue;
+  if (in.colIx == 1u) { fill = green; }
+  if (in.colIx == 2u) { fill = orange; }
+  if (in.colIx == 3u) { fill = red; }
+
+  // Distance to hex edge. Our triangles exactly fill the hex, but
+  // we draw a border ring by mixing near the edge.
+  let r = ${HEX_RADIUS.toFixed(1)};
+  let d = hexSDF(in.local, r);
+  // border thickness in "pixels" (local units). 1px requested.
+  let borderPx = ${BORDER_PX.toFixed(1)};
+  // Inside region is d < 0. Create ring where d is near 0.
+  let t = smoothstep(-borderPx, 0.0, d); // 0 deep inside, 1 at edge/outside
+  // Only tint inside the hex: if outside, discard.
+  if (d > 0.0) { discard; }
+  return mix(border, fill, 1.0 - t);
+}
+`
+        });
+
+        // ---- Pipeline -------------------------------------------------------------
+        const pipeline = device.createRenderPipeline({
+            layout: "auto",
+            vertex: {
+                module: shader,
+                entryPoint: "vs",
+                buffers: [
+                    // vertex buffer: pos (2f) + local (2f)
+                    {
+                        arrayStride: 16,
+                        attributes: [
+                            { shaderLocation: 0, offset: 0, format: "float32x2" },
+                            { shaderLocation: 1, offset: 8, format: "float32x2" },
+                        ],
+                    },
+                    // instance buffer: iPos (2f) + iCol (u32)
+                    {
+                        arrayStride: INSTANCE_STRIDE,
+                        stepMode: "instance",
+                        attributes: [
+                            { shaderLocation: 2, offset: 0, format: "float32x2" },
+                            { shaderLocation: 3, offset: 8, format: "uint32" },
+                        ],
+                    },
+                ],
+            },
+            fragment: {
+                module: shader,
+                entryPoint: "fs",
+                targets: [{ format }],
+            },
+            primitive: { topology: "triangle-list", cullMode: "none" },
+        });
+
+        // ---- Bindings -------------------------------------------------------------
+        const bindGroup = device.createBindGroup({
+            layout: pipeline.getBindGroupLayout(0),
+            entries: [{ binding: 0, resource: { buffer: uniformBuffer } }],
+        });
+
+        // ---- Picking (CPU) --------------------------------------------------------
+        function pickTile(clientX, clientY) {
+            // Convert to CSS pixels (we store positions in CSS pixels)
+            const x = clientX;
+            const y = clientY;
+
+            // Brute force is fine for ~1200 tiles; can be optimized later.
+            // We first do a fast circle-ish check, then a hex containment check.
+            const r = HEX_RADIUS;
+            const r2 = (r * 1.05) ** 2;
+
+            let best = -1;
+            let bestDist = Infinity;
+
+            for (let i = 0; i < instanceCount; i++) {
+                const cx = positions[i * 2 + 0];
+                const cy = positions[i * 2 + 1];
+                const dx = x - cx;
+                const dy = y - cy;
+                const dist2 = dx * dx + dy * dy;
+                if (dist2 > r2) continue;
+
+                // Hex point-in test for flat-top:
+                // Convert to axial-ish test using constraints:
+                // |x| <= r AND |y| <= sqrt(3)/2*r AND |x|/2 + |y|/sqrt(3) <= r
+                const ax = Math.abs(dx);
+                const ay = Math.abs(dy);
+                if (ax > r) continue;
+                if (ay > (SQRT3 * 0.5 * r)) continue;
+                if ((ax * 0.5 + ay / SQRT3) > r) continue;
+
+                if (dist2 < bestDist) { bestDist = dist2; best = i; }
+            }
+            return best;
+        }
+
+        // ---- Modal wiring ---------------------------------------------------------
+        let selectedTile = -1;
+
+        function openModal(tileIndex) {
+            selectedTile = tileIndex;
+            tileMeta.textContent = `Tile: ${tileIndex} (row ${Math.floor(tileIndex / GRID_COLS)}, col ${tileIndex % GRID_COLS})`;
+            colorSelect.value = String(colorIndex[tileIndex]);
+            backdrop.style.display = "flex";
+        }
+
+        function closeModal() {
+            backdrop.style.display = "none";
+            selectedTile = -1;
+        }
+
+        backdrop.addEventListener("click", (e) => {
+            if (e.target === backdrop) closeModal();
+        });
+        cancelBtn.addEventListener("click", closeModal);
+        addEventListener("keydown", (e) => {
+            if (e.key === "Escape" && backdrop.style.display === "flex") closeModal();
+        });
+
+        applyBtn.addEventListener("click", () => {
+            if (selectedTile < 0) return;
+            colorIndex[selectedTile] = Number(colorSelect.value) >>> 0;
+            // Update just one instance in the GPU buffer (more efficient than full upload)
+            const byteOffset = selectedTile * INSTANCE_STRIDE;
+            const temp = new ArrayBuffer(INSTANCE_STRIDE);
+            const f32 = new Float32Array(temp);
+            const u32 = new Uint32Array(temp);
+            f32[0] = positions[selectedTile * 2 + 0];
+            f32[1] = positions[selectedTile * 2 + 1];
+            u32[2] = colorIndex[selectedTile];
+            u32[3] = 0;
+            device.queue.writeBuffer(instanceBuffer, byteOffset, temp);
+
+            closeModal();
+        });
+
+        // ---- Input ---------------------------------------------------------------
+        canvas.addEventListener("pointerdown", (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const idx = pickTile(x, y);
+            if (idx >= 0) openModal(idx);
+        });
+
+        // ---- Render loop ----------------------------------------------------------
+        function frame() {
+            const encoder = device.createCommandEncoder();
+            const view = context.getCurrentTexture().createView();
+            const pass = encoder.beginRenderPass({
+                colorAttachments: [{
+                    view,
+                    clearValue: { r: 0.06, g: 0.06, b: 0.06, a: 1 },
+                    loadOp: "clear",
+                    storeOp: "store",
+                }]
+            });
+
+            pass.setPipeline(pipeline);
+            pass.setBindGroup(0, bindGroup);
+            pass.setVertexBuffer(0, vertexBuffer);
+            pass.setVertexBuffer(1, instanceBuffer);
+            pass.draw(hexVerts.length / 4, instanceCount, 0, 0); // each vertex: 4 floats
+            pass.end();
+
+            device.queue.submit([encoder.finish()]);
+            requestAnimationFrame(frame);
+        }
+        requestAnimationFrame(frame);
+    </script>
+</body>
+
+</html>
