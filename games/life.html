@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Conway's Game of Life</title>
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    
+
     <style>
         body {
             background-color: #212529;
@@ -18,7 +19,7 @@
         /* Canvas Styling */
         #game-container {
             position: relative;
-            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
             border: 1px solid #444;
             background-color: #000;
             cursor: crosshair;
@@ -77,461 +78,478 @@
         }
 
         /* Scrollbar styling */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #212529; }
-        ::-webkit-scrollbar-thumb { background: #555; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #777; }
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #212529;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #555;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #777;
+        }
     </style>
 </head>
+
 <body>
 
-<div class="container-fluid py-4">
-    <div class="row mb-3">
-        <div class="col-12 text-center">
-            <h1>Conway's Game of Life</h1>
-            <p class="text-muted small">Select cells, drag patterns, or press Play.</p>
+    <div class="container-fluid py-4">
+        <div class="row mb-3">
+            <div class="col-12 text-center">
+                <h1>Conway's Game of Life</h1>
+                <p class="text-muted small">Select cells, drag patterns, or press Play.</p>
+            </div>
+        </div>
+
+        <div class="row justify-content-center">
+            <!-- Game Grid Column -->
+            <div class="col-lg-8 col-md-12">
+                <div id="game-container">
+                    <canvas id="gridCanvas"></canvas>
+                </div>
+
+                <!-- Bottom Controls -->
+                <div class="controls-panel d-flex flex-wrap gap-2 justify-content-center align-items-center mb-3">
+                    <button id="btnPlay" class="btn btn-success px-4">Play</button>
+                    <button id="btnStep" class="btn btn-secondary">Next Step</button>
+                    <button id="btnClear" class="btn btn-danger">Clear</button>
+                    <button id="btnRandom" class="btn btn-warning">Randomize</button>
+
+                    <div class="d-flex align-items-center ms-3 gap-2">
+                        <label for="speedRange" class="form-label mb-0">Speed</label>
+                        <input type="range" class="form-range" id="speedRange" min="1" max="60" value="30"
+                            style="width: 100px;">
+                    </div>
+
+                    <div class="ms-auto text-end">
+                        <span id="genCount" class="badge bg-primary fs-6">Gen: 0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar Patterns Column -->
+            <div class="col-lg-3 col-md-12">
+                <div class="controls-panel">
+                    <h5 class="mb-3">Known Entities</h5>
+                    <p class="small text-muted mb-3">Drag onto grid (Desktop) or Click then Tap grid (Mobile).</p>
+                    <div id="patternList" class="pattern-list">
+                        <!-- Patterns injected by JS -->
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <div class="row justify-content-center">
-        <!-- Game Grid Column -->
-        <div class="col-lg-8 col-md-12">
-            <div id="game-container">
-                <canvas id="gridCanvas"></canvas>
-            </div>
-            
-            <!-- Bottom Controls -->
-            <div class="controls-panel d-flex flex-wrap gap-2 justify-content-center align-items-center mb-3">
-                <button id="btnPlay" class="btn btn-success px-4">Play</button>
-                <button id="btnStep" class="btn btn-secondary">Next Step</button>
-                <button id="btnClear" class="btn btn-danger">Clear</button>
-                <button id="btnRandom" class="btn btn-warning">Randomize</button>
-                
-                <div class="d-flex align-items-center ms-3 gap-2">
-                    <label for="speedRange" class="form-label mb-0">Speed</label>
-                    <input type="range" class="form-range" id="speedRange" min="1" max="60" value="30" style="width: 100px;">
-                </div>
-                
-                <div class="ms-auto text-end">
-                    <span id="genCount" class="badge bg-primary fs-6">Gen: 0</span>
-                </div>
-            </div>
-        </div>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-        <!-- Sidebar Patterns Column -->
-        <div class="col-lg-3 col-md-12">
-            <div class="controls-panel">
-                <h5 class="mb-3">Known Entities</h5>
-                <p class="small text-muted mb-3">Drag onto grid (Desktop) or Click then Tap grid (Mobile).</p>
-                <div id="patternList" class="pattern-list">
-                    <!-- Patterns injected by JS -->
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+    <script>
+        /**
+         * CONFIGURATION & STATE
+         */
+        const canvas = document.getElementById('gridCanvas');
+        const ctx = canvas.getContext('2d');
+        const container = document.getElementById('game-container');
 
-<!-- Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        // Cell Size (pixels)
+        const CELL_SIZE = 15;
+        const GRID_COLOR = '#333';
+        const LIVE_COLOR = '#0d6efd';
 
-<script>
-    /**
-     * CONFIGURATION & STATE
-     */
-    const canvas = document.getElementById('gridCanvas');
-    const ctx = canvas.getContext('2d');
-    const container = document.getElementById('game-container');
-    
-    // Cell Size (pixels)
-    const CELL_SIZE = 15; 
-    const GRID_COLOR = '#333';
-    const LIVE_COLOR = '#0d6efd';
-    
-    let cols, rows;
-    let grid = [];
-    let isPlaying = false;
-    let animationId;
-    let generation = 0;
-    let fps = 30;
-    let now;
-    let then = Date.now();
-    let interval = 1000 / fps;
-    let selectedPattern = null; // For click-to-place logic
+        let cols, rows;
+        let grid = [];
+        let isPlaying = false;
+        let animationId;
+        let generation = 0;
+        let fps = 30;
+        let now;
+        let then = Date.now();
+        let interval = 1000 / fps;
+        let selectedPattern = null; // For click-to-place logic
 
-    // Predefined Patterns (Source: Wikipedia)
-    const patterns = [
-        {
-            name: "Glider",
-            type: "Spaceship",
-            data: [[0, 1], [1, 2], [2, 0], [2, 1], [2, 2]]
-        },
-        {
-            name: "L.W. Spaceship",
-            type: "Spaceship",
-            data: [[0,1], [0,4], [1,0], [2,0], [3,0], [3,4], [4,0], [4,1], [4,2], [4,3]]
-        },
-        {
-            name: "Block",
-            type: "Still Life",
-            data: [[0, 0], [0, 1], [1, 0], [1, 1]]
-        },
-        {
-            name: "Blinker",
-            type: "Oscillator",
-            data: [[0, 0], [0, 1], [0, 2]]
-        },
-        {
-            name: "Toad",
-            type: "Oscillator",
-            data: [[1, 0], [2, 0], [3, 0], [0, 1], [1, 1], [2, 1]]
-        },
-        {
-            name: "Beacon",
-            type: "Oscillator",
-            data: [[0,0],[0,1],[1,0],[1,1],[2,2],[2,3],[3,2],[3,3]]
-        },
-        {
-            name: "Pulsar",
-            type: "Oscillator",
-            data: [
-                [2,0],[3,0],[4,0],[8,0],[9,0],[10,0],
-                [0,2],[5,2],[7,2],[12,2],
-                [0,3],[5,3],[7,3],[12,3],
-                [0,4],[5,4],[7,4],[12,4],
-                [2,5],[3,5],[4,5],[8,5],[9,5],[10,5],
-                [2,7],[3,7],[4,7],[8,7],[9,7],[10,7],
-                [0,8],[5,8],[7,8],[12,8],
-                [0,9],[5,9],[7,9],[12,9],
-                [0,10],[5,10],[7,10],[12,10],
-                [2,12],[3,12],[4,12],[8,12],[9,12],[10,12]
-            ]
-        },
-        {
-            name: "Gosper Glider Gun",
-            type: "Gun",
-            data: [
-                [24,0],[22,1],[24,1],[12,2],[13,2],[20,2],[21,2],[34,2],[35,2],[11,3],[15,3],[20,3],[21,3],[34,3],[35,3],[0,4],[1,4],[10,4],[16,4],[20,4],[21,4],[0,5],[1,5],[10,5],[14,5],[16,5],[17,5],[22,5],[24,5],[10,6],[16,6],[24,6],[11,7],[15,7],[12,8],[13,8]
-            ]
-        }
-    ];
-
-    /**
-     * INITIALIZATION
-     */
-    function init() {
-        resizeCanvas();
-        createGrid();
-        renderSidebar();
-        draw();
-        
-        // Window Resize Listener
-        window.addEventListener('resize', () => {
-            resizeCanvas();
-            // Preserve grid data would be complex on resize, simpler to reset or clip
-            // For this simple version, we recreate the grid but lose data outside bounds
-            let oldGrid = grid;
-            createGrid();
-            // Restore what fits
-            for(let y=0; y<Math.min(rows, oldGrid.length); y++) {
-                for(let x=0; x<Math.min(cols, oldGrid[0].length); x++) {
-                    grid[y][x] = oldGrid[y][x];
-                }
+        // Predefined Patterns (Source: Wikipedia)
+        const patterns = [
+            {
+                name: "Glider",
+                type: "Spaceship",
+                data: [[0, 1], [1, 2], [2, 0], [2, 1], [2, 2]]
+            },
+            {
+                name: "L.W. Spaceship",
+                type: "Spaceship",
+                data: [[0, 1], [0, 4], [1, 0], [2, 0], [3, 0], [3, 4], [4, 0], [4, 1], [4, 2], [4, 3]]
+            },
+            {
+                name: "Block",
+                type: "Still Life",
+                data: [[0, 0], [0, 1], [1, 0], [1, 1]]
+            },
+            {
+                name: "Blinker",
+                type: "Oscillator",
+                data: [[0, 0], [0, 1], [0, 2]]
+            },
+            {
+                name: "Toad",
+                type: "Oscillator",
+                data: [[1, 0], [2, 0], [3, 0], [0, 1], [1, 1], [2, 1]]
+            },
+            {
+                name: "Beacon",
+                type: "Oscillator",
+                data: [[0, 0], [0, 1], [1, 0], [1, 1], [2, 2], [2, 3], [3, 2], [3, 3]]
+            },
+            {
+                name: "Pulsar",
+                type: "Oscillator",
+                data: [
+                    [2, 0], [3, 0], [4, 0], [8, 0], [9, 0], [10, 0],
+                    [0, 2], [5, 2], [7, 2], [12, 2],
+                    [0, 3], [5, 3], [7, 3], [12, 3],
+                    [0, 4], [5, 4], [7, 4], [12, 4],
+                    [2, 5], [3, 5], [4, 5], [8, 5], [9, 5], [10, 5],
+                    [2, 7], [3, 7], [4, 7], [8, 7], [9, 7], [10, 7],
+                    [0, 8], [5, 8], [7, 8], [12, 8],
+                    [0, 9], [5, 9], [7, 9], [12, 9],
+                    [0, 10], [5, 10], [7, 10], [12, 10],
+                    [2, 12], [3, 12], [4, 12], [8, 12], [9, 12], [10, 12]
+                ]
+            },
+            {
+                name: "Gosper Glider Gun",
+                type: "Gun",
+                data: [
+                    [24, 0], [22, 1], [24, 1], [12, 2], [13, 2], [20, 2], [21, 2], [34, 2], [35, 2], [11, 3], [15, 3], [20, 3], [21, 3], [34, 3], [35, 3], [0, 4], [1, 4], [10, 4], [16, 4], [20, 4], [21, 4], [0, 5], [1, 5], [10, 5], [14, 5], [16, 5], [17, 5], [22, 5], [24, 5], [10, 6], [16, 6], [24, 6], [11, 7], [15, 7], [12, 8], [13, 8]
+                ]
             }
+        ];
+
+        /**
+         * INITIALIZATION
+         */
+        function init() {
+            resizeCanvas();
+            createGrid();
+            renderSidebar();
             draw();
-        });
-    }
 
-    function resizeCanvas() {
-        // Calculate available width
-        const width = container.clientWidth;
-        // Set height to nice aspect ratio or screen height
-        const height = Math.min(window.innerHeight * 0.7, 600);
-        
-        canvas.width = width;
-        canvas.height = height;
-        
-        cols = Math.floor(width / CELL_SIZE);
-        rows = Math.floor(height / CELL_SIZE);
-    }
+            // Window Resize Listener
+            window.addEventListener('resize', () => {
+                resizeCanvas();
+                // Preserve grid data would be complex on resize, simpler to reset or clip
+                // For this simple version, we recreate the grid but lose data outside bounds
+                let oldGrid = grid;
+                createGrid();
+                // Restore what fits
+                for (let y = 0; y < Math.min(rows, oldGrid.length); y++) {
+                    for (let x = 0; x < Math.min(cols, oldGrid[0].length); x++) {
+                        grid[y][x] = oldGrid[y][x];
+                    }
+                }
+                draw();
+            });
+        }
 
-    function createGrid() {
-        grid = new Array(rows).fill(null).map(() => new Array(cols).fill(0));
-    }
+        function resizeCanvas() {
+            // Calculate available width
+            const width = container.clientWidth;
+            // Set height to nice aspect ratio or screen height
+            const height = Math.min(window.innerHeight * 0.7, 600);
 
-    /**
-     * GAME LOGIC
-     */
-    function countNeighbors(grid, x, y) {
-        let sum = 0;
-        for (let i = -1; i < 2; i++) {
-            for (let j = -1; j < 2; j++) {
-                // Wrap around (Toroidal) or Edges? Let's do simple edge (treat outside as dead)
-                let col = (x + j);
-                let row = (y + i);
-                
-                if (col >= 0 && col < cols && row >= 0 && row < rows) {
+            canvas.width = width;
+            canvas.height = height;
+
+            cols = Math.floor(width / CELL_SIZE);
+            rows = Math.floor(height / CELL_SIZE);
+        }
+
+        function createGrid() {
+            grid = new Array(rows).fill(null).map(() => new Array(cols).fill(0));
+        }
+
+        /**
+         * GAME LOGIC
+         */
+        function countNeighbors(grid, x, y) {
+            let sum = 0;
+
+            for (let i = -1; i <= 1; i++) {
+                for (let j = -1; j <= 1; j++) {
+                    if (i === 0 && j === 0) continue;
+
+                    // Wrap around (toroidal)
+                    const col = (x + j + cols) % cols;
+                    const row = (y + i + rows) % rows;
+
                     sum += grid[row][col];
                 }
             }
+
+            return sum;
         }
-        sum -= grid[y][x]; // Subtract self
-        return sum;
-    }
 
-    function computeNextGen() {
-        let next = grid.map(arr => [...arr]); // Deep copy
-        let hasChanges = false;
 
-        for (let i = 0; i < rows; i++) {
-            for (let j = 0; j < cols; j++) {
-                let state = grid[i][j];
-                let neighbors = countNeighbors(grid, j, i);
+        function computeNextGen() {
+            let next = grid.map(arr => [...arr]); // Deep copy
+            let hasChanges = false;
 
-                // Rules
-                if (state === 0 && neighbors === 3) {
-                    next[i][j] = 1;
-                    hasChanges = true;
-                } else if (state === 1 && (neighbors < 2 || neighbors > 3)) {
-                    next[i][j] = 0;
-                    hasChanges = true;
+            for (let i = 0; i < rows; i++) {
+                for (let j = 0; j < cols; j++) {
+                    let state = grid[i][j];
+                    let neighbors = countNeighbors(grid, j, i);
+
+                    // Rules
+                    if (state === 0 && neighbors === 3) {
+                        next[i][j] = 1;
+                        hasChanges = true;
+                    } else if (state === 1 && (neighbors < 2 || neighbors > 3)) {
+                        next[i][j] = 0;
+                        hasChanges = true;
+                    }
                 }
+            }
+
+            grid = next;
+            if (hasChanges) generation++;
+            document.getElementById('genCount').innerText = `Gen: ${generation}`;
+            return hasChanges;
+        }
+
+        function gameLoop() {
+            if (!isPlaying) return;
+
+            requestAnimationFrame(gameLoop);
+
+            now = Date.now();
+            let elapsed = now - then;
+
+            if (elapsed > interval) {
+                then = now - (elapsed % interval);
+                computeNextGen();
+                draw();
             }
         }
 
-        grid = next;
-        if(hasChanges) generation++;
-        document.getElementById('genCount').innerText = `Gen: ${generation}`;
-        return hasChanges;
-    }
+        /**
+         * RENDERING
+         */
+        function draw() {
+            // Clear background
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    function gameLoop() {
-        if (!isPlaying) return;
-
-        requestAnimationFrame(gameLoop);
-
-        now = Date.now();
-        let elapsed = now - then;
-
-        if (elapsed > interval) {
-            then = now - (elapsed % interval);
-            computeNextGen();
-            draw();
-        }
-    }
-
-    /**
-     * RENDERING
-     */
-    function draw() {
-        // Clear background
-        ctx.fillStyle = '#000';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-        // Draw Live Cells
-        ctx.fillStyle = LIVE_COLOR;
-        for (let i = 0; i < rows; i++) {
-            for (let j = 0; j < cols; j++) {
-                if (grid[i][j] === 1) {
-                    ctx.fillRect(j * CELL_SIZE, i * CELL_SIZE, CELL_SIZE - 1, CELL_SIZE - 1);
+            // Draw Live Cells
+            ctx.fillStyle = LIVE_COLOR;
+            for (let i = 0; i < rows; i++) {
+                for (let j = 0; j < cols; j++) {
+                    if (grid[i][j] === 1) {
+                        ctx.fillRect(j * CELL_SIZE, i * CELL_SIZE, CELL_SIZE - 1, CELL_SIZE - 1);
+                    }
                 }
             }
+
+            // Optional: Draw Grid lines (subtle)
+            ctx.strokeStyle = '#1a1a1a';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            for (let i = 0; i <= cols; i++) {
+                ctx.moveTo(i * CELL_SIZE, 0);
+                ctx.lineTo(i * CELL_SIZE, canvas.height);
+            }
+            for (let i = 0; i <= rows; i++) {
+                ctx.moveTo(0, i * CELL_SIZE);
+                ctx.lineTo(canvas.width, i * CELL_SIZE);
+            }
+            ctx.stroke();
         }
 
-        // Optional: Draw Grid lines (subtle)
-        ctx.strokeStyle = '#1a1a1a';
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        for (let i = 0; i <= cols; i++) {
-            ctx.moveTo(i * CELL_SIZE, 0);
-            ctx.lineTo(i * CELL_SIZE, canvas.height);
-        }
-        for (let i = 0; i <= rows; i++) {
-            ctx.moveTo(0, i * CELL_SIZE);
-            ctx.lineTo(canvas.width, i * CELL_SIZE);
-        }
-        ctx.stroke();
-    }
-
-    function renderSidebar() {
-        const list = document.getElementById('patternList');
-        patterns.forEach((pat, index) => {
-            const card = document.createElement('div');
-            card.className = 'card pattern-card p-2';
-            card.draggable = true;
-            card.innerHTML = `
+        function renderSidebar() {
+            const list = document.getElementById('patternList');
+            patterns.forEach((pat, index) => {
+                const card = document.createElement('div');
+                card.className = 'card pattern-card p-2';
+                card.draggable = true;
+                card.innerHTML = `
                 <div class="d-flex justify-content-between align-items-center">
                     <strong>${pat.name}</strong>
                     <span class="badge bg-secondary">${pat.type}</span>
                 </div>
             `;
-            
-            // Drag Start
-            card.addEventListener('dragstart', (e) => {
-                // Set data for drag
-                e.dataTransfer.setData('application/json', JSON.stringify(pat.data));
-                e.dataTransfer.effectAllowed = 'copy';
-                // Also select it for Click-to-place logic as fallback
-                selectPattern(index, card);
+
+                // Drag Start
+                card.addEventListener('dragstart', (e) => {
+                    // Set data for drag
+                    e.dataTransfer.setData('application/json', JSON.stringify(pat.data));
+                    e.dataTransfer.effectAllowed = 'copy';
+                    // Also select it for Click-to-place logic as fallback
+                    selectPattern(index, card);
+                });
+
+                // Click (for mobile/click-to-place)
+                card.addEventListener('click', () => {
+                    selectPattern(index, card);
+                });
+
+                list.appendChild(card);
             });
-
-            // Click (for mobile/click-to-place)
-            card.addEventListener('click', () => {
-                selectPattern(index, card);
-            });
-
-            list.appendChild(card);
-        });
-    }
-
-    function selectPattern(index, cardElement) {
-        // Clear previous selection UI
-        document.querySelectorAll('.pattern-card').forEach(c => c.classList.remove('selected'));
-        
-        if (selectedPattern === patterns[index]) {
-            // Deselect if clicking same
-            selectedPattern = null;
-        } else {
-            selectedPattern = patterns[index];
-            cardElement.classList.add('selected');
         }
-    }
 
-    /**
-     * INPUT HANDLING
-     */
+        function selectPattern(index, cardElement) {
+            // Clear previous selection UI
+            document.querySelectorAll('.pattern-card').forEach(c => c.classList.remove('selected'));
 
-    // Canvas Draw / Interaction
-    let isDrawing = false;
-    
-    function getGridCoords(e) {
-        const rect = canvas.getBoundingClientRect();
-        // Handle touch or mouse events
-        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-
-        const x = Math.floor((clientX - rect.left) / CELL_SIZE);
-        const y = Math.floor((clientY - rect.top) / CELL_SIZE);
-        return { x, y };
-    }
-
-    // Place a specific pattern at x,y
-    function placePattern(patternData, gx, gy) {
-        patternData.forEach(pos => {
-            const px = gx + pos[0];
-            const py = gy + pos[1];
-            if (py >= 0 && py < rows && px >= 0 && px < cols) {
-                grid[py][px] = 1;
+            if (selectedPattern === patterns[index]) {
+                // Deselect if clicking same
+                selectedPattern = null;
+            } else {
+                selectedPattern = patterns[index];
+                cardElement.classList.add('selected');
             }
-        });
-        draw();
-    }
-
-    // Mouse Listeners for Painting
-    canvas.addEventListener('mousedown', (e) => {
-        const { x, y } = getGridCoords(e);
-        
-        // If a pattern is selected in sidebar, place it
-        if (selectedPattern) {
-            placePattern(selectedPattern.data, x, y);
-            // Optional: deselect after placement? Let's keep it for multiple stamps
-            return;
         }
 
-        // Otherwise, toggle single cell
-        isDrawing = true;
-        toggleCell(x, y);
-    });
+        /**
+         * INPUT HANDLING
+         */
 
-    canvas.addEventListener('mousemove', (e) => {
-        if (!isDrawing) return;
-        const { x, y } = getGridCoords(e);
-        // Turn on cells when dragging mouse (painting)
-        if (y >= 0 && y < rows && x >= 0 && x < cols) {
-             grid[y][x] = 1;
-             draw();
+        // Canvas Draw / Interaction
+        let isDrawing = false;
+
+        function getGridCoords(e) {
+            const rect = canvas.getBoundingClientRect();
+            // Handle touch or mouse events
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+            const x = Math.floor((clientX - rect.left) / CELL_SIZE);
+            const y = Math.floor((clientY - rect.top) / CELL_SIZE);
+            return { x, y };
         }
-    });
 
-    window.addEventListener('mouseup', () => isDrawing = false);
-
-    function toggleCell(x, y) {
-        if (y >= 0 && y < rows && x >= 0 && x < cols) {
-            grid[y][x] = grid[y][x] ? 0 : 1;
+        // Place a specific pattern at x,y
+        function placePattern(patternData, gx, gy) {
+            patternData.forEach(pos => {
+                const px = gx + pos[0];
+                const py = gy + pos[1];
+                if (py >= 0 && py < rows && px >= 0 && px < cols) {
+                    grid[py][px] = 1;
+                }
+            });
             draw();
         }
-    }
 
-    // Drag and Drop (Desktop)
-    canvas.addEventListener('dragover', (e) => {
-        e.preventDefault(); // Allow drop
-        e.dataTransfer.dropEffect = 'copy';
-    });
-
-    canvas.addEventListener('drop', (e) => {
-        e.preventDefault();
-        const data = e.dataTransfer.getData('application/json');
-        if (data) {
-            const patternData = JSON.parse(data);
+        // Mouse Listeners for Painting
+        canvas.addEventListener('mousedown', (e) => {
             const { x, y } = getGridCoords(e);
-            placePattern(patternData, x, y);
-        }
-    });
 
-    /**
-     * CONTROLS
-     */
-    document.getElementById('btnPlay').addEventListener('click', function() {
-        if (isPlaying) {
-            isPlaying = false;
-            this.innerText = 'Play';
-            this.classList.remove('btn-danger');
-            this.classList.add('btn-success');
-        } else {
-            isPlaying = true;
-            this.innerText = 'Pause';
-            this.classList.remove('btn-success');
-            this.classList.add('btn-danger');
-            gameLoop();
-        }
-    });
+            // If a pattern is selected in sidebar, place it
+            if (selectedPattern) {
+                placePattern(selectedPattern.data, x, y);
+                // Optional: deselect after placement? Let's keep it for multiple stamps
+                return;
+            }
 
-    document.getElementById('btnStep').addEventListener('click', () => {
-        isPlaying = false;
-        document.getElementById('btnPlay').innerText = 'Play';
-        document.getElementById('btnPlay').classList.add('btn-success');
-        document.getElementById('btnPlay').classList.remove('btn-danger');
-        computeNextGen();
-        draw();
-    });
+            // Otherwise, toggle single cell
+            isDrawing = true;
+            toggleCell(x, y);
+        });
 
-    document.getElementById('btnClear').addEventListener('click', () => {
-        isPlaying = false;
-        document.getElementById('btnPlay').innerText = 'Play';
-        document.getElementById('btnPlay').classList.add('btn-success');
-        document.getElementById('btnPlay').classList.remove('btn-danger');
-        createGrid();
-        generation = 0;
-        document.getElementById('genCount').innerText = `Gen: 0`;
-        draw();
-    });
+        canvas.addEventListener('mousemove', (e) => {
+            if (!isDrawing) return;
+            const { x, y } = getGridCoords(e);
+            // Turn on cells when dragging mouse (painting)
+            if (y >= 0 && y < rows && x >= 0 && x < cols) {
+                grid[y][x] = 1;
+                draw();
+            }
+        });
 
-    document.getElementById('btnRandom').addEventListener('click', () => {
-        for (let i = 0; i < rows; i++) {
-            for (let j = 0; j < cols; j++) {
-                grid[i][j] = Math.random() > 0.85 ? 1 : 0;
+        window.addEventListener('mouseup', () => isDrawing = false);
+
+        function toggleCell(x, y) {
+            if (y >= 0 && y < rows && x >= 0 && x < cols) {
+                grid[y][x] = grid[y][x] ? 0 : 1;
+                draw();
             }
         }
-        draw();
-    });
 
-    document.getElementById('speedRange').addEventListener('input', (e) => {
-        fps = parseInt(e.target.value);
-        interval = 1000 / fps;
-    });
+        // Drag and Drop (Desktop)
+        canvas.addEventListener('dragover', (e) => {
+            e.preventDefault(); // Allow drop
+            e.dataTransfer.dropEffect = 'copy';
+        });
 
-    // Start
-    init();
+        canvas.addEventListener('drop', (e) => {
+            e.preventDefault();
+            const data = e.dataTransfer.getData('application/json');
+            if (data) {
+                const patternData = JSON.parse(data);
+                const { x, y } = getGridCoords(e);
+                placePattern(patternData, x, y);
+            }
+        });
 
-</script>
+        /**
+         * CONTROLS
+         */
+        document.getElementById('btnPlay').addEventListener('click', function () {
+            if (isPlaying) {
+                isPlaying = false;
+                this.innerText = 'Play';
+                this.classList.remove('btn-danger');
+                this.classList.add('btn-success');
+            } else {
+                isPlaying = true;
+                this.innerText = 'Pause';
+                this.classList.remove('btn-success');
+                this.classList.add('btn-danger');
+                gameLoop();
+            }
+        });
+
+        document.getElementById('btnStep').addEventListener('click', () => {
+            isPlaying = false;
+            document.getElementById('btnPlay').innerText = 'Play';
+            document.getElementById('btnPlay').classList.add('btn-success');
+            document.getElementById('btnPlay').classList.remove('btn-danger');
+            computeNextGen();
+            draw();
+        });
+
+        document.getElementById('btnClear').addEventListener('click', () => {
+            isPlaying = false;
+            document.getElementById('btnPlay').innerText = 'Play';
+            document.getElementById('btnPlay').classList.add('btn-success');
+            document.getElementById('btnPlay').classList.remove('btn-danger');
+            createGrid();
+            generation = 0;
+            document.getElementById('genCount').innerText = `Gen: 0`;
+            draw();
+        });
+
+        document.getElementById('btnRandom').addEventListener('click', () => {
+            for (let i = 0; i < rows; i++) {
+                for (let j = 0; j < cols; j++) {
+                    grid[i][j] = Math.random() > 0.85 ? 1 : 0;
+                }
+            }
+            draw();
+        });
+
+        document.getElementById('speedRange').addEventListener('input', (e) => {
+            fps = parseInt(e.target.value);
+            interval = 1000 / fps;
+        });
+
+        // Start
+        init();
+
+    </script>
 </body>
+
 </html>
