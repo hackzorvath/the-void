@@ -4,6 +4,9 @@
     <meta charset="utf-8">
     <title>Lost in the Void</title>
 
+    <!-- Restore favicon (adjust path if yours differs) -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+
     <style>
         :root {
             --gold: #ffcc66;
@@ -23,11 +26,12 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
+            padding: 24px;
         }
 
         h1 {
             font-size: 42px;
-            margin-bottom: 10px;
+            margin: 0 0 10px 0;
             text-shadow:
                 0 0 8px var(--gold),
                 0 0 20px rgba(255, 200, 80, 0.6);
@@ -37,59 +41,76 @@
         p {
             font-size: 16px;
             opacity: 0.85;
-            margin-bottom: 40px;
+            margin: 0 0 34px 0;
         }
 
-        /* ─── VOID BUTTON ───────────────────────────── */
+        /* ─── VOID BUTTON (with image) ───────────────── */
 
-        .void-button {
+        .void-img-button {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
             text-decoration: none;
             color: var(--gold);
+            font-family: "Cinzel", Georgia, serif;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+
             border: 1px solid var(--gold-dim);
             padding: 16px 26px;
             border-radius: 999px;
-            font-family: "Cinzel", Georgia, serif;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
+
             position: relative;
             overflow: hidden;
+
             box-shadow:
                 0 0 15px rgba(255, 200, 80, 0.15),
                 inset 0 0 10px rgba(255, 200, 80, 0.1);
+
             transition: transform 0.2s ease, box-shadow 0.2s ease;
             animation: voidPulse 3.5s infinite;
         }
 
-        .void-button::before {
+        .void-img-button::before {
             content: "";
             position: absolute;
             inset: 0;
-            background: radial-gradient(
-                circle at center,
-                rgba(255, 220, 120, 0.25),
-                transparent 70%
-            );
+            background: radial-gradient(circle at center, rgba(255, 220, 120, 0.25), transparent 70%);
             opacity: 0;
             transition: opacity 0.3s ease;
         }
 
-        .void-button:hover {
+        .void-img-button:hover {
             transform: translateY(-2px) scale(1.03);
             box-shadow:
                 0 0 25px rgba(255, 220, 120, 0.35),
                 inset 0 0 15px rgba(255, 220, 120, 0.2);
         }
 
-        .void-button:hover::before {
-            opacity: 1;
+        .void-img-button:hover::before { opacity: 1; }
+
+        .void-img-button img {
+            width: 120px;
+            height: auto;
+            filter: drop-shadow(0 0 10px rgba(255, 200, 80, 0.25));
+            transition: transform 0.2s ease;
+            z-index: 1;
+        }
+
+        .void-img-button:hover img { transform: scale(1.05); }
+
+        .void-img-button span {
+            z-index: 1;
+            line-height: 1;
         }
 
         /* ─── ANIMATIONS ───────────────────────────── */
 
         @keyframes voidPulse {
-            0%   { box-shadow: 0 0 12px rgba(255,200,80,0.15); }
-            50%  { box-shadow: 0 0 22px rgba(255,220,120,0.35); }
-            100% { box-shadow: 0 0 12px rgba(255,200,80,0.15); }
+            0%   { box-shadow: 0 0 12px rgba(255,200,80,0.15), inset 0 0 10px rgba(255,200,80,0.1); }
+            50%  { box-shadow: 0 0 22px rgba(255,220,120,0.35), inset 0 0 14px rgba(255,220,120,0.18); }
+            100% { box-shadow: 0 0 12px rgba(255,200,80,0.15), inset 0 0 10px rgba(255,200,80,0.1); }
         }
 
         @keyframes flicker {
@@ -103,9 +124,19 @@
     <h1>404 — This Path Does Not Exist</h1>
     <p>Have you tried turning the Void off and on again?</p>
 
-    <!-- UNIVERSAL RETURN -->
-    <a href="/" class="void-button">
-        Return to the Void
+    <a id="homeLink" class="void-img-button" href="#">
+        <!-- Keep your button image; use a path that matches your project -->
+        <img src="assets/img/buttons/spiritomb.png" alt="Return to The Void">
+        <span>Return to The Void</span>
     </a>
+
+    <script>
+        // Set this to your site base:
+        // - Custom domain root: "/"
+        // - GitHub Pages project: "/REPO_NAME/"
+        const HOME_PATH = "/the-void/";
+
+        document.getElementById("homeLink").setAttribute("href", HOME_PATH);
+    </script>
 </body>
 </html>
