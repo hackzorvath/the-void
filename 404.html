@@ -1,57 +1,111 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
     <meta charset="utf-8">
     <title>Lost in the Void</title>
+
     <style>
+        :root {
+            --gold: #ffcc66;
+            --gold-soft: #ffdd88;
+            --gold-dim: #c9a23f;
+            --void: #000;
+        }
+
         body {
-            background: black;
-            color: gold;
-            font-family: 'Georgia', serif;
+            background: radial-gradient(circle at top, #111 0%, #000 60%);
+            color: var(--gold);
+            font-family: Georgia, serif;
             text-align: center;
-            padding-top: 100px;
-        }
-
-        .glow {
-            font-size: 40px;
-            text-shadow: 0 0 10px #ffcc00, 0 0 20px #ffaa00;
-        }
-
-        .void-img-button {
-            display: inline-flex;
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
             flex-direction: column;
+            justify-content: center;
             align-items: center;
+        }
+
+        h1 {
+            font-size: 42px;
+            margin-bottom: 10px;
+            text-shadow:
+                0 0 8px var(--gold),
+                0 0 20px rgba(255, 200, 80, 0.6);
+            animation: flicker 4s infinite alternate;
+        }
+
+        p {
+            font-size: 16px;
+            opacity: 0.85;
+            margin-bottom: 40px;
+        }
+
+        /* ─── VOID BUTTON ───────────────────────────── */
+
+        .void-button {
             text-decoration: none;
-            color: gold;
-            font-family: "Cinzel", serif;
-            transition: 0.2s;
+            color: var(--gold);
+            border: 1px solid var(--gold-dim);
+            padding: 16px 26px;
+            border-radius: 999px;
+            font-family: "Cinzel", Georgia, serif;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            position: relative;
+            overflow: hidden;
+            box-shadow:
+                0 0 15px rgba(255, 200, 80, 0.15),
+                inset 0 0 10px rgba(255, 200, 80, 0.1);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            animation: voidPulse 3.5s infinite;
         }
 
-        .void-img-button img {
-            width: 120px;
-            transition: 0.2s;
+        .void-button::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(
+                circle at center,
+                rgba(255, 220, 120, 0.25),
+                transparent 70%
+            );
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
 
-        .void-img-button:hover img {
-            transform: scale(1.05);
+        .void-button:hover {
+            transform: translateY(-2px) scale(1.03);
+            box-shadow:
+                0 0 25px rgba(255, 220, 120, 0.35),
+                inset 0 0 15px rgba(255, 220, 120, 0.2);
+        }
+
+        .void-button:hover::before {
+            opacity: 1;
+        }
+
+        /* ─── ANIMATIONS ───────────────────────────── */
+
+        @keyframes voidPulse {
+            0%   { box-shadow: 0 0 12px rgba(255,200,80,0.15); }
+            50%  { box-shadow: 0 0 22px rgba(255,220,120,0.35); }
+            100% { box-shadow: 0 0 12px rgba(255,200,80,0.15); }
+        }
+
+        @keyframes flicker {
+            from { opacity: 1; }
+            to   { opacity: 0.85; }
         }
     </style>
 </head>
 
-
 <body>
-        <h1 class="glow">404 — This Path Does Not Exist</h1>
-    <p>Have you tried turning the void off and on again? Ha ha ha</p>
-    <a href="index.html" class="void-img-button">
-<<<<<<< HEAD
-        <img src="/assets/img/buttons/spiritomb.png" alt="">
-=======
-        <img src="https://www.serebii.net/Shiny/XY/442.png" alt="">
->>>>>>> 27409ff (i think i fixed the 404 image)
-        <span>Return to The Void</span>
+    <h1>404 — This Path Does Not Exist</h1>
+    <p>Have you tried turning the Void off and on again?</p>
+
+    <!-- UNIVERSAL RETURN -->
+    <a href="/" class="void-button">
+        Return to the Void
     </a>
-
 </body>
-
 </html>
