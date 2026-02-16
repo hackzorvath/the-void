@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8">
     <title>Lost in the Void</title>
@@ -88,7 +89,9 @@
                 inset 0 0 15px rgba(255, 220, 120, 0.2);
         }
 
-        .void-img-button:hover::before { opacity: 1; }
+        .void-img-button:hover::before {
+            opacity: 1;
+        }
 
         .void-img-button img {
             width: 120px;
@@ -98,7 +101,9 @@
             z-index: 1;
         }
 
-        .void-img-button:hover img { transform: scale(1.05); }
+        .void-img-button:hover img {
+            transform: scale(1.05);
+        }
 
         .void-img-button span {
             z-index: 1;
@@ -108,14 +113,48 @@
         /* ─── ANIMATIONS ───────────────────────────── */
 
         @keyframes voidPulse {
-            0%   { box-shadow: 0 0 12px rgba(255,200,80,0.15), inset 0 0 10px rgba(255,200,80,0.1); }
-            50%  { box-shadow: 0 0 22px rgba(255,220,120,0.35), inset 0 0 14px rgba(255,220,120,0.18); }
-            100% { box-shadow: 0 0 12px rgba(255,200,80,0.15), inset 0 0 10px rgba(255,200,80,0.1); }
+            0% {
+                box-shadow: 0 0 12px rgba(255, 200, 80, 0.15), inset 0 0 10px rgba(255, 200, 80, 0.1);
+            }
+
+            50% {
+                box-shadow: 0 0 22px rgba(255, 220, 120, 0.35), inset 0 0 14px rgba(255, 220, 120, 0.18);
+            }
+
+            100% {
+                box-shadow: 0 0 12px rgba(255, 200, 80, 0.15), inset 0 0 10px rgba(255, 200, 80, 0.1);
+            }
         }
 
         @keyframes flicker {
-            from { opacity: 1; }
-            to   { opacity: 0.85; }
+            from {
+                opacity: 1;
+            }
+
+            to {
+                opacity: 0.85;
+            }
+        }
+
+        .void-button span:first-child {
+            animation: glyphPulse 3s infinite ease-in-out;
+        }
+
+        @keyframes glyphPulse {
+            0% {
+                transform: scale(1);
+                opacity: 0.9;
+            }
+
+            50% {
+                transform: scale(1.08);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 0.9;
+            }
         }
     </style>
 </head>
@@ -124,11 +163,11 @@
     <h1>404 — This Path Does Not Exist</h1>
     <p>Have you tried turning the Void off and on again?</p>
 
-    <a id="homeLink" class="void-img-button" href="#">
-        <!-- Keep your button image; use a path that matches your project -->
-        <img src="assets/img/buttons/spiritomb.png" alt="Return to The Void">
+    <a id="homeLink" class="void-button" href="#">
+        <span style="font-size: 48px; line-height: 1;">🌌</span>
         <span>Return to The Void</span>
     </a>
+
 
     <script>
         // Set this to your site base:
@@ -139,4 +178,5 @@
         document.getElementById("homeLink").setAttribute("href", HOME_PATH);
     </script>
 </body>
+
 </html>
