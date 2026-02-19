@@ -90,12 +90,21 @@ function playSound(type) {
 $("#start-btn").click(function() {
   initAudioContext();
   if (!started) {
-    // Hide the start button so they don't click it twice
+    // Hide the start button and show reset button
     $("#start-btn").hide();
+    $("#reset-btn").show();
     $("#level-title").text("Voyage " + level);
     nextSequence();
     started = true;
   }
+});
+
+// Reset Game Button
+$("#reset-btn").click(function() {
+  startOver();
+  $("#reset-btn").hide();
+  $("#start-btn").show();
+  $("#level-title").text("🏴‍☠️ Captain Sparrow Says");
 });
 
 // 3. User Click Logic
@@ -168,6 +177,7 @@ $(".pirate-btn").click(function () {
 function startOver() {
             level = 0;
             gamePattern = [];
+            userClickedPattern = [];
             started = false;
         }
 
