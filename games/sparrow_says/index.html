@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Captain Sparrow Says</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+    <div class="container text-center mt-4">
+
+        <!-- Header -->
+        <h1 id="level-title" class="display-5 fw-bold text-white">🏴‍☠️ Captain Sparrow Says</h1>
+
+        <!-- Mobile Friendly Start Button -->
+        <button id="start-btn" class="btn btn-lg btn-warning mt-3 fw-bold">Start Voyage</button>
+
+        <!-- Game Board -->
+        <div class="container mt-4">
+            <div class="game-board-row">
+                <!-- Rum (Green) -->
+                <div type="button" id="rum" class="btn pirate-btn rum">🍾</div>
+                <!-- Bomb (Red) -->
+                <div type="button" id="bomb" class="btn pirate-btn bomb">💣</div>
+            </div>
+
+            <div class="game-board-row">
+                <!-- Gold (Yellow) -->
+                <div type="button" id="gold" class="btn pirate-btn gold">🪙</div>
+                <!-- Compass (Blue) -->
+                <div type="button" id="compass" class="btn pirate-btn compass">🧭</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Game Script -->
+    <script src="game.js"></script>
+</body>
+
+</html>

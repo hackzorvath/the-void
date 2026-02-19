@@ -1,0 +1,80 @@
+body {
+    background-color: #0b1e27;
+    /* Deep Ocean / Black Pearl color */
+    color: #ecf0f1;
+    font-family: 'Courier New', Courier, monospace;
+    /* Old map font style */
+
+    /* Mobile: Prevent selecting text or dragging images */
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+h1 {
+    text-shadow: 2px 2px #000;
+}
+
+#start-btn {
+    border: 2px solid #fff;
+    box-shadow: 0 0 10px #f1c40f;
+}
+
+.pirate-btn {
+    width: 140px;
+    height: 140px;
+    border-radius: 15px;
+    /* Slightly rounded squares, like crates */
+    border: 5px solid #5d4037;
+    /* Wood color border */
+    margin: 3px;
+    font-size: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    /* MOBILE MAGIC: Prevents delay/zooming on touch screens */
+    touch-action: manipulation;
+}
+
+.game-board-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0;
+    margin: 3px 0;
+}
+
+/* Colors */
+.rum {
+    background-color: #27ae60;
+}
+
+/* Green Bottle */
+.bomb {
+    background-color: #c0392b;
+}
+
+/* Red Boom */
+.gold {
+    background-color: #f1c40f;
+}
+
+/* Yellow Doubloon */
+.compass {
+    background-color: #2980b9;
+}
+
+/* Blue Sea */
+
+/* Animations */
+.pressed {
+    box-shadow: 0 0 20px white;
+    background-color: #95a5a6;
+    transform: scale(0.95);
+}
+
+.game-over {
+    background-color: #550000;
+    /* Blood Red */
+    opacity: 0.9;
+}
