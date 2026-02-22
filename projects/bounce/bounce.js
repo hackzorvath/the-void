@@ -13,6 +13,22 @@ const ctx = canvas.getContext('2d', { alpha: false });
 
 let W = 0, H = 0, DPR = 1;
 
+// Audio: create on first user gesture
+let audioContext = null;
+function initAudioContext() {
+    if (audioContext) return;
+    try {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        console.log('[🔊] AudioContext created');
+    } catch (e) {
+        console.warn('[🔊] Audio not available:', e);
+        audioContext = null;
+    }
+}
+
+// Ensure we have a user gesture to unlock audio on browsers
+document.addEventListener('pointerdown', initAudioContext, { once: true, passive: true });
+
 // Ball config
 const ball = {
     r: 70,
@@ -118,11 +134,76 @@ function update(dt) {
     ball.x += ball.vx * dt * DPR;
     ball.y += ball.vy * dt * DPR;
 
-    // Bounce with radius-based bounds
-    if (ball.x + ball.r >= W) { ball.x = W - ball.r; ball.vx *= -1; }
-    if (ball.x - ball.r <= 0) { ball.x = ball.r; ball.vx *= -1; }
-    if (ball.y + ball.r >= H) { ball.y = H - ball.r; ball.vy *= -1; }
-    if (ball.y - ball.r <= 0) { ball.y = ball.r; ball.vy *= -1; }
+    // Bounce with radius-based bounds and play sounds on collision
+    // Detect collisions first so we can play sounds with position info
+    if (ball.x + ball.r >= W) {
+        ball.x = W - ball.r;
+        ball.vx *= -1;
+        playBounceSound('x', ball.x / W);
+    }
+    if (ball.x - ball.r <= 0) {
+        ball.x = ball.r;
+        ball.vx *= -1;
+        playBounceSound('x', ball.x / W);
+    }
+    if (ball.y + ball.r >= H) {
+        ball.y = H - ball.r;
+        ball.vy *= -1;
+        playBounceSound('y', ball.y / H);
+    }
+    if (ball.y - ball.r <= 0) {
+        ball.y = ball.r;
+        ball.vy *= -1;
+        playBounceSound('y', ball.y / H);
+    }
+}
+
+// Play a short percussive bounce sound. "axis" is 'x' or 'y'. pan is 0..1 position.
+function playBounceSound(axis, normPos) {
+    if (!audioContext) return; // gracefully skip if audio not available
+
+    try {
+        const now = audioContext.currentTime;
+
+        // Create short noise burst for a percussive "pong" character
+        const osc = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+        const filter = audioContext.createBiquadFilter();
+        const panner = audioContext.createStereoPanner ? audioContext.createStereoPanner() : null;
+
+        // Slight pitch variation depending on axis
+        osc.type = 'sine';
+        osc.frequency.value = axis === 'x' ? 680 : 480; // brighter for horizontal hits
+
+        // Short envelope
+        gain.gain.setValueAtTime(0.001, now);
+        gain.gain.exponentialRampToValueAtTime(0.6, now + 0.004);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+
+        // Brighten with a highpass-ish filter for click
+        filter.type = 'highshelf';
+        filter.frequency.value = 1200;
+        filter.gain.value = 6;
+
+        // Pan based on normalized X position (-1 .. +1)
+        if (panner) {
+            panner.pan.value = (normPos - 0.5) * 2;
+            osc.connect(filter);
+            filter.connect(gain);
+            gain.connect(panner);
+            panner.connect(audioContext.destination);
+        } else {
+            osc.connect(filter);
+            filter.connect(gain);
+            gain.connect(audioContext.destination);
+        }
+
+        osc.start(now);
+        osc.stop(now + 0.14);
+    } catch (e) {
+        // ignore audio errors in older browsers
+        console.warn('bounce sound error', e);
+    }
 }
 
 function drawBackground(t) {
